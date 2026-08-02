@@ -25,7 +25,13 @@ app.use("/api/reports", reportsRouter);
 app.use("/api", aiRouter);
 
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", service: "FitLab Pro", version: "1.0.0" });
+  res.json({
+    status: "ok",
+    service: "FitLab Pro",
+    version: "1.0.0",
+    aiConfigured: Boolean(process.env.XAI_API_KEY),
+    storage: process.env.VERCEL ? "temporary-instance-storage" : "local-file",
+  });
 });
 
 // Serve static frontend when not on Vercel (local prod / other hosts)
