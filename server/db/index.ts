@@ -1,6 +1,4 @@
-import fs from "node:fs";
-import path from "node:path";
-import { randomUUID } from "node:crypto";
+import { createClient } from "@supabase/supabase-js";
 
 export type StoredFitting = {
   id: string;
@@ -16,103 +14,162 @@ export type StoredReport = {
   snapshot: Record<string, any>;
 };
 
-type State = { fittings: StoredFitting[]; reports: StoredReport[] };
+type FittingRow = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  data: Record<string, any>;
+};
 
-const filePath = process.env.VERCEL
-  ? "/tmp/fitlab-pro-data.json"
-  : path.resolve(process.cwd(), "data/fitlab-pro-data.json");
+type ReportRow = {
+  id: string;
+  fitting_id: string;
+  created_at: string;
+  snapshot: Record<string, any>;
+};
 
-function emptyState(): State {
-  return { fittings: [], reports: [] };
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabasePublishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+
+export function isSupabaseConfigured() {
+  return Boolean(supabaseUrl && supabasePublishableKey);
 }
 
-function readState(): State {
-  try {
-    if (!fs.existsSync(filePath)) return emptyState();
-    const parsed = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    return {
-      fittings: Array.isArray(parsed.fittings) ? parsed.fittings : [],
-      reports: Array.isArray(parsed.reports) ? parsed.reports : [],
-    };
-  } catch {
-    return emptyState();
+function getSupabase() {
+  if (!supabaseUrl || !supabasePublishableKey) {
+    throw new Error("Supabase n'est pas configuré : variables SUPABASE_URL et SUPABASE_PUBLISHABLE_KEY manquantes");
   }
+
+  return createClient(supabaseUrl, supabasePublishableKey, {
+    auth: {
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+      persistSession: false,
+    },
+  });
 }
 
-function writeState(state: State) {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, JSON.stringify(state, null, 2));
+function fittingFromRow(row: FittingRow) {
+  return {
+    ...(row.data || {}),
+    id: row.id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
 }
 
-export function listFittings() {
-  const state = readState();
-  return state.fittings
-    .slice()
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-    .map((fitting) => ({
-      ...fitting.data,
-      id: fitting.id,
-      createdAt: fitting.createdAt,
-      updatedAt: fitting.updatedAt,
-      reportCount: state.reports.filter((report) => report.fittingId === fitting.id).length,
-    }));
+function reportFromRow(row: ReportRow): StoredReport {
+  return {
+    id: row.id,
+    fittingId: row.fitting_id,
+    createdAt: row.created_at,
+    snapshot: row.snapshot || {},
+  };
 }
 
-export function getFitting(id: string) {
-  const state = readState();
-  const fitting = state.fittings.find((item) => item.id === id);
-  if (!fitting) return null;
-  return { ...fitting.data, id: fitting.id, createdAt: fitting.createdAt, updatedAt: fitting.updatedAt };
+export async function listFittings() {
+  const supabase = getSupabase();
+  const [{ data: fittingRows, error: fittingsError }, { data: reportRows, error: reportsError }] = await Promise.all([
+    supabase.from("fitlab_fittings").select("id, created_at, updated_at, data").order("updated_at", { ascending: false }),
+    supabase.from("fitlab_reports").select("id, fitting_id"),
+  ]);
+
+  if (fittingsError) throw fittingsError;
+  if (reportsError) throw reportsError;
+
+  const reportCounts = new Map<string, number>();
+  for (const report of reportRows || []) {
+    reportCounts.set(report.fitting_id, (reportCounts.get(report.fitting_id) || 0) + 1);
+  }
+
+  return ((fittingRows || []) as FittingRow[]).map((fitting) => ({
+    ...fittingFromRow(fitting),
+    reportCount: reportCounts.get(fitting.id) || 0,
+  }));
 }
 
-export function createFitting(data: Record<string, any>) {
-  const state = readState();
-  const now = new Date().toISOString();
-  const fitting: StoredFitting = { id: randomUUID(), createdAt: now, updatedAt: now, data };
-  state.fittings.push(fitting);
-  writeState(state);
-  return { ...data, id: fitting.id, createdAt: now, updatedAt: now };
+export async function getFitting(id: string) {
+  const { data, error } = await getSupabase()
+    .from("fitlab_fittings")
+    .select("id, created_at, updated_at, data")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ? fittingFromRow(data as FittingRow) : null;
 }
 
-export function updateFitting(id: string, patch: Record<string, any>) {
-  const state = readState();
-  const fitting = state.fittings.find((item) => item.id === id);
-  if (!fitting) return null;
-  fitting.data = { ...fitting.data, ...patch };
-  fitting.updatedAt = new Date().toISOString();
-  writeState(state);
-  return { ...fitting.data, id: fitting.id, createdAt: fitting.createdAt, updatedAt: fitting.updatedAt };
+export async function createFitting(data: Record<string, any>) {
+  const { data: row, error } = await getSupabase()
+    .from("fitlab_fittings")
+    .insert({ data })
+    .select("id, created_at, updated_at, data")
+    .single();
+
+  if (error) throw error;
+  return fittingFromRow(row as FittingRow);
 }
 
-export function deleteFitting(id: string) {
-  const state = readState();
-  const before = state.fittings.length;
-  state.fittings = state.fittings.filter((item) => item.id !== id);
-  state.reports = state.reports.filter((report) => report.fittingId !== id);
-  if (state.fittings.length === before) return false;
-  writeState(state);
-  return true;
+export async function updateFitting(id: string, patch: Record<string, any>) {
+  const current = await getFitting(id);
+  if (!current) return null;
+
+  const mergedData: Record<string, any> = { ...current, ...patch };
+  delete mergedData.id;
+  delete mergedData.createdAt;
+  delete mergedData.updatedAt;
+
+  const { data: row, error } = await getSupabase()
+    .from("fitlab_fittings")
+    .update({ data: mergedData, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .select("id, created_at, updated_at, data")
+    .single();
+
+  if (error) throw error;
+  return fittingFromRow(row as FittingRow);
 }
 
-export function listReports(fittingId: string) {
-  return readState().reports
-    .filter((report) => report.fittingId === fittingId)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+export async function deleteFitting(id: string) {
+  const { data, error } = await getSupabase()
+    .from("fitlab_fittings")
+    .delete()
+    .eq("id", id)
+    .select("id");
+
+  if (error) throw error;
+  return Boolean(data?.length);
 }
 
-export function createReport(fittingId: string, snapshot: Record<string, any>) {
-  const state = readState();
-  const report: StoredReport = { id: randomUUID(), fittingId, createdAt: new Date().toISOString(), snapshot };
-  state.reports.push(report);
-  writeState(state);
-  return report;
+export async function listReports(fittingId: string) {
+  const { data, error } = await getSupabase()
+    .from("fitlab_reports")
+    .select("id, fitting_id, created_at, snapshot")
+    .eq("fitting_id", fittingId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return ((data || []) as ReportRow[]).map(reportFromRow);
 }
 
-export function deleteReport(id: string) {
-  const state = readState();
-  const before = state.reports.length;
-  state.reports = state.reports.filter((report) => report.id !== id);
-  if (state.reports.length === before) return false;
-  writeState(state);
-  return true;
+export async function createReport(fittingId: string, snapshot: Record<string, any>) {
+  const { data, error } = await getSupabase()
+    .from("fitlab_reports")
+    .insert({ fitting_id: fittingId, snapshot })
+    .select("id, fitting_id, created_at, snapshot")
+    .single();
+
+  if (error) throw error;
+  return reportFromRow(data as ReportRow);
+}
+
+export async function deleteReport(id: string) {
+  const { data, error } = await getSupabase()
+    .from("fitlab_reports")
+    .delete()
+    .eq("id", id)
+    .select("id");
+
+  if (error) throw error;
+  return Boolean(data?.length);
 }
