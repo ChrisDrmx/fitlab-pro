@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import fittingsRouter from "./routes/fittings.js";
 import reportsRouter from "./routes/reports.js";
 import aiRouter from "./routes/ai.js";
-import "./db/index.js"; // init DB
+import { isSupabaseConfigured } from "./db/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -30,7 +30,7 @@ app.get("/api/health", (_req, res) => {
     service: "FitLab Pro",
     version: "1.0.0",
     aiConfigured: Boolean(process.env.XAI_API_KEY),
-    storage: process.env.VERCEL ? "temporary-instance-storage" : "local-file",
+    storage: isSupabaseConfigured() ? "supabase-postgres" : "not-configured",
   });
 });
 
@@ -45,5 +45,10 @@ if (!process.env.VERCEL) {
     });
   });
 }
+
+app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error("FitLab API error", error);
+  res.status(500).json({ error: "Erreur interne de stockage" });
+});
 
 export default app;
