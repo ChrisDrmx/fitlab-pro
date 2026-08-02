@@ -63,43 +63,43 @@ RÈGLE ABSOLUE — RIEN N'EST INVENTÉ :
 - Préférer un champ vide plutôt qu'une valeur incertaine.
 
 Convertis uniquement si explicitement dit :
-- Nombres en toutes lettres → chiffres (\"un mètre quatre-vingt-deux\" → 182)
+- Nombres en toutes lettres → chiffres ("un mètre quatre-vingt-deux" → 182)
 - Longueurs corporelles en cm
 - Vitesses en mph (si km/h ×0.621371, si m/s ×2.23694)
 - Distances en mètres (si yards ×0.9144)
 - Genre et latéralité uniquement si clairement déductibles du langage
 - Marques de lie board : talon/heel, légèrement pointe/toe léger, centre, etc.
-- Matériel en série sans club précis (\"il joue du Ping i230\") → rattacher au fer 7 avec mention \"série complète\"
+- Matériel en série sans club précis ("il joue du Ping i230") → rattacher au fer 7 avec mention "série complète"
 
 Réponds UNIQUEMENT en JSON valide (pas de markdown) :
 {
-  \"summary\": \"résumé court de la séance\",
-  \"player\": {
-    \"firstName\": \"\", \"lastName\": \"\", \"email\": \"\", \"phone\": \"\",
-    \"gender\": \"H\"|\"F\"|\"\", \"birthYear\": null, \"handedness\": \"droitier\"|\"gaucher\"|\"\",
-    \"handicap\": null, \"yearsPlaying\": null, \"roundsPerMonth\": null,
-    \"tempo\": \"lent\"|\"moyen\"|\"rapide\"|\"\", \"physicalNotes\": \"\",
-    \"goals\": [], \"missPattern\": \"\", \"golfClub\": \"\"
+  "summary": "résumé court de la séance",
+  "player": {
+    "firstName": "", "lastName": "", "email": "", "phone": "",
+    "gender": "H"|"F"|"", "birthYear": null, "handedness": "droitier"|"gaucher"|"",
+    "handicap": null, "yearsPlaying": null, "roundsPerMonth": null,
+    "tempo": "lent"|"moyen"|"rapide"|"", "physicalNotes": "",
+    "goals": [], "missPattern": "", "golfClub": ""
   },
-  \"measures\": {
-    \"heightCm\": null, \"wristToFloorCm\": null, \"wingspanCm\": null,
-    \"handLengthCm\": null, \"handCircumferenceCm\": null, \"middleFingerCm\": null,
-    \"currentGloveSize\": \"\", \"shoeSole\": \"plate\"|\"crampons\"|\"\"
+  "measures": {
+    "heightCm": null, "wristToFloorCm": null, "wingspanCm": null,
+    "handLengthCm": null, "handCircumferenceCm": null, "middleFingerCm": null,
+    "currentGloveSize": "", "shoeSole": "plate"|"crampons"|""
   },
-  \"currentClubs\": [],
-  \"lieTests\": [],
-  \"trackman\": [],
-  \"reco\": {
-    \"lie\": \"\", \"lengthInches\": null, \"lengthCm\": null, \"flex\": \"\",
-    \"gripModel\": \"\", \"gripSize\": \"\", \"glove\": \"\", \"pingColorCode\": \"\",
-    \"loftGapping\": \"\", \"driverLoft\": \"\", \"ballModel\": \"\"
+  "currentClubs": [],
+  "lieTests": [],
+  "trackman": [],
+  "reco": {
+    "lie": "", "lengthInches": null, "lengthCm": null, "flex": "",
+    "gripModel": "", "gripSize": "", "glove": "", "pingColorCode": "",
+    "loftGapping": "", "driverLoft": "", "ballModel": ""
   },
-  \"targetBrand\": \"\",
-  \"fitterNotes\": \"\",
-  \"quotes\": {}
+  "targetBrand": "",
+  "fitterNotes": "",
+  "quotes": {}
 }
 
-Pour \"quotes\" : pour CHAQUE valeur non vide/null, fournis l'extrait EXACT de la transcription qui la justifie. Clé = chemin du champ (ex: \"player.firstName\", \"measures.heightCm\").`;
+Pour "quotes" : pour CHAQUE valeur non vide/null, fournis l'extrait EXACT de la transcription qui la justifie. Clé = chemin du champ (ex: "player.firstName", "measures.heightCm").`;
 
 const OCR_SYSTEM = `Tu es un expert en extraction de données TrackMan pour le fitting de clubs de golf.
 Analyse l'image d'un écran ou rapport TrackMan et extrais UNIQUEMENT les mesures clairement lisibles.
@@ -126,33 +126,33 @@ Clubs : DR, 3W, 5W, 7W, H3, H4, H5, 3i–9i, PW, GW, SW, LW (normaliser les noms
 
 Réponds UNIQUEMENT en JSON valide (pas de markdown) :
 {
-  \"detectedUnits\": \"unités détectées dans l'image\",
-  \"source\": \"description courte de l'écran (joueur, club, date si visibles)\",
-  \"rows\": [
+  "detectedUnits": "unités détectées dans l'image",
+  "source": "description courte de l'écran (joueur, club, date si visibles)",
+  "rows": [
     {
-      \"club\": \"DR\",
-      \"clubSpeed\": null,
-      \"ballSpeed\": null,
-      \"smashFactor\": null,
-      \"launchAngle\": null,
-      \"backspin\": null,
-      \"attackAngle\": null,
-      \"dynamicLoft\": null,
-      \"spinLoft\": null,
-      \"faceAngle\": null,
-      \"clubPath\": null,
-      \"faceToPath\": null,
-      \"height\": null,
-      \"landAngle\": null,
-      \"carry\": null,
-      \"total\": null,
-      \"sideCarry\": null
+      "club": "DR",
+      "clubSpeed": null,
+      "ballSpeed": null,
+      "smashFactor": null,
+      "launchAngle": null,
+      "backspin": null,
+      "attackAngle": null,
+      "dynamicLoft": null,
+      "spinLoft": null,
+      "faceAngle": null,
+      "clubPath": null,
+      "faceToPath": null,
+      "height": null,
+      "landAngle": null,
+      "carry": null,
+      "total": null,
+      "sideCarry": null
     }
   ]
 }
 
 Si aucune donnée TrackMan n'est clairement lisible :
-{\"detectedUnits\":\"\",\"source\":\"Aucune donnée lisible\",\"rows\":[]}`;
+{"detectedUnits":"","source":"Aucune donnée lisible","rows":[]}`;
 
 export async function parseTranscript(transcript: string) {
   const text = await xaiChat({
