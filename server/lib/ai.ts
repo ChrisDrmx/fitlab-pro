@@ -8,10 +8,12 @@
 
 const XAI_BASE = "https://api.x.ai/v1";
 
-/** Modèles xAI actuels (août 2026) */
+/** Modèles xAI actuels (août 2026) — grok-4.6 accepte texte + image */
 const MODEL_TEXT = "grok-4.6";
-const MODEL_VISION = "grok-4.6"; // text + image input
-const MODEL_VISION_FALLBACK = "grok-2-vision-1212";
+const MODEL_VISION = "grok-4.6";
+
+/** Timeout interne avant le kill Vercel (doit rester < maxDuration) */
+const XAI_TIMEOUT_MS = 120_000;
 
 function getApiKey(): string {
   const key = process.env.XAI_API_KEY || "";
@@ -24,33 +26,52 @@ async function xaiChat(params: {
   system: string;
   messages: Array<{ role: string; content: string | Array<Record<string, unknown>> }>;
   max_tokens?: number;
+  timeoutMs?: number;
 }): Promise<string> {
-  const res = await fetch(`${XAI_BASE}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${getApiKey()}`,
-    },
-    body: JSON.stringify({
-      model: params.model,
-      max_tokens: params.max_tokens ?? 4096,
-      temperature: 0,
-      messages: [
-        { role: "system", content: params.system },
-        ...params.messages,
-      ],
-    }),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    params.timeoutMs ?? XAI_TIMEOUT_MS,
+  );
 
-  if (!res.ok) {
-    const errText = await res.text().catch(() => res.statusText);
-    throw new Error(`xAI API ${res.status}: ${errText.slice(0, 400)}`);
+  try {
+    const res = await fetch(`${XAI_BASE}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getApiKey()}`,
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: params.model,
+        max_tokens: params.max_tokens ?? 4096,
+        temperature: 0,
+        messages: [
+          { role: "system", content: params.system },
+          ...params.messages,
+        ],
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => res.statusText);
+      throw new Error(`xAI API ${res.status}: ${errText.slice(0, 400)}`);
+    }
+
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    return data.choices?.[0]?.message?.content ?? "";
+  } catch (err: any) {
+    if (err?.name === "AbortError") {
+      throw new Error(
+        "Délai dépassé côté xAI (image trop lourde ou API lente). Réessaie avec une photo plus légère (crop sur la barre de chiffres).",
+      );
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
   }
-
-  const data = (await res.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
-  };
-  return data.choices?.[0]?.message?.content ?? "";
 }
 
 function extractJson(text: string): unknown {
@@ -164,6 +185,7 @@ export async function parseTranscript(transcript: string) {
     model: MODEL_TEXT,
     system: TRANSCRIPT_SYSTEM,
     max_tokens: 8192,
+    timeoutMs: 90_000,
     messages: [
       {
         role: "user",
@@ -184,49 +206,52 @@ export async function ocrTrackman(imageBase64: string) {
     ? imageBase64
     : `data:${mediaType};base64,${imageBase64}`;
 
-  const messages = [
-    {
-      role: "user",
-      content: [
-        {
-          type: "image_url",
-          image_url: { url: dataUrl, detail: "high" },
-        },
-        {
-          type: "text",
-          text: "Extrais toutes les données TrackMan clairement lisibles dans cette image. Si un chiffre est flou, mets null. Ne rien inventer.",
-        },
-      ],
-    },
-  ];
-
-  const models = [MODEL_VISION, MODEL_VISION_FALLBACK];
-  let lastError: unknown = null;
-
-  for (const model of models) {
-    try {
-      const text = await xaiChat({
-        model,
-        system: OCR_SYSTEM,
-        max_tokens: 4096,
-        messages,
-      });
-      return extractJson(text) as {
-        detectedUnits: string;
-        source: string;
-        rows: unknown[];
-      };
-    } catch (err) {
-      lastError = err;
-      console.error(`OCR TrackMan error with model ${model}:`, err);
-    }
+  // Limite taille payload (~4 Mo base64 ≈ photo 3 Mo) pour éviter timeout
+  if (dataUrl.length > 5_500_000) {
+    return {
+      detectedUnits: "",
+      source:
+        "Image trop lourde pour l'OCR. Recadre sur la barre de chiffres TrackMan (sans le fond 3D) et réessaie.",
+      rows: [],
+    };
   }
 
-  return {
-    detectedUnits: "",
-    source: `Erreur OCR: ${lastError instanceof Error ? lastError.message : "données non lisibles"}`,
-    rows: [],
-  };
+  try {
+    const text = await xaiChat({
+      model: MODEL_VISION,
+      system: OCR_SYSTEM,
+      max_tokens: 2048,
+      timeoutMs: 120_000,
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "image_url",
+              // "low" = plus rapide, suffisant pour chiffres TrackMan lisibles
+              image_url: { url: dataUrl, detail: "low" },
+            },
+            {
+              type: "text",
+              text: "Extrais toutes les données TrackMan clairement lisibles dans cette image. Si un chiffre est flou, mets null. Ne rien inventer. Réponds uniquement en JSON.",
+            },
+          ],
+        },
+      ],
+    });
+    return extractJson(text) as {
+      detectedUnits: string;
+      source: string;
+      rows: unknown[];
+    };
+  } catch (err) {
+    console.error("OCR TrackMan error:", err);
+    return {
+      detectedUnits: "",
+      source: `Erreur OCR: ${err instanceof Error ? err.message : "données non lisibles"}`,
+      rows: [],
+    };
+  }
 }
 
 export function hasAiKey(): boolean {
