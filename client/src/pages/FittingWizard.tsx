@@ -1,4 +1,4 @@
-import { Camera, Check, ChevronLeft, ChevronRight, FileDown, Plus, Save, Sparkles, Trash2 } from "lucide-react";
+import { Camera, Check, ChevronLeft, ChevronRight, FileDown, Loader2, Plus, Save, Sparkles, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -11,21 +11,76 @@ const goals = ["Plus de distance", "Plus de précision", "Trajectoire", "Confort
 const clubs = ["DR", "3W", "5W", "7W", "H3", "H4", "H5", "3i", "4i", "5i", "6i", "7i", "8i", "9i", "PW", "GW", "SW", "LW"];
 const tmFields: Array<[keyof TrackmanRow, string]> = [["clubSpeed", "Vitesse club"], ["ballSpeed", "Vitesse balle"], ["smashFactor", "Smash"], ["launchAngle", "Launch"], ["backspin", "Backspin"], ["attackAngle", "Attack"], ["dynamicLoft", "Loft dyn."], ["faceAngle", "Face"], ["clubPath", "Path"], ["faceToPath", "Face-to-path"], ["height", "Hauteur"], ["landAngle", "Angle chute"], ["carry", "Carry"], ["total", "Total"], ["sideCarry", "Side"]];
 
-function Field({ label, value, onChange, type = "text", placeholder = "" }: { label: string; value: string | number | null | undefined; onChange: (value: string) => void; type?: string; placeholder?: string }) { return <div className="field"><label>{label}</label><input type={type} value={value ?? ""} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} /></div>; }
-function SelectField({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: string[] }) { return <div className="field"><label>{label}</label><select value={value} onChange={(event) => onChange(event.target.value)}><option value="">Sélectionner…</option>{options.map((option) => <option key={option} value={option}>{option}</option>)}</select></div>; }
-function Section({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) { return <section className="panel"><div className="section-title"><h2>{title}</h2>{action}</div>{children}</section>; }
+function normalizeClub(value: unknown): string {
+  if (typeof value !== "string" || !value.trim()) return "7i";
+  const raw = value.trim().toUpperCase().replace(/\s+/g, "");
+  const map: Record<string, string> = {
+    DRIVER: "DR", D: "DR", "1W": "DR",
+    "3WOOD": "3W", "5WOOD": "5W", "7WOOD": "7W",
+    "3HYBRID": "H3", "4HYBRID": "H4", "5HYBRID": "H5",
+    "7IRON": "7i", "7I": "7i", "8IRON": "8i", "9IRON": "9i",
+    PITCHINGWEDGE: "PW", GAPWEDGE: "GW", SANDWEDGE: "SW", LOBWEDGE: "LW",
+  };
+  if (clubs.includes(raw)) return raw;
+  if (clubs.includes(value.trim())) return value.trim();
+  const mapped = map[raw];
+  if (mapped) return mapped;
+  const compact = raw.replace("IRON", "i").replace("WOOD", "W");
+  if (clubs.includes(compact)) return compact;
+  return "7i";
+}
+
+function Field({ label, value, onChange, type = "text", placeholder = "" }: { label: string; value: string | number | null | undefined; onChange: (value: string) => void; type?: string; placeholder?: string }) {
+  return <div className="field"><label>{label}</label><input type={type} value={value ?? ""} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} /></div>;
+}
+function SelectField({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: string[] }) {
+  return <div className="field"><label>{label}</label><select value={value} onChange={(event) => onChange(event.target.value)}><option value="">Sélectionner…</option>{options.map((option) => <option key={option} value={option}>{option}</option>)}</select></div>;
+}
+function Section({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) {
+  return <section className="panel"><div className="section-title"><h2>{title}</h2>{action}</div>{children}</section>;
+}
 
 export default function FittingWizard() {
-  const { id } = useParams(); const navigate = useNavigate();
-  const [data, setData] = useState<Fitting>(blankFitting); const [ready, setReady] = useState(false); const [step, setStep] = useState(0); const [message, setMessage] = useState(""); const [error, setError] = useState("");
-  const [pendingParse, setPendingParse] = useState<any>(null); const [parsing, setParsing] = useState(false); const [ocrRows, setOcrRows] = useState<TrackmanRow[]>([]); const [ocrBusy, setOcrBusy] = useState(false); const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [data, setData] = useState<Fitting>(blankFitting);
+  const [ready, setReady] = useState(false);
+  const [step, setStep] = useState(0);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [pendingParse, setPendingParse] = useState<any>(null);
+  const [parsing, setParsing] = useState(false);
+  const [ocrRows, setOcrRows] = useState<TrackmanRow[]>([]);
+  const [ocrBusy, setOcrBusy] = useState(false);
+  const [ocrStatus, setOcrStatus] = useState("");
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (id) { getJson<Fitting>(`/api/fittings/${id}`).then((value) => { setData({ ...blankFitting(), ...value, player: { ...blankFitting().player, ...value.player }, measures: { ...blankFitting().measures, ...value.measures }, reco: { ...blankFitting().reco, ...value.reco } }); setReady(true); }).catch((err) => setError(err.message)); }
-    else { api<Fitting>("/api/fittings", { method: "POST", body: JSON.stringify(blankFitting()) }).then((value) => navigate(`/fitting/${value.id}`, { replace: true })).catch((err) => setError(err.message)); }
+    if (id) {
+      getJson<Fitting>(`/api/fittings/${id}`)
+        .then((value) => {
+          setData({ ...blankFitting(), ...value, player: { ...blankFitting().player, ...value.player }, measures: { ...blankFitting().measures, ...value.measures }, reco: { ...blankFitting().reco, ...value.reco } });
+          setReady(true);
+        })
+        .catch((err) => setError(err.message));
+    } else {
+      api<Fitting>("/api/fittings", { method: "POST", body: JSON.stringify(blankFitting()) })
+        .then((value) => navigate(`/fitting/${value.id}`, { replace: true }))
+        .catch((err) => setError(err.message));
+    }
   }, [id, navigate]);
 
-  useEffect(() => { if (!ready || !id) return; if (saveTimer.current) clearTimeout(saveTimer.current); saveTimer.current = setTimeout(() => { api(`/api/fittings/${id}`, { method: "PATCH", body: JSON.stringify(data) }).then(() => { setMessage("Sauvegardé"); setTimeout(() => setMessage(""), 1600); }).catch((err) => setError(err.message)); }, 650); return () => { if (saveTimer.current) clearTimeout(saveTimer.current); }; }, [data, id, ready]);
+  useEffect(() => {
+    if (!ready || !id) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      api(`/api/fittings/${id}`, { method: "PATCH", body: JSON.stringify(data) })
+        .then(() => { setMessage("Sauvegardé"); setTimeout(() => setMessage(""), 1600); })
+        .catch((err) => setError(err.message));
+    }, 650);
+    return () => { if (saveTimer.current) clearTimeout(saveTimer.current); };
+  }, [data, id, ready]);
+
   const update = (patch: Partial<Fitting>) => setData((previous) => ({ ...previous, ...patch }));
   const player = (patch: Partial<Fitting["player"]>) => setData((previous) => ({ ...previous, player: { ...previous.player, ...patch } }));
   const measures = (patch: Partial<Fitting["measures"]>) => setData((previous) => ({ ...previous, measures: { ...previous.measures, ...patch } }));
@@ -36,26 +91,194 @@ export default function FittingWizard() {
   const addInsight = () => update({ insights: [...data.insights, { id: crypto.randomUUID(), priority: "Moyenne", text: "", action: "", checked: true }] });
   const updateInsight = (index: number, patch: Partial<Insight>) => update({ insights: data.insights.map((item, itemIndex) => itemIndex === index ? { ...item, ...patch } : item) });
   const apeIndex = Number(data.measures.wingspanCm) && Number(data.measures.heightCm) ? (Number(data.measures.wingspanCm) - Number(data.measures.heightCm)).toFixed(1) : "—";
-  const lieConsensus = useMemo(() => { const marks = data.lieTests.map((row) => row.mark).filter(Boolean); return marks.length ? marks.sort((a, b) => marks.filter((value) => value === b).length - marks.filter((value) => value === a).length)[0] : "—"; }, [data.lieTests]);
+  const lieConsensus = useMemo(() => {
+    const marks = data.lieTests.map((row) => row.mark).filter(Boolean);
+    return marks.length ? marks.sort((a, b) => marks.filter((value) => value === b).length - marks.filter((value) => value === a).length)[0] : "—";
+  }, [data.lieTests]);
 
-  async function analyseTranscript() { if (data.transcript.trim().length < 10) return setError("Colle une transcription de séance suffisamment longue."); setParsing(true); setError(""); try { setPendingParse(await api("/api/transcript/parse", { method: "POST", body: JSON.stringify({ transcript: data.transcript }) })); } catch (err: any) { setError(err.message); } finally { setParsing(false); } }
-  function applyTranscript() { if (!pendingParse) return; const parsed = pendingParse; const nonEmpty = (value: any) => value !== null && value !== undefined && value !== "" && !(Array.isArray(value) && value.length === 0); const nextPlayer = Object.fromEntries(Object.entries({ ...data.player, ...(parsed.player || {}) }).filter(([, value]) => nonEmpty(value))); const nextMeasures = Object.fromEntries(Object.entries({ ...data.measures, ...(parsed.measures || {}) }).filter(([, value]) => nonEmpty(value))); update({ player: { ...data.player, ...nextPlayer }, measures: { ...data.measures, ...nextMeasures }, currentClubs: parsed.currentClubs?.length ? parsed.currentClubs : data.currentClubs, lieTests: parsed.lieTests?.length ? parsed.lieTests : data.lieTests, trackman: parsed.trackman?.length ? parsed.trackman : data.trackman, reco: { ...data.reco, ...(parsed.reco || {}) }, targetBrand: nonEmpty(parsed.targetBrand) ? parsed.targetBrand : data.targetBrand, fitterNotes: nonEmpty(parsed.fitterNotes) ? parsed.fitterNotes : data.fitterNotes }); setMessage("Données lisibles reportées dans la fiche"); }
-  function handlePhoto(file: File | undefined) { if (!file) return; setOcrBusy(true); const reader = new FileReader(); reader.onload = async () => { try { const result = await api<any>("/api/trackman/ocr", { method: "POST", body: JSON.stringify({ image: reader.result }) }); setOcrRows((result.rows || []).map((row: any) => deriveTrackman({ ...blankTrackman(), ...row }))); } catch (err: any) { setError(err.message); } finally { setOcrBusy(false); } }; reader.readAsDataURL(file); }
-  function insertOcr() { update({ trackman: [...data.trackman, ...ocrRows] }); setOcrRows([]); }
-  async function exportPdf() { if (!id) return; await api(`/api/fittings/${id}/reports`, { method: "POST", body: JSON.stringify({ snapshot: data }) }); const doc = new jsPDF(); doc.setFillColor(18, 76, 47); doc.rect(0, 0, 210, 22, "F"); doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.text("FitLab Pro", 14, 14); doc.setTextColor(20, 35, 27); doc.setFontSize(12); doc.text(`Rapport de fitting — ${data.player.firstName} ${data.player.lastName}`, 14, 36); const lines = [`Date : ${new Date(data.date).toLocaleDateString("fr-BE")}`, `Marque : ${data.targetBrand || "—"}`, `Lie : ${data.reco.lie || "—"} · Longueur : ${data.reco.lengthInches || "—"}`, `Flex : ${data.reco.flex || "—"} · Grip : ${data.reco.gripModel || "—"} ${data.reco.gripSize || ""}`, "", "Constats et actions :", ...data.insights.filter((item) => item.checked && item.text).map((item) => `• ${item.text} — ${item.action}`), "", `Notes : ${data.fitterNotes || "—"}`]; doc.setFontSize(10); doc.text(doc.splitTextToSize(lines.join("\n"), 180), 14, 48); doc.save(`fitting-${data.player.firstName || "joueur"}-${data.player.lastName || ""}-${new Date().toISOString().slice(0, 10)}.pdf`); setMessage("Rapport archivé et PDF téléchargé"); }
+  async function analyseTranscript() {
+    if (data.transcript.trim().length < 10) return setError("Colle une transcription de séance suffisamment longue.");
+    setParsing(true); setError("");
+    try { setPendingParse(await api("/api/transcript/parse", { method: "POST", body: JSON.stringify({ transcript: data.transcript }) })); }
+    catch (err: any) { setError(err.message); }
+    finally { setParsing(false); }
+  }
+
+  function applyTranscript() {
+    if (!pendingParse) return;
+    const parsed = pendingParse;
+    const nonEmpty = (value: any) => value !== null && value !== undefined && value !== "" && !(Array.isArray(value) && value.length === 0);
+    const nextPlayer = Object.fromEntries(Object.entries({ ...data.player, ...(parsed.player || {}) }).filter(([, value]) => nonEmpty(value)));
+    const nextMeasures = Object.fromEntries(Object.entries({ ...data.measures, ...(parsed.measures || {}) }).filter(([, value]) => nonEmpty(value)));
+    update({
+      player: { ...data.player, ...nextPlayer },
+      measures: { ...data.measures, ...nextMeasures },
+      currentClubs: parsed.currentClubs?.length ? parsed.currentClubs : data.currentClubs,
+      lieTests: parsed.lieTests?.length ? parsed.lieTests : data.lieTests,
+      trackman: parsed.trackman?.length ? parsed.trackman : data.trackman,
+      reco: { ...data.reco, ...(parsed.reco || {}) },
+      targetBrand: nonEmpty(parsed.targetBrand) ? parsed.targetBrand : data.targetBrand,
+      fitterNotes: nonEmpty(parsed.fitterNotes) ? parsed.fitterNotes : data.fitterNotes,
+    });
+    setMessage("Données lisibles reportées dans la fiche");
+  }
+
+  function handlePhoto(file: File | undefined) {
+    if (!file) return;
+    setOcrBusy(true);
+    setError("");
+    setOcrRows([]);
+    setOcrStatus(`Photo « ${file.name} » chargée — préparation…`);
+    const reader = new FileReader();
+    reader.onerror = () => { setError("Impossible de lire le fichier photo."); setOcrBusy(false); setOcrStatus(""); };
+    reader.onload = async () => {
+      setOcrStatus("Analyse Grok en cours… (30 à 90 s selon la photo)");
+      try {
+        const result = await api<any>("/api/trackman/ocr", { method: "POST", body: JSON.stringify({ image: reader.result }) });
+        const rows = (result.rows || []).map((row: any) => deriveTrackman({ ...blankTrackman(), ...row, club: normalizeClub(row.club) }));
+        setOcrRows(rows);
+        setOcrStatus(rows.length === 0 ? (result.source || "Aucune donnée lisible sur cette photo.") : `${rows.length} ligne(s) extraite(s) — vérifie puis insère.`);
+      } catch (err: any) {
+        setError(err.message || "Erreur OCR");
+        setOcrStatus("");
+      } finally {
+        setOcrBusy(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function insertOcr() {
+    update({ trackman: [...data.trackman, ...ocrRows] });
+    setOcrRows([]);
+    setOcrStatus("");
+  }
+
+  async function exportPdf() {
+    if (!id) return;
+    await api(`/api/fittings/${id}/reports`, { method: "POST", body: JSON.stringify({ snapshot: data }) });
+    const doc = new jsPDF();
+    doc.setFillColor(18, 76, 47);
+    doc.rect(0, 0, 210, 22, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.text("FitLab Pro", 14, 14);
+    doc.setTextColor(20, 35, 27);
+    doc.setFontSize(12);
+    doc.text(`Rapport de fitting — ${data.player.firstName} ${data.player.lastName}`, 14, 36);
+    const lines = [`Date : ${new Date(data.date).toLocaleDateString("fr-BE")}`, `Marque : ${data.targetBrand || "—"}`, `Lie : ${data.reco.lie || "—"} · Longueur : ${data.reco.lengthInches || "—"}`, `Flex : ${data.reco.flex || "—"} · Grip : ${data.reco.gripModel || "—"} ${data.reco.gripSize || ""}`, "", "Constats et actions :", ...data.insights.filter((item) => item.checked && item.text).map((item) => `• ${item.text} — ${item.action}`), "", `Notes : ${data.fitterNotes || "—"}`];
+    doc.setFontSize(10);
+    doc.text(doc.splitTextToSize(lines.join("\n"), 180), 14, 48);
+    doc.save(`fitting-${data.player.firstName || "joueur"}-${data.player.lastName || ""}-${new Date().toISOString().slice(0, 10)}.pdf`);
+    setMessage("Rapport archivé et PDF téléchargé");
+  }
 
   if (!ready) return <div className="page"><div className="empty">Préparation de la fiche…</div></div>;
+
+  const renderTrackmanTable = (rows: TrackmanRow[], editable: boolean, baseIndex = 0) => (
+    <div className="table-wrap">
+      <table className="tm-table">
+        <thead>
+          <tr>
+            <th>Club</th>
+            {tmFields.slice(0, 7).map(([, label]) => <th key={label}>{label}</th>)}
+            <th>Carry</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, index) => (
+            <tr key={index}>
+              <td>
+                <select className="tm-club" value={normalizeClub(row.club)} onChange={(e) => editable && updateTrackman(baseIndex + index, { club: e.target.value })}>
+                  {clubs.map((club) => <option key={club} value={club}>{club}</option>)}
+                </select>
+              </td>
+              {tmFields.slice(0, 7).map(([key]) => (
+                <td key={key}>
+                  <input className="tm-num" type="number" step="any" value={row[key] ?? ""} onChange={(e) => editable && updateTrackman(baseIndex + index, { [key]: e.target.value === "" ? null : Number(e.target.value) })} />
+                </td>
+              ))}
+              <td><input className="tm-num" type="number" step="any" value={row.carry ?? ""} onChange={(e) => editable && updateTrackman(baseIndex + index, { carry: e.target.value === "" ? null : Number(e.target.value) })} /></td>
+              <td><input className="tm-num" type="number" step="any" value={row.total ?? ""} onChange={(e) => editable && updateTrackman(baseIndex + index, { total: e.target.value === "" ? null : Number(e.target.value) })} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   const renderStep = () => {
     if (step === 0) return <Section title="Joueur"><div className="grid-3"><Field label="Prénom" value={data.player.firstName} onChange={(value) => player({ firstName: value })} /><Field label="Nom" value={data.player.lastName} onChange={(value) => player({ lastName: value })} /><Field label="Club de golf" value={data.player.golfClub} onChange={(value) => player({ golfClub: value })} /><Field label="Email" value={data.player.email} onChange={(value) => player({ email: value })} type="email" /><Field label="Téléphone" value={data.player.phone} onChange={(value) => player({ phone: value })} /><Field label="Année de naissance" value={data.player.birthYear} onChange={(value) => player({ birthYear: value })} type="number" /><SelectField label="Latéralité" value={data.player.handedness} onChange={(value) => player({ handedness: value })} options={["Droitier", "Gaucher"]} /><Field label="Handicap" value={data.player.handicap} onChange={(value) => player({ handicap: value })} /><SelectField label="Tempo" value={data.player.tempo} onChange={(value) => player({ tempo: value })} options={["Lent", "Moyen", "Rapide"]} /></div><div className="section-title"><h3>Objectifs</h3></div><div className="check-list">{goals.map((goal) => <button key={goal} className={`check-pill ${data.player.goals.includes(goal) ? "selected" : ""}`} onClick={() => player({ goals: data.player.goals.includes(goal) ? data.player.goals.filter((item) => item !== goal) : [...data.player.goals, goal] })}>{data.player.goals.includes(goal) && <Check size={13} />} {goal}</button>)}</div><div className="grid-2" style={{ marginTop: 15 }}><div className="field"><label>Pattern de miss</label><textarea value={data.player.missPattern} onChange={(event) => player({ missPattern: event.target.value })} /></div><div className="field"><label>Notes physiques</label><textarea value={data.player.physicalNotes} onChange={(event) => player({ physicalNotes: event.target.value })} /></div></div></Section>;
     if (step === 1) return <Section title="Transcription de la séance"><div className="notice">Les données sont proposées avec prudence. Une valeur absente ou douteuse reste vide et ne remplace jamais une donnée existante.</div><div className="field"><label>Texte transcrit</label><textarea style={{ minHeight: 260 }} value={data.transcript} onChange={(event) => update({ transcript: event.target.value })} placeholder="Colle ici la transcription audio de la séance…" /></div><div className="inline" style={{ marginTop: 12 }}><button className="button" onClick={analyseTranscript} disabled={parsing}><Sparkles size={16} /> {parsing ? "Analyse Grok…" : "Analyser avec Grok"}</button>{pendingParse && <button className="button secondary" onClick={applyTranscript}><Check size={16} /> Reporter les données lisibles</button>}</div>{pendingParse && <div className="panel" style={{ marginTop: 16, background: "var(--bg)" }}><h3>Proposition à vérifier</h3><p className="subtle">{pendingParse.summary || "Résumé non fourni"}</p><pre style={{ whiteSpace: "pre-wrap", color: "var(--muted)", fontSize: 12 }}>{JSON.stringify(pendingParse.quotes || {}, null, 2)}</pre></div>}</Section>;
     if (step === 2) return <Section title="Mesures statiques"><div className="grid-4"><Field label="Taille (cm)" value={data.measures.heightCm} onChange={(value) => measures({ heightCm: value })} type="number" /><Field label="Wrist-to-floor (cm)" value={data.measures.wristToFloorCm} onChange={(value) => measures({ wristToFloorCm: value })} type="number" /><Field label="Envergure (cm)" value={data.measures.wingspanCm} onChange={(value) => measures({ wingspanCm: value })} type="number" /><Field label="Longueur de main (cm)" value={data.measures.handLengthCm} onChange={(value) => measures({ handLengthCm: value })} type="number" /><Field label="Tour de main (cm)" value={data.measures.handCircumferenceCm} onChange={(value) => measures({ handCircumferenceCm: value })} type="number" /><Field label="Majeur (cm)" value={data.measures.middleFingerCm} onChange={(value) => measures({ middleFingerCm: value })} type="number" /><Field label="Taille de gant" value={data.measures.currentGloveSize} onChange={(value) => measures({ currentGloveSize: value })} /><SelectField label="Semelle" value={data.measures.shoeSole} onChange={(value) => measures({ shoeSole: value })} options={["Plate", "Crampons"]} /></div><div className="section-title"><h3>Lecture live</h3></div><div className="metric-grid"><div className="metric"><span>Ape index</span><strong>{apeIndex} cm</strong></div><div className="metric"><span>Lie statique</span><strong>{data.measures.wristToFloorCm ? "À confirmer" : "—"}</strong></div><div className="metric"><span>Longueur</span><strong>{data.measures.heightCm ? "À confirmer" : "—"}</strong></div><div className="metric"><span>Grip</span><strong>{data.measures.handLengthCm ? "À confirmer" : "—"}</strong></div></div></Section>;
-    if (step === 3) return <Section title="Matériel actuel" action={<button className="button" onClick={() => update({ currentClubs: [...data.currentClubs, blankClub()] })}><Plus size={15} /> Club</button>}>{data.currentClubs.length === 0 ? <div className="empty">Ajoute les clubs de référence utilisés par le joueur.</div> : <div className="table-wrap"><table><thead><tr><th>Club</th><th>Marque</th><th>Modèle</th><th>Shaft</th><th>Flex</th><th>Longueur</th><th /></tr></thead><tbody>{data.currentClubs.map((row, index) => <tr key={index}><td><select value={row.club} onChange={(e) => updateClub(index, { club: e.target.value })}>{clubs.map((club) => <option key={club}>{club}</option>)}</select></td><td><input value={row.brand} onChange={(e) => updateClub(index, { brand: e.target.value })} /></td><td><input value={row.model} onChange={(e) => updateClub(index, { model: e.target.value })} /></td><td><input value={row.shaft} onChange={(e) => updateClub(index, { shaft: e.target.value })} /></td><td><input value={row.flex} onChange={(e) => updateClub(index, { flex: e.target.value })} /></td><td><input value={row.length} onChange={(e) => updateClub(index, { length: e.target.value })} /></td><td><button className="icon-button" onClick={() => update({ currentClubs: data.currentClubs.filter((_, rowIndex) => rowIndex !== index) })}><Trash2 size={15} /></button></td></tr>)}</tbody></table></div>}</Section>;
-    if (step === 4) return <Section title="Lie board" action={<button className="button" onClick={() => update({ lieTests: [...data.lieTests, { club: "7i", mark: "", shots: "", correction: "", note: "" }] })}><Plus size={15} /> Test</button>}><div className="notice">Consensus actuel : <b>{lieConsensus}</b>. Une divergence avec le statique doit être discutée, pas masquée.</div>{data.lieTests.length === 0 ? <div className="empty">Ajoute un test dynamique.</div> : <div className="table-wrap"><table><thead><tr><th>Club</th><th>Trace</th><th>Frappes</th><th>Correction °</th><th>Note</th><th /></tr></thead><tbody>{data.lieTests.map((row, index) => <tr key={index}><td><select value={row.club} onChange={(e) => updateLie(index, { club: e.target.value })}>{clubs.map((club) => <option key={club}>{club}</option>)}</select></td><td><select value={row.mark} onChange={(e) => updateLie(index, { mark: e.target.value })}><option value="">—</option>{["Pointe", "Pointe léger", "Centre", "Talon léger", "Talon"].map((mark) => <option key={mark}>{mark}</option>)}</select></td><td><input value={row.shots} onChange={(e) => updateLie(index, { shots: e.target.value })} /></td><td><input value={row.correction} onChange={(e) => updateLie(index, { correction: e.target.value })} /></td><td><input value={row.note} onChange={(e) => updateLie(index, { note: e.target.value })} /></td><td><button className="icon-button" onClick={() => update({ lieTests: data.lieTests.filter((_, rowIndex) => rowIndex !== index) })}><Trash2 size={15} /></button></td></tr>)}</tbody></table></div>}</Section>;
-    if (step === 5) return <Section title="Données TrackMan" action={<><label className="button secondary"><Camera size={15} /> {ocrBusy ? "Lecture…" : "Photo OCR"}<input type="file" accept="image/*" capture="environment" hidden onChange={(e) => handlePhoto(e.target.files?.[0])} /></label><button className="button" onClick={() => update({ trackman: [...data.trackman, blankTrackman()] })}><Plus size={15} /> Club</button></>}><p className="subtle">Grok propose uniquement les chiffres clairement lisibles. Vérifie chaque ligne avant insertion.</p>{ocrRows.length > 0 && <div className="notice"><b>{ocrRows.length} ligne(s) OCR en attente.</b> <button className="button" style={{ marginLeft: 10 }} onClick={insertOcr}>Insérer les lignes vérifiées</button></div>}{data.trackman.length === 0 ? <div className="empty">Ajoute une ligne ou importe une photo TrackMan.</div> : <div className="table-wrap"><table><thead><tr><th>Club</th>{tmFields.slice(0, 7).map(([, label]) => <th key={label}>{label}</th>)}<th>Carry</th><th>Total</th></tr></thead><tbody>{data.trackman.map((row, index) => <tr key={index}><td><select value={row.club} onChange={(e) => updateTrackman(index, { club: e.target.value })}>{clubs.map((club) => <option key={club}>{club}</option>)}</select></td>{tmFields.slice(0, 7).map(([key]) => <td key={key}><input type="number" step="any" value={row[key] ?? ""} onChange={(e) => updateTrackman(index, { [key]: e.target.value === "" ? null : Number(e.target.value) })} /></td>)}<td><input type="number" step="any" value={row.carry ?? ""} onChange={(e) => updateTrackman(index, { carry: e.target.value === "" ? null : Number(e.target.value) })} /></td><td><input type="number" step="any" value={row.total ?? ""} onChange={(e) => updateTrackman(index, { total: e.target.value === "" ? null : Number(e.target.value) })} /></td></tr>)}</tbody></table></div>}</Section>;
+    if (step === 3) return <Section title="Matériel actuel" action={<button className="button" onClick={() => update({ currentClubs: [...data.currentClubs, blankClub()] })}><Plus size={15} /> Club</button>}>{data.currentClubs.length === 0 ? <div className="empty">Ajoute les clubs de référence utilisés par le joueur.</div> : <div className="table-wrap"><table><thead><tr><th>Club</th><th>Marque</th><th>Modèle</th><th>Shaft</th><th>Flex</th><th>Longueur</th><th /></tr></thead><tbody>{data.currentClubs.map((row, index) => <tr key={index}><td><select className="tm-club" value={row.club} onChange={(e) => updateClub(index, { club: e.target.value })}>{clubs.map((club) => <option key={club} value={club}>{club}</option>)}</select></td><td><input value={row.brand} onChange={(e) => updateClub(index, { brand: e.target.value })} /></td><td><input value={row.model} onChange={(e) => updateClub(index, { model: e.target.value })} /></td><td><input value={row.shaft} onChange={(e) => updateClub(index, { shaft: e.target.value })} /></td><td><input value={row.flex} onChange={(e) => updateClub(index, { flex: e.target.value })} /></td><td><input value={row.length} onChange={(e) => updateClub(index, { length: e.target.value })} /></td><td><button className="icon-button" onClick={() => update({ currentClubs: data.currentClubs.filter((_, rowIndex) => rowIndex !== index) })}><Trash2 size={15} /></button></td></tr>)}</tbody></table></div>}</Section>;
+    if (step === 4) return <Section title="Lie board" action={<button className="button" onClick={() => update({ lieTests: [...data.lieTests, { club: "7i", mark: "", shots: "", correction: "", note: "" }] })}><Plus size={15} /> Test</button>}><div className="notice">Consensus actuel : <b>{lieConsensus}</b>. Une divergence avec le statique doit être discutée, pas masquée.</div>{data.lieTests.length === 0 ? <div className="empty">Ajoute un test dynamique.</div> : <div className="table-wrap"><table><thead><tr><th>Club</th><th>Trace</th><th>Frappes</th><th>Correction °</th><th>Note</th><th /></tr></thead><tbody>{data.lieTests.map((row, index) => <tr key={index}><td><select className="tm-club" value={row.club} onChange={(e) => updateLie(index, { club: e.target.value })}>{clubs.map((club) => <option key={club} value={club}>{club}</option>)}</select></td><td><select value={row.mark} onChange={(e) => updateLie(index, { mark: e.target.value })}><option value="">—</option>{["Pointe", "Pointe léger", "Centre", "Talon léger", "Talon"].map((mark) => <option key={mark}>{mark}</option>)}</select></td><td><input value={row.shots} onChange={(e) => updateLie(index, { shots: e.target.value })} /></td><td><input value={row.correction} onChange={(e) => updateLie(index, { correction: e.target.value })} /></td><td><input value={row.note} onChange={(e) => updateLie(index, { note: e.target.value })} /></td><td><button className="icon-button" onClick={() => update({ lieTests: data.lieTests.filter((_, rowIndex) => rowIndex !== index) })}><Trash2 size={15} /></button></td></tr>)}</tbody></table></div>}</Section>;
+    if (step === 5) return (
+      <Section title="Données TrackMan" action={<>
+        <label className="button secondary" style={{ opacity: ocrBusy ? 0.7 : 1, pointerEvents: ocrBusy ? "none" : "auto" }}>
+          {ocrBusy ? <Loader2 size={15} /> : <Camera size={15} />}
+          {ocrBusy ? "Analyse…" : "Photo OCR"}
+          <input type="file" accept="image/*" capture="environment" hidden disabled={ocrBusy} onChange={(e) => handlePhoto(e.target.files?.[0])} />
+        </label>
+        <button className="button" onClick={() => update({ trackman: [...data.trackman, blankTrackman()] })}><Plus size={15} /> Club</button>
+      </>}>
+        <p className="subtle">Grok propose uniquement les chiffres clairement lisibles. Vérifie chaque ligne avant insertion.</p>
+        {(ocrBusy || ocrStatus) && (
+          <div className="ocr-progress">
+            {ocrBusy && <div className="spinner" aria-hidden />}
+            <div className="ocr-text">
+              <strong>{ocrBusy ? "OCR en cours" : "OCR terminé"}</strong>
+              <span>{ocrStatus || "Traitement de la photo…"}</span>
+              {ocrBusy && <div className="ocr-bar"><i /></div>}
+            </div>
+          </div>
+        )}
+        {ocrRows.length > 0 && (
+          <div className="notice">
+            <b>{ocrRows.length} ligne(s) OCR en attente de validation.</b>{" "}
+            <button className="button" style={{ marginLeft: 10 }} onClick={insertOcr}>Insérer les lignes vérifiées</button>
+          </div>
+        )}
+        {data.trackman.length === 0 && ocrRows.length === 0 ? (
+          <div className="empty">Ajoute une ligne ou importe une photo TrackMan.</div>
+        ) : (
+          renderTrackmanTable(data.trackman, true)
+        )}
+      </Section>
+    );
     return <div className="grid-2"><Section title="Prescription"><div className="grid-2"><Field label="Lie" value={data.reco.lie} onChange={(value) => reco({ lie: value })} /><Field label="Longueur (pouces)" value={data.reco.lengthInches} onChange={(value) => reco({ lengthInches: value })} /><Field label="Longueur (cm)" value={data.reco.lengthCm} onChange={(value) => reco({ lengthCm: value })} /><Field label="Flex" value={data.reco.flex} onChange={(value) => reco({ flex: value })} /><Field label="Grip" value={data.reco.gripModel} onChange={(value) => reco({ gripModel: value })} /><Field label="Taille grip" value={data.reco.gripSize} onChange={(value) => reco({ gripSize: value })} /><Field label="Code PING" value={data.reco.pingColorCode} onChange={(value) => reco({ pingColorCode: value })} /><Field label="Loft driver" value={data.reco.driverLoft} onChange={(value) => reco({ driverLoft: value })} /><Field label="Gapping" value={data.reco.loftGapping} onChange={(value) => reco({ loftGapping: value })} /><Field label="Balle" value={data.reco.ballModel} onChange={(value) => reco({ ballModel: value })} /></div></Section><Section title="Constats et actions" action={<button className="button secondary" onClick={addInsight}><Plus size={15} /> Constat</button>}>{data.insights.length === 0 && <p className="subtle">Ajoute les constats confirmés pendant la séance.</p>}{data.insights.map((item, index) => <div className="insight" key={item.id}><input type="checkbox" checked={item.checked} onChange={(e) => updateInsight(index, { checked: e.target.checked })} /><div style={{ flex: 1 }}><div className="inline"><span className="priority">{item.priority}</span><select style={{ width: "auto" }} value={item.priority} onChange={(e) => updateInsight(index, { priority: e.target.value as Insight["priority"] })}><option>Haute</option><option>Moyenne</option><option>Basse</option></select></div><input style={{ marginTop: 8 }} placeholder="Constat" value={item.text} onChange={(e) => updateInsight(index, { text: e.target.value })} /><input style={{ marginTop: 7 }} placeholder="Action à mener" value={item.action} onChange={(e) => updateInsight(index, { action: e.target.value })} /></div><button className="icon-button" onClick={() => update({ insights: data.insights.filter((_, rowIndex) => rowIndex !== index) })}><Trash2 size={15} /></button></div>)}<div className="field" style={{ marginTop: 14 }}><label>Notes du fitter</label><textarea value={data.fitterNotes} onChange={(e) => update({ fitterNotes: e.target.value })} /></div><button className="button" onClick={exportPdf}><FileDown size={16} /> Archiver & exporter PDF</button></Section></div>;
   };
 
-  return <div className="page"><div className="wizard-header"><div><div className="eyebrow">Fitting en cours</div><h1>{data.player.firstName || "Nouveau joueur"} {data.player.lastName}</h1><p className="subtle">{message || "Sauvegarde automatique à chaque modification"}</p></div><div className="inline"><button className="button secondary" onClick={() => navigate("/")}><Save size={15} /> Tableau de bord</button></div></div>{error && <div className="error" style={{ marginBottom: 15 }}>{error}</div>}<div className="steps">{steps.map((label, index) => <button key={label} className={`step ${index === step ? "active" : ""} ${index < step ? "done" : ""}`} onClick={() => setStep(index)}>{index + 1}. {label}</button>)}</div>{renderStep()}<div className="wizard-actions"><button className="button secondary" disabled={step === 0} onClick={() => setStep((value) => value - 1)}><ChevronLeft size={16} /> Précédent</button><div className="actions-right">{step < steps.length - 1 && <button className="button" onClick={() => setStep((value) => value + 1)}>Suivant <ChevronRight size={16} /></button>}</div></div></div>;
+  return (
+    <div className="page">
+      <div className="wizard-header">
+        <div>
+          <div className="eyebrow">Fitting en cours</div>
+          <h1>{data.player.firstName || "Nouveau joueur"} {data.player.lastName}</h1>
+          <p className="subtle">{message || "Sauvegarde automatique à chaque modification"}</p>
+        </div>
+        <div className="inline">
+          <button className="button secondary" onClick={() => navigate("/")}><Save size={15} /> Tableau de bord</button>
+        </div>
+      </div>
+      {error && <div className="error" style={{ marginBottom: 15 }}>{error}</div>}
+      <div className="steps">{steps.map((label, index) => <button key={label} className={`step ${index === step ? "active" : ""} ${index < step ? "done" : ""}`} onClick={() => setStep(index)}>{index + 1}. {label}</button>)}</div>
+      {renderStep()}
+      <div className="wizard-actions">
+        <button className="button secondary" disabled={step === 0} onClick={() => setStep((value) => value - 1)}><ChevronLeft size={16} /> Précédent</button>
+        <div className="actions-right">{step < steps.length - 1 && <button className="button" onClick={() => setStep((value) => value + 1)}>Suivant <ChevronRight size={16} /></button>}</div>
+      </div>
+    </div>
+  );
 }
 
-function deriveTrackman(row: TrackmanRow): TrackmanRow { return { ...row, smashFactor: row.ballSpeed != null && row.clubSpeed ? Number((row.ballSpeed / row.clubSpeed).toFixed(3)) : row.smashFactor, faceToPath: row.faceAngle != null && row.clubPath != null ? Number((row.faceAngle - row.clubPath).toFixed(2)) : row.faceToPath, spinLoft: row.dynamicLoft != null && row.attackAngle != null ? Number((row.dynamicLoft - row.attackAngle).toFixed(2)) : row.spinLoft }; }
+function deriveTrackman(row: TrackmanRow): TrackmanRow {
+  return {
+    ...row,
+    club: normalizeClub(row.club),
+    smashFactor: row.ballSpeed != null && row.clubSpeed ? Number((row.ballSpeed / row.clubSpeed).toFixed(3)) : row.smashFactor,
+    faceToPath: row.faceAngle != null && row.clubPath != null ? Number((row.faceAngle - row.clubPath).toFixed(2)) : row.faceToPath,
+    spinLoft: row.dynamicLoft != null && row.attackAngle != null ? Number((row.dynamicLoft - row.attackAngle).toFixed(2)) : row.spinLoft,
+  };
+}
