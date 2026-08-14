@@ -8,6 +8,11 @@
 
 const XAI_BASE = "https://api.x.ai/v1";
 
+/** Modèles xAI actuels (août 2026) */
+const MODEL_TEXT = "grok-4.6";
+const MODEL_VISION = "grok-4.6"; // text + image input
+const MODEL_VISION_FALLBACK = "grok-2-vision-1212";
+
 function getApiKey(): string {
   const key = process.env.XAI_API_KEY || "";
   if (!key) throw new Error("Clé API Grok non configurée (XAI_API_KEY)");
@@ -39,7 +44,7 @@ async function xaiChat(params: {
 
   if (!res.ok) {
     const errText = await res.text().catch(() => res.statusText);
-    throw new Error(`xAI API ${res.status}: ${errText.slice(0, 300)}`);
+    throw new Error(`xAI API ${res.status}: ${errText.slice(0, 400)}`);
   }
 
   const data = (await res.json()) as {
@@ -156,7 +161,7 @@ Si aucune donnée TrackMan n'est clairement lisible :
 
 export async function parseTranscript(transcript: string) {
   const text = await xaiChat({
-    model: "grok-4",
+    model: MODEL_TEXT,
     system: TRANSCRIPT_SYSTEM,
     max_tokens: 8192,
     messages: [
@@ -179,40 +184,49 @@ export async function ocrTrackman(imageBase64: string) {
     ? imageBase64
     : `data:${mediaType};base64,${imageBase64}`;
 
-  try {
-    const text = await xaiChat({
-      model: "grok-2-vision-latest",
-      system: OCR_SYSTEM,
-      max_tokens: 4096,
-      messages: [
+  const messages = [
+    {
+      role: "user",
+      content: [
         {
-          role: "user",
-          content: [
-            {
-              type: "image_url",
-              image_url: { url: dataUrl, detail: "high" },
-            },
-            {
-              type: "text",
-              text: "Extrais toutes les données TrackMan clairement lisibles dans cette image. Si un chiffre est flou, mets null. Ne rien inventer.",
-            },
-          ],
+          type: "image_url",
+          image_url: { url: dataUrl, detail: "high" },
+        },
+        {
+          type: "text",
+          text: "Extrais toutes les données TrackMan clairement lisibles dans cette image. Si un chiffre est flou, mets null. Ne rien inventer.",
         },
       ],
-    });
-    return extractJson(text) as {
-      detectedUnits: string;
-      source: string;
-      rows: unknown[];
-    };
-  } catch (err) {
-    console.error("OCR TrackMan error:", err);
-    return {
-      detectedUnits: "",
-      source: "Erreur ou données non lisibles",
-      rows: [],
-    };
+    },
+  ];
+
+  const models = [MODEL_VISION, MODEL_VISION_FALLBACK];
+  let lastError: unknown = null;
+
+  for (const model of models) {
+    try {
+      const text = await xaiChat({
+        model,
+        system: OCR_SYSTEM,
+        max_tokens: 4096,
+        messages,
+      });
+      return extractJson(text) as {
+        detectedUnits: string;
+        source: string;
+        rows: unknown[];
+      };
+    } catch (err) {
+      lastError = err;
+      console.error(`OCR TrackMan error with model ${model}:`, err);
+    }
   }
+
+  return {
+    detectedUnits: "",
+    source: `Erreur OCR: ${lastError instanceof Error ? lastError.message : "données non lisibles"}`,
+    rows: [],
+  };
 }
 
 export function hasAiKey(): boolean {
