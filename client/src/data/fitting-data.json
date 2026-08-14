@@ -1,0 +1,4250 @@
+{
+  "ping_color_code": {
+    "source_url": "https://ping.com/en-us/fitting/color-code-chart",
+    "note": "Two documented systems exist across sources; both preserved for compatibility.",
+    "current_system_2017_plus": {
+      "source_urls": [
+        "https://www.tgw.com/golf-guide/how-to-read-the-ping-color-code-chart/",
+        "https://houseofgolf.com.au/blogs/custom-tools/ping-colour-code-chart"
+      ],
+      "increment_degrees": 1.0,
+      "colors": [
+        {
+          "color": "Gold",
+          "lie_adjustment_deg": -4.0,
+          "direction": "flat"
+        },
+        {
+          "color": "Brown",
+          "lie_adjustment_deg": -3.0,
+          "direction": "flat"
+        },
+        {
+          "color": "Orange",
+          "lie_adjustment_deg": -2.0,
+          "direction": "flat"
+        },
+        {
+          "color": "Red",
+          "lie_adjustment_deg": -1.0,
+          "direction": "flat"
+        },
+        {
+          "color": "Black",
+          "lie_adjustment_deg": 0.0,
+          "direction": "standard"
+        },
+        {
+          "color": "Blue",
+          "lie_adjustment_deg": 1.0,
+          "direction": "upright"
+        },
+        {
+          "color": "Green",
+          "lie_adjustment_deg": 2.0,
+          "direction": "upright"
+        },
+        {
+          "color": "White",
+          "lie_adjustment_deg": 3.0,
+          "direction": "upright"
+        },
+        {
+          "color": "Silver",
+          "lie_adjustment_deg": 4.0,
+          "direction": "upright"
+        },
+        {
+          "color": "Maroon",
+          "lie_adjustment_deg": 5.0,
+          "direction": "upright"
+        }
+      ]
+    },
+    "legacy_system_pre_2017": {
+      "source_url": "https://qsponge.com/questions/61843368/What_do_Ping_Dot_Colours_mean",
+      "increment_degrees": 0.75,
+      "colors": [
+        {
+          "color": "Gold",
+          "lie_adjustment_deg": -3.75,
+          "direction": "flat",
+          "wrist_to_floor_in_min": 28.5,
+          "wrist_to_floor_in_max": 30.0
+        },
+        {
+          "color": "Brown",
+          "lie_adjustment_deg": -3.0,
+          "direction": "flat",
+          "wrist_to_floor_in_min": 29.25,
+          "wrist_to_floor_in_max": 30.75
+        },
+        {
+          "color": "Orange",
+          "lie_adjustment_deg": -2.25,
+          "direction": "flat",
+          "wrist_to_floor_in_min": 30.5,
+          "wrist_to_floor_in_max": 31.75
+        },
+        {
+          "color": "Purple",
+          "lie_adjustment_deg": -1.5,
+          "direction": "flat",
+          "wrist_to_floor_in_min": 31.25,
+          "wrist_to_floor_in_max": 32.5
+        },
+        {
+          "color": "Red",
+          "lie_adjustment_deg": -0.75,
+          "direction": "flat",
+          "wrist_to_floor_in_min": 32.25,
+          "wrist_to_floor_in_max": 33.5
+        },
+        {
+          "color": "Black",
+          "lie_adjustment_deg": 0.0,
+          "direction": "standard",
+          "wrist_to_floor_in_min": 33.0,
+          "wrist_to_floor_in_max": 34.25
+        },
+        {
+          "color": "Blue",
+          "lie_adjustment_deg": 0.75,
+          "direction": "upright",
+          "wrist_to_floor_in_min": 33.75,
+          "wrist_to_floor_in_max": 35.25
+        },
+        {
+          "color": "Yellow",
+          "lie_adjustment_deg": 1.5,
+          "direction": "upright",
+          "wrist_to_floor_in_min": 34.75,
+          "wrist_to_floor_in_max": 36.0
+        },
+        {
+          "color": "Green",
+          "lie_adjustment_deg": 2.25,
+          "direction": "upright",
+          "wrist_to_floor_in_min": 35.5,
+          "wrist_to_floor_in_max": 36.75
+        },
+        {
+          "color": "White",
+          "lie_adjustment_deg": 3.0,
+          "direction": "upright",
+          "wrist_to_floor_in_min": 36.5,
+          "wrist_to_floor_in_max": 37.75
+        },
+        {
+          "color": "Silver",
+          "lie_adjustment_deg": 3.75,
+          "direction": "upright",
+          "wrist_to_floor_in_min": 37.25,
+          "wrist_to_floor_in_max": 38.75
+        },
+        {
+          "color": "Maroon",
+          "lie_adjustment_deg": 4.5,
+          "direction": "upright",
+          "wrist_to_floor_in_min": 38.25,
+          "wrist_to_floor_in_max": null
+        }
+      ]
+    },
+    "length_adjustment_by_height": [
+      {
+        "height_range": "6'6\"-6'7\"",
+        "length_adjustment_in": 1.5
+      },
+      {
+        "height_range": "6'4\"-6'5\"",
+        "length_adjustment_in": 1.0
+      },
+      {
+        "height_range": "6'1\"-6'3\"",
+        "length_adjustment_in": 0.5
+      },
+      {
+        "height_range": "5'7\"-6'0\"",
+        "length_adjustment_in": 0.0
+      },
+      {
+        "height_range": "5'4\"-5'6\"",
+        "length_adjustment_in": -0.5
+      },
+      {
+        "height_range": "5'2\"-5'3\"",
+        "length_adjustment_in": -1.0
+      },
+      {
+        "height_range": "5'0\"-5'1\"",
+        "length_adjustment_in": -1.5
+      }
+    ],
+    "junior_chart": {
+      "source_url": "https://www.golfclub-innsbruck-igls.at/wp-content/uploads/PING_JuniorColorCode_Chart_revised.pdf",
+      "height_range_in": [
+        52,
+        62
+      ],
+      "height_range_cm": [
+        132,
+        158
+      ],
+      "wrist_to_floor_range_in": [
+        20,
+        36
+      ],
+      "wrist_to_floor_range_cm": [
+        51,
+        91
+      ],
+      "woods_length_adjustment_in": [
+        -3.75,
+        3.0
+      ],
+      "irons_length_adjustment_in": [
+        -2.5,
+        2.5
+      ],
+      "lie_bands": [
+        "2 Upright",
+        "1 Upright",
+        "Standard",
+        "1 Flat",
+        "2 Flat"
+      ],
+      "flex_band_wtf_boundaries_in": [
+        39.5,
+        37.75,
+        36.25,
+        34.125,
+        33.5,
+        33.0,
+        32.75,
+        32.5,
+        32.5,
+        32.25,
+        29.5
+      ]
+    },
+    "cross_brand_7iron_lie_comparison": {
+      "source_url": "https://www.golfbidder.co.uk/guides-and-advice/buyers-guides/a-guide-to-the-ping-colour-dot-system",
+      "data": [
+        {
+          "brand_model": "Titleist 718 AP1",
+          "lie_7iron_deg": 63.0
+        },
+        {
+          "brand_model": "Callaway EPIC Pro",
+          "lie_7iron_deg": 62.0
+        },
+        {
+          "brand_model": "Mizuno JPX919 HM",
+          "lie_7iron_deg": 61.5
+        },
+        {
+          "brand_model": "Cobra KING Forged ONE",
+          "lie_7iron_deg": 62.5
+        },
+        {
+          "brand_model": "Ping G410",
+          "lie_7iron_deg": 62.0
+        }
+      ]
+    }
+  },
+  "brands": {
+    "ping": {
+      "iron_models": [
+        {
+          "model": "i230",
+          "source_url": "https://eu.ping.com/en-gb/golf-clubs/irons/i230-iron",
+          "stock_shafts": [
+            "PING ALTA CB Black",
+            "True Temper DG S300/X100 124g",
+            "PING AWT 2.0",
+            "DG120",
+            "KBS Tour",
+            "Nippon Modus3 Tour 105/115"
+          ],
+          "clubs": [
+            {
+              "club": "3i",
+              "length_in": 39.0,
+              "loft_deg": 19.0,
+              "loft_range_deg": [
+                19.0,
+                21.0
+              ],
+              "lie_deg": 59.0,
+              "offset_in": 0.2,
+              "bounce_deg": 5.0,
+              "swingweight": "D1"
+            },
+            {
+              "club": "4i",
+              "length_in": 38.5,
+              "loft_deg": 22.5,
+              "loft_range_deg": [
+                22.0,
+                24.5
+              ],
+              "lie_deg": 59.8,
+              "offset_in": 0.17,
+              "bounce_deg": 6.0,
+              "swingweight": "D1"
+            },
+            {
+              "club": "5i",
+              "length_in": 38.0,
+              "loft_deg": 26.0,
+              "loft_range_deg": [
+                25.0,
+                28.0
+              ],
+              "lie_deg": 60.5,
+              "offset_in": 0.14,
+              "bounce_deg": 7.0,
+              "swingweight": "D1"
+            },
+            {
+              "club": "6i",
+              "length_in": 37.5,
+              "loft_deg": 29.5,
+              "loft_range_deg": [
+                28.0,
+                31.5
+              ],
+              "lie_deg": 61.3,
+              "offset_in": 0.12,
+              "bounce_deg": 8.0,
+              "swingweight": "D1"
+            },
+            {
+              "club": "7i",
+              "length_in": 37.0,
+              "loft_deg": 33.0,
+              "loft_range_deg": [
+                31.5,
+                35.0
+              ],
+              "lie_deg": 62.0,
+              "offset_in": 0.09,
+              "bounce_deg": 9.0,
+              "swingweight": "D1"
+            },
+            {
+              "club": "8i",
+              "length_in": 36.5,
+              "loft_deg": 37.0,
+              "loft_range_deg": [
+                35.5,
+                39.0
+              ],
+              "lie_deg": 62.8,
+              "offset_in": 0.07,
+              "bounce_deg": 10.5,
+              "swingweight": "D1"
+            },
+            {
+              "club": "9i",
+              "length_in": 36.0,
+              "loft_deg": 41.0,
+              "loft_range_deg": [
+                40.0,
+                43.0
+              ],
+              "lie_deg": 63.5,
+              "offset_in": 0.05,
+              "bounce_deg": 12.0,
+              "swingweight": "D1.5"
+            },
+            {
+              "club": "PW",
+              "length_in": 35.5,
+              "loft_deg": 45.0,
+              "loft_range_deg": [
+                44.5,
+                47.0
+              ],
+              "lie_deg": 64.1,
+              "offset_in": 0.03,
+              "bounce_deg": 13.0,
+              "swingweight": "D2"
+            },
+            {
+              "club": "UW",
+              "length_in": 35.5,
+              "loft_deg": 50.0,
+              "loft_range_deg": [
+                49.5,
+                52.0
+              ],
+              "lie_deg": 64.1,
+              "offset_in": 0.02,
+              "bounce_deg": 13.0,
+              "swingweight": "D2"
+            }
+          ]
+        },
+        {
+          "model": "Blueprint S",
+          "source_url": "https://ping.com/en-us/golf-clubs/irons/blueprint-s-iron",
+          "clubs": [
+            {
+              "club": "3i",
+              "length_in": 39.0,
+              "loft_deg": 19.0,
+              "lie_deg": 59.0,
+              "offset_in": 0.17,
+              "bounce_deg": 4.0,
+              "swingweight": "D2"
+            },
+            {
+              "club": "4i",
+              "length_in": 38.5,
+              "loft_deg": 22.5,
+              "lie_deg": 59.8,
+              "offset_in": 0.15,
+              "bounce_deg": 5.0,
+              "swingweight": "D2"
+            },
+            {
+              "club": "5i",
+              "length_in": 38.0,
+              "loft_deg": 26.0,
+              "lie_deg": 60.5,
+              "offset_in": 0.12,
+              "bounce_deg": 6.0,
+              "swingweight": "D2"
+            },
+            {
+              "club": "6i",
+              "length_in": 37.5,
+              "loft_deg": 29.5,
+              "lie_deg": 61.3,
+              "offset_in": 0.1,
+              "bounce_deg": 7.0,
+              "swingweight": "D2"
+            },
+            {
+              "club": "7i",
+              "length_in": 37.0,
+              "loft_deg": 33.0,
+              "lie_deg": 62.0,
+              "offset_in": 0.08,
+              "bounce_deg": 8.0,
+              "swingweight": "D2"
+            },
+            {
+              "club": "8i",
+              "length_in": 36.5,
+              "loft_deg": 37.0,
+              "lie_deg": 62.8,
+              "offset_in": 0.06,
+              "bounce_deg": 9.0,
+              "swingweight": "D2"
+            },
+            {
+              "club": "9i",
+              "length_in": 36.0,
+              "loft_deg": 41.0,
+              "lie_deg": 63.5,
+              "offset_in": 0.04,
+              "bounce_deg": 10.5,
+              "swingweight": "D2"
+            },
+            {
+              "club": "PW",
+              "length_in": 35.5,
+              "loft_deg": 45.0,
+              "lie_deg": 64.1,
+              "offset_in": 0.02,
+              "bounce_deg": 11.5,
+              "swingweight": "D3"
+            }
+          ]
+        },
+        {
+          "model": "Blueprint (non-S)",
+          "source_url": "https://www.wingolf.com.sg/blueprint-irons/",
+          "stock_shaft": "DG120 S300",
+          "stock_grip": "Golf Pride MCC Align",
+          "clubs": [
+            {
+              "club": "2i",
+              "length_in": 39.25,
+              "loft_deg": 17.5,
+              "lie_deg": 58.3,
+              "offset_in": 0.14,
+              "bounce_deg": 4.0,
+              "swingweight": "D2"
+            },
+            {
+              "club": "PW",
+              "length_in": 35.5,
+              "loft_deg": 46.0,
+              "lie_deg": 64.1,
+              "offset_in": 0.02,
+              "bounce_deg": 13.0,
+              "swingweight": "D3"
+            }
+          ]
+        },
+        {
+          "model": "i530",
+          "source_url": "https://eu.ping.com/es-es/golf-clubs/irons/i530-iron",
+          "clubs": [
+            {
+              "club": "4i",
+              "length_in": 38.875,
+              "loft_deg": 19.0,
+              "loft_range_deg": [
+                18,
+                20
+              ],
+              "lie_deg": 60.5,
+              "offset_in": 0.2,
+              "bounce_deg": 6.0,
+              "swingweight": "D1"
+            },
+            {
+              "club": "UW",
+              "length_in": 35.5,
+              "loft_deg": 47.0,
+              "loft_range_deg": [
+                46,
+                47.5
+              ],
+              "lie_deg": 64.1,
+              "offset_in": 0.03,
+              "bounce_deg": 13.0,
+              "swingweight": "D2"
+            }
+          ]
+        },
+        {
+          "model": "G440",
+          "source_url": "https://eu.ping.com/en-gb/golf-clubs/irons/g440-iron",
+          "release_date": "2025-01-14",
+          "price_usd": {
+            "steel": 170,
+            "graphite": 185
+          },
+          "loft_adjustable_deg": 1.5,
+          "lie_adjustable_max_flatter_deg": 3.0,
+          "stock_shafts": [
+            "PING AWT 3.0 steel",
+            "ALTA CB Blue graphite",
+            "Nippon Modus3 105",
+            "Elevate MPH 95"
+          ],
+          "stock_grip": "Golf Pride 360 Tour Velvet (6 sizes)",
+          "clubs": [
+            {
+              "club": "4i",
+              "length_in": 39.25,
+              "loft_deg": 19.0,
+              "loft_range_deg": [
+                18,
+                20
+              ],
+              "lie_deg": 60.5,
+              "offset_in": 0.27,
+              "bounce_deg": 6.0,
+              "swingweight": "D0"
+            },
+            {
+              "club": "56",
+              "length_in": 35.25,
+              "loft_deg": 56.0,
+              "lie_deg": 64.4,
+              "offset_in": 0.08,
+              "bounce_deg": 14.0,
+              "swingweight": "D3"
+            }
+          ]
+        }
+      ]
+    },
+    "callaway": {
+      "iron_fitting_protocol": {
+        "source_url": "https://callawaymedia.com/wp-content/uploads/2025/02/CG24_SLS017_IronFittingProtocols_FlipBook_4x6_Ref-Only.pdf",
+        "flex_by_7iron_head_speed_mph": [
+          {
+            "flex": "X-Stiff",
+            "speed_range_mph": [
+              90,
+              100
+            ]
+          },
+          {
+            "flex": "Stiff",
+            "speed_range_mph": [
+              80,
+              90
+            ]
+          },
+          {
+            "flex": "Regular",
+            "speed_range_mph": [
+              70,
+              80
+            ]
+          },
+          {
+            "flex": "Light",
+            "speed_range_mph": [
+              60,
+              70
+            ]
+          },
+          {
+            "flex": "Ladies",
+            "speed_range_mph": [
+              null,
+              60
+            ]
+          }
+        ],
+        "launch_backspin_by_7iron_speed": [
+          {
+            "speed_mph": 60,
+            "launch_deg_range": [
+              20,
+              23
+            ],
+            "backspin_rpm_range": [
+              4400,
+              5500
+            ]
+          },
+          {
+            "speed_mph": 65,
+            "launch_deg_range": [
+              19,
+              22
+            ],
+            "backspin_rpm_range": [
+              4700,
+              5700
+            ]
+          },
+          {
+            "speed_mph": 70,
+            "launch_deg_range": [
+              17,
+              20
+            ],
+            "backspin_rpm_range": [
+              4900,
+              5900
+            ]
+          },
+          {
+            "speed_mph": 75,
+            "launch_deg_range": [
+              17,
+              19
+            ],
+            "backspin_rpm_range": [
+              5200,
+              6100
+            ]
+          },
+          {
+            "speed_mph": 80,
+            "launch_deg_range": [
+              18,
+              20
+            ],
+            "backspin_rpm_range": [
+              5400,
+              6400
+            ]
+          },
+          {
+            "speed_mph": 85,
+            "launch_deg_range": null,
+            "backspin_rpm_range": [
+              5600,
+              6600
+            ]
+          },
+          {
+            "speed_mph": 90,
+            "launch_deg_range": null,
+            "backspin_rpm_range": [
+              5900,
+              6800
+            ]
+          },
+          {
+            "speed_mph": 95,
+            "launch_deg_range": null,
+            "backspin_rpm_range": [
+              6100,
+              7000
+            ]
+          }
+        ],
+        "apex_7iron_lofts_deg": {
+          "Ai200": 27.5,
+          "Ai300": 28.5,
+          "Ti Fusion": 31.5,
+          "lie_all_deg": 62.5
+        },
+        "shaft_weight_ranges_g": {
+          "graphite_iron": [
+            40,
+            100
+          ],
+          "graphite_driver": [
+            40,
+            115
+          ],
+          "steel_iron": [
+            80,
+            130
+          ]
+        }
+      },
+      "iron_models": [
+        {
+          "model": "Paradym",
+          "source_url": "https://www.callawaygolf.com/golf-clubs/irons/irons-2023-paradym.html",
+          "clubs": [
+            {
+              "club": "#4",
+              "loft_deg": 20,
+              "length_in": 38.875,
+              "lie_deg": 61.0,
+              "offset_mm": 3.81,
+              "swingweight": "D1-D2"
+            },
+            {
+              "club": "PW",
+              "loft_deg": 42,
+              "length_in": 35.75,
+              "lie_deg": 64.0,
+              "offset_mm": 1.78
+            },
+            {
+              "club": "AW",
+              "loft_deg": 47,
+              "length_in": 35.5,
+              "lie_deg": 64.0
+            },
+            {
+              "club": "GW",
+              "loft_deg": 52,
+              "length_in": 35.25,
+              "lie_deg": 64.0
+            }
+          ]
+        },
+        {
+          "model": "Paradym X",
+          "clubs": [
+            {
+              "club": "#4",
+              "loft_deg": 18.5,
+              "length_in": 38.875,
+              "lie_deg": 61
+            },
+            {
+              "club": "56",
+              "loft_deg": 56,
+              "length_in": 35.0,
+              "lie_deg": 64
+            }
+          ]
+        },
+        {
+          "model": "Paradym Ai Smoke HL",
+          "clubs": [
+            {
+              "club": "#4",
+              "loft_deg": 21,
+              "length_in": 39.75,
+              "lie_deg": 59.75
+            },
+            {
+              "club": "SW",
+              "loft_deg": 55,
+              "length_in": 35.5,
+              "lie_deg": 64.0
+            }
+          ]
+        },
+        {
+          "model": "Apex CB 2024",
+          "clubs": [
+            {
+              "club": "3i",
+              "loft_deg": 20.5,
+              "length_in": 39.0,
+              "lie_deg": 60
+            },
+            {
+              "club": "AW",
+              "loft_deg": 50,
+              "length_in": 35.5,
+              "lie_deg": 63.5
+            }
+          ]
+        },
+        {
+          "model": "Apex MB Chrome 2024",
+          "clubs": [
+            {
+              "club": "#3",
+              "loft_deg": 20.5,
+              "length_in": 39.0,
+              "lie_deg": 60.0
+            },
+            {
+              "club": "#11 (AW)",
+              "loft_deg": 50,
+              "length_in": 35.5,
+              "lie_deg": 63.5
+            }
+          ]
+        },
+        {
+          "model": "Apex Ai200",
+          "clubs": [
+            {
+              "club": "#4",
+              "loft_deg": 21,
+              "length_in": 38.5,
+              "lie_deg": 60.5
+            },
+            {
+              "club": "AW",
+              "loft_deg": 48,
+              "length_in": 35.5,
+              "lie_deg": 63.5
+            }
+          ]
+        },
+        {
+          "model": "Apex Pro '24",
+          "stock_shaft_steel": "DG Mid 115g",
+          "stock_shaft_graphite_range_g": [
+            80,
+            90
+          ],
+          "stock_grip": "Golf Pride Z Grip Firm",
+          "clubs": [
+            {
+              "club": "3i",
+              "loft_deg": 19,
+              "length_in": 39,
+              "lie_deg": 60
+            },
+            {
+              "club": "AW",
+              "loft_deg": 50,
+              "length_in": 35.5,
+              "lie_deg": 63.5
+            }
+          ]
+        },
+        {
+          "model": "Apex UT '24",
+          "clubs": [
+            {
+              "club": "2i",
+              "loft_deg": 18.0,
+              "length_in": 39.5,
+              "lie_deg": 60
+            },
+            {
+              "club": "4i",
+              "loft_deg": 23.0,
+              "length_in_range": [
+                38,
+                38.5
+              ],
+              "lie_deg": 61
+            }
+          ]
+        }
+      ],
+      "driver_fitting": {
+        "source_url": "https://callawaygolfpreowned.com/fitting-guide",
+        "standard_loft_deg": {
+          "mens": 10.5,
+          "womens": 12.0
+        },
+        "loft_adjustable_range_deg": [
+          -1,
+          2
+        ],
+        "standard_length_in": {
+          "mens": 45.75,
+          "womens": 44.75
+        },
+        "general_rule": "women's clubs traditionally 1 inch shorter than men's"
+      }
+    },
+    "cobra": {
+      "adjustability": {
+        "source_url": "https://cobragolf.com/pages/adjustability-guide",
+        "futurefit33_range_deg": {
+          "loft": 2.0,
+          "lie": 2.0,
+          "direction": "both"
+        },
+        "weight_ports": {
+          "LS_X": "multi-position",
+          "MAX_K_MAX_D": "single fixed weight",
+          "weight_options_g": [
+            3,
+            7,
+            11,
+            14
+          ]
+        },
+        "torque_wrench": "T25, tighten to click"
+      },
+      "iron_models": [
+        {
+          "model": "Aerojet One Length Iron",
+          "source_url": "https://golfio.com/products/cobra-aerojet-one-length-iron-set-23-men",
+          "stock_shaft": "PGI 85/75/65 (S/R/A, 80/70/60g)",
+          "clubs": [
+            {
+              "club": "4i",
+              "loft_deg": 19.0,
+              "lie_deg": 65.0,
+              "offset_mm": 6.0,
+              "length_in": 37.25,
+              "swingweight": "D1"
+            },
+            {
+              "club": "SW",
+              "loft_deg": 54.0,
+              "lie_deg": 61.5,
+              "offset_mm": 0.5,
+              "length_in": 37.25,
+              "swingweight": "D2"
+            }
+          ]
+        }
+      ]
+    },
+    "taylormade": {
+      "iron_models": [
+        {
+          "model": "P790",
+          "versions": [
+            {
+              "year": 2019,
+              "clubs": [
+                {
+                  "club": "3i",
+                  "loft_deg": 19.0,
+                  "lie_deg": 60.5,
+                  "length_in_steel": 38.75,
+                  "length_in_graphite": 39.0
+                },
+                {
+                  "club": "AW",
+                  "loft_deg": 50.0,
+                  "lie_deg": 64.0,
+                  "length_in_steel": 35.5,
+                  "length_in_graphite": 35.75
+                }
+              ]
+            },
+            {
+              "year": 2025,
+              "note": "lofts stronger; lies/lengths unchanged from 2019",
+              "clubs": [
+                {
+                  "club": "4i",
+                  "loft_deg": 20
+                },
+                {
+                  "club": "5i",
+                  "loft_deg": 23
+                },
+                {
+                  "club": "6i",
+                  "loft_deg": 26.5
+                },
+                {
+                  "club": "7i",
+                  "loft_deg": 30
+                },
+                {
+                  "club": "8i",
+                  "loft_deg": 34
+                },
+                {
+                  "club": "9i",
+                  "loft_deg": 39
+                },
+                {
+                  "club": "PW",
+                  "loft_deg": 44
+                },
+                {
+                  "club": "AW",
+                  "loft_deg": 49
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "custom_component_booklet": {
+        "source_url": "TaylorMade Custom Component Booklet, Fall 2021 PDF",
+        "stealth_driver": {
+          "loft_options_deg": [
+            9,
+            10.5
+          ],
+          "lie_adjustable_range_deg": [
+            56,
+            60
+          ],
+          "head_size_cc": 460,
+          "length_in": 45.75
+        },
+        "loft_adjustable_irons_wedges_deg": 2.0,
+        "lie_adjustable_deg": 4.0,
+        "junior_spec_recommender": [
+          {
+            "height_range": "4'4\"-4'8\"",
+            "length_adjustment_in": -1.0,
+            "lie": "4 deg flat",
+            "flex": "L"
+          },
+          {
+            "height_range": "4'8\"-4'10\"",
+            "length_adjustment_in": 0.0,
+            "lie": "2 deg flat",
+            "flex": "L/A"
+          },
+          {
+            "height_range": "4'11\"-5'1\"",
+            "length_adjustment_in": 0.5,
+            "lie": "2 deg flat",
+            "flex": "A/R"
+          },
+          {
+            "height_range": "5'2\"-5'4\"",
+            "length_adjustment_in": 1.0,
+            "lie": "2 deg flat",
+            "flex": "A/R"
+          }
+        ]
+      },
+      "stealth_irons_length_by_wtf": {
+        "source_url": "https://www.austads.com",
+        "note": "Table possibly truncated in original source; verify before production use",
+        "data": [
+          {
+            "height": "6'8\"+",
+            "wtf_in": "42+",
+            "length_adjustment_in": 2.0
+          },
+          {
+            "height": "6'6\"-6'8\"",
+            "wtf_in": "41-42",
+            "length_adjustment_in": 1.5
+          },
+          {
+            "height": "6'4\"-6'6\"",
+            "wtf_in": "40-41",
+            "length_adjustment_in": 1.0
+          },
+          {
+            "height": "6'2\"-6'4\"",
+            "wtf_in": "38.5-40",
+            "length_adjustment_in": 0.5
+          },
+          {
+            "height": "6'1\"-6'2\"",
+            "wtf_in": "37-38.5",
+            "length_adjustment_in": 0.25
+          }
+        ]
+      }
+    },
+    "titleist": {
+      "iron_models": null,
+      "driver_models": null,
+      "note": "Official specs not extracted in this session. Source page identified: https://www.titleist.com/golf-clubs/specifications",
+      "source_url": "https://www.titleist.com/golf-clubs/specifications"
+    },
+    "mizuno": {
+      "iron_models": null,
+      "shaft_optimizer_guide": null,
+      "note": "Official specs not extracted in this session. Source page identified: http://www.mizunofitters.com/assets/uk/resources/shaftoptimizer_user_guide.pdf",
+      "source_url": "http://www.mizunofitters.com/assets/uk/resources/shaftoptimizer_user_guide.pdf"
+    },
+    "srixon_cleveland": {
+      "iron_models": null,
+      "note": "Official specs not extracted in this session. Source pages identified: loftchart.com/srixon, us.dunlopsports.com",
+      "source_url": "https://us.dunlopsports.com"
+    },
+    "pxg": {
+      "iron_models": null,
+      "note": "Official specs not extracted in this session. Source: pxg.com (GEN8/GEN7/GEN6)",
+      "source_url": "https://www.pxg.com"
+    }
+  },
+  "shafts": [
+    {
+      "brand": "KBS",
+      "model": "Tour",
+      "type": "taper tip",
+      "category": "iron",
+      "source_url": "https://kbsgolfshafts.com/products/c-taper",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 110,
+          "frequency": 5.1,
+          "torque": 2.0
+        },
+        {
+          "flex": "R+",
+          "weight_g": 115,
+          "frequency": 5.6,
+          "torque": 1.95
+        },
+        {
+          "flex": "S",
+          "weight_g": 120,
+          "frequency": 6.1,
+          "torque": 1.9
+        },
+        {
+          "flex": "S+",
+          "weight_g": 125,
+          "frequency": 6.6,
+          "torque": 1.85
+        },
+        {
+          "flex": "X",
+          "weight_g": 130,
+          "frequency": 7.1,
+          "torque": 1.8
+        }
+      ],
+      "tip_diameter_in": 0.355,
+      "butt_diameter_in": 0.6,
+      "length_range_in": [
+        37.5,
+        41.5
+      ],
+      "balance_pct": 52
+    },
+    {
+      "brand": "KBS",
+      "model": "Tour Parallel",
+      "type": "parallel tip",
+      "category": "iron",
+      "source_url": "https://www.fairwaygolfusa.com/category/select/pid/1525/language/en",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 120
+        },
+        {
+          "flex": "S",
+          "weight_g": 130
+        },
+        {
+          "flex": "X",
+          "weight_g": 130
+        }
+      ],
+      "tip_diameter_in": 0.37,
+      "length_by_club_in": {
+        "3": 40.5,
+        "4": 40.0,
+        "5": 39.5,
+        "6": 39.0,
+        "7": 38.5,
+        "8": 38.0,
+        "9": 37.5,
+        "W": 37.5
+      }
+    },
+    {
+      "brand": "KBS",
+      "model": "C-Taper",
+      "type": "taper tip",
+      "category": "iron",
+      "source_url": "https://www.valuegolf.com/kbs-tour-c-taper-steel-shafts-taper-tip",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 110,
+          "torque": 2.5,
+          "butt_frequency": 5.3,
+          "driver_fit_speed_mph": 90,
+          "iron5_fit_speed_mph": 80
+        },
+        {
+          "flex": "R+",
+          "weight_g": 115,
+          "torque": 2.0,
+          "butt_frequency": 5.8
+        },
+        {
+          "flex": "S",
+          "weight_g": 120,
+          "torque": 1.95,
+          "butt_frequency": 6.3
+        },
+        {
+          "flex": "S+",
+          "weight_g": 125,
+          "torque": 1.9,
+          "butt_frequency": 6.8
+        },
+        {
+          "flex": "X",
+          "weight_g": 130,
+          "torque": 1.85,
+          "butt_frequency": 7.3,
+          "driver_fit_speed_mph": 110,
+          "iron5_fit_speed_mph": 100
+        }
+      ]
+    },
+    {
+      "brand": "KBS",
+      "model": "C-Taper Lite",
+      "category": "iron",
+      "source_url": "https://clubtechgolf.com.au/pages/taylormade-irons-custom-shaft-specs",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 105
+        },
+        {
+          "flex": "S",
+          "weight_g": 110
+        },
+        {
+          "flex": "X",
+          "weight_g": 115
+        }
+      ],
+      "launch_spin_profile": "mid spin, mid/high launch"
+    },
+    {
+      "brand": "KBS",
+      "model": "Tour Lite",
+      "category": "iron",
+      "source_url": "https://clubtechgolf.com.au/pages/taylormade-irons-custom-shaft-specs",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 95,
+          "torque": 2.5
+        },
+        {
+          "flex": "S",
+          "weight_g": 100,
+          "torque": 2.3
+        },
+        {
+          "flex": "X",
+          "weight_g": 105
+        }
+      ]
+    },
+    {
+      "brand": "KBS",
+      "model": "Tour 90",
+      "category": "iron",
+      "source_url": "https://www.diamondtour.com/kbs-tour-90-iron.html",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 101,
+          "speed_range_mph": [
+            75,
+            85
+          ],
+          "carry_yd_range": [
+            165,
+            185
+          ]
+        },
+        {
+          "flex": "S",
+          "weight_g": 102,
+          "speed_range_mph": [
+            85,
+            95
+          ],
+          "carry_yd_range": [
+            185,
+            205
+          ]
+        }
+      ],
+      "length_in": 41.25,
+      "tip_diameter_in": 0.37
+    },
+    {
+      "brand": "KBS",
+      "model": "Tour 105",
+      "category": "iron",
+      "source_url": "https://www.diamondtour.com/kbs-tour-105-iron-shaft.html",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 109
+        },
+        {
+          "flex": "S",
+          "weight_g": 114
+        }
+      ],
+      "length_in": 41.25,
+      "tip_diameter_in": 0.37
+    },
+    {
+      "brand": "KBS",
+      "model": "Shaft Performance Matrix (weight class reference)",
+      "source_url": "https://us.dunlopsports.com/on/demandware.static/-/Sites-masterCatalog_DunlopSports/default/dwb9863079/pdf/zxi-irons/shaft_performance_matrix_irons.pdf",
+      "classes": {
+        "ultra_light": [
+          "KBS MAX 45",
+          "KBS MAX 50",
+          "KBS MAX 55"
+        ],
+        "light": [
+          "KBS MAX 65",
+          "KBS MAX 85",
+          "TGI60"
+        ],
+        "mid_high": [
+          "TGI 60/80/90/95",
+          "C-Taper Lite"
+        ],
+        "mid": [
+          "DG105",
+          "DG Mid100/115",
+          "Modus3 Tour105",
+          "KBS Tour",
+          "KBS $-Taper",
+          "Project X LZ"
+        ],
+        "low_mid": [
+          "Modus3 Tour120"
+        ],
+        "low": [
+          "KBS C-Taper",
+          "DG",
+          "DG120",
+          "DG Tour Issue",
+          "DG X7",
+          "Modus3 125",
+          "Project X"
+        ]
+      }
+    },
+    {
+      "brand": "True Temper",
+      "model": "Dynamic Gold",
+      "category": "iron",
+      "source_url": "https://www.truetempersports.com/en-us/dynamic-gold-shaft.html",
+      "variants": [
+        {
+          "type": "parallel",
+          "flex": "R300",
+          "weight_g": 127,
+          "length_in": 41,
+          "tip_diameter_in": 0.37
+        },
+        {
+          "type": "parallel",
+          "flex": "S200-S400",
+          "weight_g_range": [
+            127,
+            134
+          ],
+          "length_in": 41,
+          "tip_diameter_in": 0.37
+        },
+        {
+          "type": "parallel",
+          "flex": "X100",
+          "weight_g": 130,
+          "length_in": 41,
+          "tip_diameter_in": 0.37
+        },
+        {
+          "type": "tapered",
+          "flex": "R300",
+          "weight_g": 127,
+          "length_in_range": [
+            40,
+            41
+          ],
+          "tip_diameter_in": 0.355
+        },
+        {
+          "type": "tapered",
+          "flex": "S200-S400",
+          "weight_g_range": [
+            128,
+            132
+          ],
+          "length_in_range": [
+            40,
+            41
+          ],
+          "tip_diameter_in": 0.355
+        },
+        {
+          "type": "tapered",
+          "flex": "X100",
+          "weight_g": 130,
+          "length_in_range": [
+            40,
+            41
+          ],
+          "tip_diameter_in": 0.355
+        }
+      ]
+    },
+    {
+      "brand": "True Temper",
+      "model": "DG105",
+      "category": "iron",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 106,
+          "torque_range": [
+            1.7,
+            2.1
+          ]
+        },
+        {
+          "flex": "S",
+          "weight_g": 109.5,
+          "torque_range": [
+            1.6,
+            2.0
+          ]
+        }
+      ]
+    },
+    {
+      "brand": "True Temper",
+      "model": "DG95",
+      "category": "iron",
+      "flex_options": [
+        {
+          "flex": "R300",
+          "weight_g": 96
+        },
+        {
+          "flex": "S300",
+          "weight_g": 97
+        }
+      ]
+    },
+    {
+      "brand": "True Temper",
+      "model": "DG Mid90",
+      "category": "iron",
+      "flex_options": [
+        {
+          "flex": "R300/S300",
+          "weight_g": 90
+        }
+      ],
+      "length_in": 40.5,
+      "tip_diameter_in": 0.37
+    },
+    {
+      "brand": "True Temper",
+      "model": "additional models (XP95, XP105, XP115, Dynalite, DG Wood)",
+      "source_url": "https://www.diamondgolf.co.uk/wp-content/uploads/true-temper.pdf",
+      "variants": [
+        {
+          "model": "XP95",
+          "R300_g": 93,
+          "S300_g": 95
+        },
+        {
+          "model": "XP105",
+          "R300_g": 100,
+          "S300_g": 101
+        },
+        {
+          "model": "XP115",
+          "R300_g": 100,
+          "S300_g": 117,
+          "X100_g": 114
+        },
+        {
+          "model": "Dynalite/Dynalite Gold XP",
+          "R300_g_range": [
+            109,
+            113.5
+          ],
+          "S300_g_range": [
+            118,
+            122.5
+          ],
+          "X100_g_range": [
+            125,
+            129.5
+          ]
+        },
+        {
+          "model": "DG Wood",
+          "X100_g": 124,
+          "S300_g": 127,
+          "R300_g": 125,
+          "S400_g": 130,
+          "R400_g": 129,
+          "length_in": 46,
+          "tip_diameter_in": 0.335
+        }
+      ]
+    },
+    {
+      "brand": "True Temper",
+      "model": "Dynamic Gold flex-to-carry chart",
+      "category": "driver/wood reference",
+      "source_url": "https://www.diamondtour.com/true-temper-dynamic-gold-wood.html",
+      "data": [
+        {
+          "flex": "R200",
+          "speed_range_mph": [
+            70,
+            77
+          ],
+          "carry_yd_range": [
+            210,
+            235
+          ]
+        },
+        {
+          "flex": "R300",
+          "speed_range_mph": [
+            85,
+            95
+          ],
+          "carry_yd_range": [
+            215,
+            240
+          ]
+        },
+        {
+          "flex": "R400",
+          "speed_range_mph": [
+            80,
+            87
+          ],
+          "carry_yd_range": [
+            220,
+            245
+          ]
+        },
+        {
+          "flex": "S200",
+          "speed_range_mph": [
+            85,
+            92
+          ],
+          "carry_yd_range": [
+            235,
+            265
+          ]
+        },
+        {
+          "flex": "S300",
+          "speed_range_mph": [
+            90,
+            97
+          ],
+          "carry_yd_range": [
+            240,
+            270
+          ]
+        },
+        {
+          "flex": "S400",
+          "speed_range_mph": [
+            94,
+            99
+          ],
+          "carry_yd_range": [
+            245,
+            275
+          ]
+        },
+        {
+          "flex": "X100",
+          "speed_range_mph": [
+            97,
+            103
+          ],
+          "carry_yd_min": 270
+        },
+        {
+          "flex": "X200",
+          "speed_range_mph": [
+            100,
+            107
+          ],
+          "carry_yd_min": 270
+        },
+        {
+          "flex": "X300",
+          "speed_min_mph": 105,
+          "carry_yd_min": 270
+        }
+      ]
+    },
+    {
+      "brand": "Project X",
+      "model": "flex code system",
+      "category": "reference",
+      "source_url": "https://www.golfclubbrokers.com/blog/complete-guide-to-project-x-flex-codes/",
+      "codes": [
+        {
+          "code": 4.0,
+          "equivalent": "Senior/Ladies",
+          "driver_speed_max_mph": 75
+        },
+        {
+          "code": 4.5,
+          "equivalent": "Senior Plus",
+          "driver_speed_range_mph": [
+            75,
+            85
+          ]
+        },
+        {
+          "code": 5.0,
+          "equivalent": "Regular",
+          "driver_speed_range_mph": [
+            85,
+            95
+          ]
+        },
+        {
+          "code": 5.5,
+          "equivalent": "Regular Plus",
+          "driver_speed_range_mph": [
+            95,
+            105
+          ]
+        },
+        {
+          "code": 6.0,
+          "equivalent": "Stiff",
+          "driver_speed_range_mph": [
+            105,
+            115
+          ]
+        },
+        {
+          "code": 6.5,
+          "equivalent": "X-Stiff",
+          "driver_speed_min_mph": 115
+        },
+        {
+          "code": 7.0,
+          "equivalent": "X-Stiff Plus (TX)",
+          "driver_speed_min_mph": 115
+        }
+      ]
+    },
+    {
+      "brand": "Project X",
+      "model": "Driver/Hybrid Irons (steel)",
+      "category": "iron",
+      "source_url": "https://www.diamondgolf.co.uk/wp-content/uploads/PROJ-X.pdf",
+      "flex_options": [
+        {
+          "code": 5.0,
+          "weight_g": 115
+        },
+        {
+          "code": 5.5,
+          "weight_g": 115
+        },
+        {
+          "code": 6.0,
+          "weight_g": 120
+        },
+        {
+          "code": 6.5,
+          "weight_g": 125
+        },
+        {
+          "code": 7.0,
+          "weight_g": 130
+        }
+      ],
+      "length_range_in": [
+        37,
+        41.5
+      ],
+      "tip_diameter_in": 0.355,
+      "butt_diameter_in": 0.6
+    },
+    {
+      "brand": "Project X",
+      "model": "Woods",
+      "category": "wood",
+      "flex_options": [
+        {
+          "code": 5.0,
+          "weight_g": 60,
+          "torque": 4.3
+        },
+        {
+          "code": 7.0,
+          "weight_g": 69,
+          "torque": 3.3
+        }
+      ],
+      "length_in": 46,
+      "tip_diameter_in": 0.335
+    },
+    {
+      "brand": "Project X",
+      "model": "Hybrids",
+      "category": "hybrid",
+      "flex_options": [
+        {
+          "code": 5.0,
+          "weight_g": 84,
+          "torque": 3.0
+        },
+        {
+          "code": 7.0,
+          "weight_g": 97,
+          "torque": 2.3
+        }
+      ],
+      "length_in": 42,
+      "tip_diameter_in": 0.37
+    },
+    {
+      "brand": "Project X",
+      "model": "Rifle Tour Flighted 105",
+      "category": "iron",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 107,
+          "range": "L+3.5 to R+5.5"
+        },
+        {
+          "flex": "S",
+          "weight_g": 108,
+          "range": "A+4.5 to S6.0"
+        },
+        {
+          "flex": "X",
+          "weight_g": 113,
+          "range": "R5.0 to S+6.5"
+        }
+      ]
+    },
+    {
+      "brand": "Project X",
+      "model": "Rifle 5.5 .355",
+      "category": "iron",
+      "weight_g": 115,
+      "flex": "S",
+      "length_range_in": [
+        37,
+        41
+      ],
+      "launch_profile": "low"
+    },
+    {
+      "brand": "Project X",
+      "model": "IO (steel)",
+      "category": "iron",
+      "flex_options": [
+        {
+          "code": 5.5,
+          "weight_g": 105
+        },
+        {
+          "code": 6.0,
+          "weight_g": 110
+        },
+        {
+          "code": 6.5,
+          "weight_g": 115
+        }
+      ],
+      "launch_spin_profile": "mid"
+    },
+    {
+      "brand": "Project X",
+      "model": "PXi Irons",
+      "category": "iron",
+      "flex_options": [
+        {
+          "flex": "R",
+          "code": 5.0,
+          "weight_g": 108
+        },
+        {
+          "flex": "S",
+          "code": "5.5-6.0",
+          "weight_g_range": [
+            108,
+            112
+          ]
+        },
+        {
+          "flex": "X",
+          "code": 6.5,
+          "weight_g": 117
+        }
+      ]
+    },
+    {
+      "brand": "Nippon",
+      "category": "iron",
+      "source_url": "https://nipponshaft.com/product/steel/",
+      "model": "Modus3 Tour105",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 103
+        },
+        {
+          "flex": "S",
+          "weight_g": 106.5
+        },
+        {
+          "flex": "X",
+          "weight_g": 112
+        }
+      ],
+      "torque_range": [
+        1.6,
+        1.9
+      ],
+      "balance_pct": 50.5,
+      "length_range_in": [
+        37,
+        41
+      ],
+      "tip_diameter_in": 0.355
+    },
+    {
+      "brand": "Nippon",
+      "category": "iron",
+      "source_url": "https://nipponshaft.com/product/steel/",
+      "model": "Modus3 Tour115",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 117.5
+        },
+        {
+          "flex": "S",
+          "weight_g": 118.5
+        },
+        {
+          "flex": "X",
+          "weight_g": 119.5
+        }
+      ]
+    },
+    {
+      "brand": "Nippon",
+      "category": "iron",
+      "source_url": "https://nipponshaft.com/product/steel/",
+      "model": "Modus3 Tour120",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 111
+        },
+        {
+          "flex": "S",
+          "weight_g": 114
+        },
+        {
+          "flex": "X",
+          "weight_g": 120
+        },
+        {
+          "flex": "TX",
+          "weight_g": 126
+        }
+      ],
+      "torque_range": [
+        1.5,
+        1.8
+      ],
+      "balance_pct_range": [
+        50.1,
+        50.4
+      ]
+    },
+    {
+      "brand": "Nippon",
+      "category": "iron",
+      "source_url": "https://nipponshaft.com/product/steel/",
+      "model": "Modus3 Tour125",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 127.5
+        },
+        {
+          "flex": "S",
+          "weight_g": 128.5
+        },
+        {
+          "flex": "X",
+          "weight_g": 129.5
+        }
+      ]
+    },
+    {
+      "brand": "Nippon",
+      "category": "iron",
+      "source_url": "https://nipponshaft.com/product/steel/",
+      "model": "Modus3 Tour130",
+      "flex_options": [
+        {
+          "flex": "R",
+          "weight_g": 121
+        },
+        {
+          "flex": "S",
+          "weight_g": 124
+        },
+        {
+          "flex": "X",
+          "weight_g": 129
+        }
+      ],
+      "trajectory": "high"
+    },
+    {
+      "brand": "Nippon",
+      "model": "Modus3 Wedge",
+      "category": "wedge",
+      "flex_options": [
+        {
+          "model": "105",
+          "weight_g": 111,
+          "torque": 1.6
+        },
+        {
+          "model": "115",
+          "weight_g": 122,
+          "torque": 1.5
+        },
+        {
+          "model": "125",
+          "weight_g": 133,
+          "torque": 1.3
+        }
+      ],
+      "length_in": 37
+    },
+    {
+      "brand": "Nippon",
+      "model": "Modus3 Hybrid",
+      "category": "hybrid",
+      "flex_options": [
+        {
+          "flex": "S",
+          "weight_g": 92.5
+        },
+        {
+          "flex": "Tour S",
+          "weight_g": 92.5
+        },
+        {
+          "flex": "X",
+          "weight_g": 102.5
+        },
+        {
+          "flex": "Tour X",
+          "weight_g": 112.5
+        }
+      ]
+    },
+    {
+      "brand": "Nippon",
+      "model": "N.S.Pro series",
+      "category": "iron",
+      "variants": [
+        {
+          "model": "Zelos 6/7/8",
+          "weight_g_range": [
+            68.5,
+            87.5
+          ],
+          "trajectory": "high"
+        },
+        {
+          "model": "750GH",
+          "R_g": 79,
+          "S_g": 83
+        },
+        {
+          "model": "850GH",
+          "R_g": 87,
+          "S_g": 91
+        },
+        {
+          "model": "950GH (neo)",
+          "R_g": 94.5,
+          "SR_g": 97,
+          "S_g": 98,
+          "X_g": 104
+        },
+        {
+          "model": "1050GH",
+          "R_g": 106,
+          "S_g": 109.5,
+          "X_g": 114
+        },
+        {
+          "model": "1150GH",
+          "R_g": 111.5,
+          "S_g": 116,
+          "X_g": 121.5
+        }
+      ]
+    },
+    {
+      "brand": "Fujikura",
+      "model": "Ventus",
+      "category": "wood",
+      "source_url": "https://fujikuragolf.com/woods/ventus/",
+      "lines": [
+        "Blue (balanced)",
+        "Black (high kickpoint, low launch/spin)",
+        "Red (low kickpoint, high launch/spin)",
+        "White (lightest, highest launch)"
+      ],
+      "example_variants": [
+        {
+          "line": "Blue",
+          "model_number": 5,
+          "flex": "R2",
+          "weight_g": 58,
+          "torque_range": [
+            3.9,
+            4.0
+          ]
+        },
+        {
+          "line": "Black",
+          "model_number": 10,
+          "flex": "X",
+          "weight_g": 106,
+          "torque": 2.8
+        },
+        {
+          "line": "Red",
+          "model_number": 9,
+          "flex": "X",
+          "weight_g": 94,
+          "torque": 3.2
+        },
+        {
+          "line": "Red",
+          "model_number": 2,
+          "flex": "R",
+          "weight_g": 58,
+          "torque_range": [
+            3.8,
+            3.9
+          ]
+        },
+        {
+          "line": "White",
+          "model_number": 4,
+          "flex": "R2",
+          "weight_g": 49.5,
+          "torque": 5.0
+        }
+      ],
+      "length_in": 46,
+      "tip_diameter_in": 0.335
+    },
+    {
+      "brand": "Fujikura",
+      "model": "Ventus TR",
+      "category": "wood",
+      "note": "newest, tour-only",
+      "source_url": "https://www.fujikurashaft.jp/en/en_material/en_ventus/ventus_tr/",
+      "example_variants": [
+        {
+          "model": "RD5",
+          "flex": "R",
+          "weight_g": 59.5,
+          "torque": 3.5
+        },
+        {
+          "model": "BK8",
+          "flex": "X",
+          "weight_g": 89,
+          "torque": 2.6
+        }
+      ]
+    },
+    {
+      "brand": "Mitsubishi Chemical",
+      "model": "TENSEI 1K Pro White",
+      "category": "wood",
+      "weight_g_range": [
+        50,
+        80
+      ],
+      "flex_options": [
+        "R",
+        "S",
+        "X",
+        "TX"
+      ],
+      "torque_range": [
+        4.5,
+        5.5
+      ],
+      "kickpoint": "Mid",
+      "launch_deg_range": [
+        10,
+        12
+      ],
+      "spin_rpm_range": [
+        2500,
+        3000
+      ],
+      "length_in": 45.5
+    },
+    {
+      "brand": "Mitsubishi Chemical",
+      "model": "TENSEI 1K Pro Blue",
+      "category": "wood",
+      "variants": [
+        {
+          "weight_class_g": 50,
+          "R_g": 52,
+          "S_g": 54,
+          "X_g": 55,
+          "TX_g": 57
+        },
+        {
+          "weight_class_g": 80,
+          "S_g": 80,
+          "X_g": 82,
+          "TX_g": 84
+        }
+      ],
+      "torque_range": [
+        3.0,
+        4.9
+      ],
+      "kickpoint": "Mid",
+      "speed_recommendation_mph_range": [
+        81,
+        106
+      ]
+    },
+    {
+      "brand": "Mitsubishi Chemical",
+      "model": "TENSEI 1K Pro Red",
+      "category": "wood",
+      "variants": [
+        {
+          "weight_class_g": 50,
+          "R_g": 50.5,
+          "S_g": 54.5,
+          "X_g": 56.5,
+          "TX_g": 57.5
+        },
+        {
+          "weight_class_g": 80,
+          "S_g": 80,
+          "X_g": 82.5,
+          "TX_g": 83.5
+        }
+      ],
+      "torque_range": [
+        2.9,
+        4.7
+      ],
+      "kickpoint": "Mid-Low",
+      "design_note": "high launch"
+    },
+    {
+      "brand": "Mitsubishi Chemical",
+      "model": "TENSEI AV RAW White/Orange",
+      "category": "wood",
+      "weight_g_range": [
+        65,
+        85
+      ],
+      "kickpoint": "High"
+    },
+    {
+      "brand": "Mitsubishi Chemical",
+      "model": "TENSEI AV Red AM(2) Iron",
+      "category": "iron",
+      "flex_options": [
+        "L",
+        "A",
+        "R",
+        "S"
+      ],
+      "weight_g_range": [
+        48,
+        68
+      ],
+      "length_in_range": [
+        36.5,
+        39.5
+      ],
+      "torque_range": [
+        2.9,
+        4.6
+      ],
+      "kickpoint": "Mid/Low"
+    },
+    {
+      "brand": "Mitsubishi Chemical",
+      "model": "TENSEI 1K Blue Hybrid",
+      "category": "hybrid",
+      "weight_g_range": [
+        65,
+        85
+      ],
+      "tip_diameter_in": 0.37,
+      "length_in": 42
+    },
+    {
+      "brand": "Graphite Design",
+      "model": "Tour AD DI",
+      "category": "wood",
+      "example_variants": [
+        {
+          "model": "5R2",
+          "weight_g": 54,
+          "torque": 4.7
+        },
+        {
+          "model": "9X",
+          "weight_g": 97,
+          "torque": 2.6
+        }
+      ],
+      "length_in": 46,
+      "tip_diameter_in": 0.335
+    },
+    {
+      "brand": "Graphite Design",
+      "model": "Tour AD driver flex fitting by swing speed",
+      "category": "reference",
+      "data": [
+        {
+          "speed_range_mph": [
+            71,
+            85
+          ],
+          "flex": "R2"
+        },
+        {
+          "speed_range_mph": [
+            86,
+            95
+          ],
+          "flex": "R1"
+        },
+        {
+          "speed_range_mph": [
+            92,
+            98
+          ],
+          "flex": "SR"
+        },
+        {
+          "speed_range_mph": [
+            96,
+            105
+          ],
+          "flex": "S"
+        },
+        {
+          "speed_min_mph": 105,
+          "flex": "X"
+        },
+        {
+          "speed_min_mph": 110,
+          "flex": "TX"
+        }
+      ]
+    },
+    {
+      "brand": "Graphite Design",
+      "model": "Tour AD FI",
+      "category": "wood/fairway",
+      "weight_g_range": [
+        40,
+        80
+      ],
+      "note": "similar flex/speed mapping to Tour AD DI"
+    },
+    {
+      "brand": "Graphite Design",
+      "model": "Tour AD Iron series (AD-55/65/75/85/95)",
+      "category": "iron",
+      "weight_g_range": [
+        57,
+        99
+      ],
+      "torque_range": [
+        2.2,
+        3.3
+      ],
+      "kickpoint": "Medium",
+      "tip_diameter_in": 0.355,
+      "standard_set": "#5-PW (6 shafts)"
+    },
+    {
+      "brand": "Graphite Design",
+      "model": "Tour AD Utility/Driving Iron",
+      "category": "utility iron",
+      "flex_options": [
+        {
+          "flex": "S",
+          "weight_g": 85
+        },
+        {
+          "flex": "S/X",
+          "weight_g": 95
+        }
+      ],
+      "single_length_in": 39.0,
+      "tip_diameter_in": 0.355
+    },
+    {
+      "brand": "Graphite Design",
+      "model": "Tour AD Hybrid",
+      "category": "hybrid",
+      "weight_g_range": [
+        65,
+        105
+      ],
+      "tip_diameter_in": 0.37,
+      "length_in": 42,
+      "torque_range": [
+        2.3,
+        3.5
+      ]
+    },
+    {
+      "brand": "General/multi-brand consensus",
+      "model": "Driver swing speed to flex",
+      "source_url": "https://launchpointgolf.com/articles/driver-shaft-flex-guide/",
+      "data": [
+        {
+          "flex": "Ladies",
+          "speed_max_mph": 72,
+          "carry_max_yd": 150
+        },
+        {
+          "flex": "Senior/A",
+          "speed_range_mph": [
+            72,
+            84
+          ],
+          "carry_yd_range": [
+            150,
+            180
+          ]
+        },
+        {
+          "flex": "Regular",
+          "speed_range_mph": [
+            84,
+            96
+          ],
+          "carry_yd_range": [
+            180,
+            220
+          ]
+        },
+        {
+          "flex": "Stiff",
+          "speed_range_mph": [
+            97,
+            104
+          ],
+          "carry_yd_range": [
+            220,
+            260
+          ]
+        },
+        {
+          "flex": "X-Stiff",
+          "speed_min_mph": 105,
+          "carry_min_yd": 260
+        }
+      ],
+      "avg_male_amateur_driver_speed_mph": 93.4,
+      "avg_male_amateur_driver_speed_kmh": 150,
+      "pct_golfers_91_to_100mph": 40
+    },
+    {
+      "brand": "General/multi-brand consensus",
+      "model": "7-iron swing speed to flex",
+      "source_url": "https://golflaunchlab.com/guides/golf-shaft-flex-chart/",
+      "data": [
+        {
+          "flex": "L",
+          "speed_max_mph": 50
+        },
+        {
+          "flex": "Senior/A",
+          "speed_range_mph": [
+            50,
+            60
+          ]
+        },
+        {
+          "flex": "Regular",
+          "speed_range_mph": [
+            60,
+            70
+          ]
+        },
+        {
+          "flex": "Regular/Stiff",
+          "speed_range_mph": [
+            70,
+            80
+          ]
+        },
+        {
+          "flex": "Stiff",
+          "speed_range_mph": [
+            80,
+            90
+          ]
+        },
+        {
+          "flex": "X-Stiff",
+          "speed_min_mph": 90
+        }
+      ]
+    }
+  ],
+  "grips": [
+    {
+      "brand": "Golf Pride",
+      "model": "Swing Grip Size Guide (official sizing chart)",
+      "source_url": "https://www.golfpride.com/us/en-us/grip-academy/swing-grip-size-guide.html",
+      "sizes": [
+        {
+          "grip_size": "Jumbo",
+          "hand_size_in_min": 9.0,
+          "hand_size_in_max": null,
+          "glove_size": "Men's XL/XXL/XXXL, Cadet XXL"
+        },
+        {
+          "grip_size": "Midsize",
+          "hand_size_in_min": 7.6,
+          "hand_size_in_max": 9.0,
+          "glove_size": "Men's L/XL or Cadet L/XL"
+        },
+        {
+          "grip_size": "Standard",
+          "hand_size_in_min": 6.6,
+          "hand_size_in_max": 7.5,
+          "glove_size": "Men's M/M-L, Cadet M/M-L, Women's M-L/L"
+        },
+        {
+          "grip_size": "Undersize",
+          "hand_size_in_min": 5.0,
+          "hand_size_in_max": 6.5,
+          "glove_size": "Men's S, Cadet S, Women's S/M"
+        },
+        {
+          "grip_size": "Junior",
+          "hand_size_in_min": null,
+          "hand_size_in_max": 5.0,
+          "glove_size": "Women's XS/Junior"
+        }
+      ],
+      "measurement_method": "wrist crease to tip of middle finger, upper/glove hand"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "MCC",
+      "size": "Standard",
+      "core": "60Round",
+      "weight_g": 46.5,
+      "note": "single color",
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "MCC",
+      "size": "Standard",
+      "core": "60Round",
+      "weight_g": 50.0,
+      "note": "dual color",
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "MCC",
+      "size": "Midsize",
+      "core": "60Round",
+      "weight_g": 59.0,
+      "note": "single color",
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "MCC",
+      "size": "Midsize",
+      "core": "60Round",
+      "weight_g": 63.5,
+      "note": "dual color",
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "MCC ALIGN",
+      "size": "Standard",
+      "weight_g": 51.0,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "MCC ALIGN",
+      "size": "Midsize",
+      "weight_g": 62.0,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "MCC Plus4",
+      "size": "Undersize",
+      "core": "58Round",
+      "weight_g": 47.0,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "MCC Plus4",
+      "size": "Standard",
+      "core": "60Round",
+      "weight_g": 52.0,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "MCC Plus4",
+      "size": "Midsize",
+      "core": "60Round",
+      "weight_g": 66.0,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "MCC Plus4",
+      "size": "Jumbo",
+      "core": "60Round",
+      "weight_g": 82.0,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "Tour Velvet",
+      "size": "Junior",
+      "core": "0.500 Ribbed",
+      "weight_g": 43.0,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "Tour Velvet",
+      "size": "Undersize",
+      "core": "0.580 Ribbed",
+      "weight_g": 47.5,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "Tour Velvet",
+      "size": "Standard",
+      "core": "0.580 Ribbed",
+      "weight_g": 49.5,
+      "alt_variants": "also 51.5g/58Round or 45g/62Round",
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "Tour Velvet",
+      "size": "Midsize",
+      "core": "0.600 Round",
+      "weight_g_range": [
+        53,
+        53.5
+      ],
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "Tour Velvet",
+      "size": "Jumbo",
+      "core": "0.600 Round",
+      "weight_g_range": [
+        61,
+        64
+      ],
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "Tour Velvet Full Cord",
+      "size": "Standard",
+      "core": "0.580 core",
+      "weight_g": 50.5,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "Tour Velvet Full Cord",
+      "size": "Midsize",
+      "core": "0.600 core",
+      "weight_g": 59.0,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "Tour Velvet Plus4",
+      "size": "Standard",
+      "core": "0.600 core",
+      "weight_g": 52.0,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "Tour Velvet Plus4",
+      "size": "Midsize",
+      "core": "0.600 core",
+      "weight_g": 65.5,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "Z-Grip Cord",
+      "size": "Standard",
+      "core": "0.600 Round",
+      "weight_g": 50.5,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "2G Tour Wrap Black",
+      "size": "Standard",
+      "weight_g": 48.0,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "Golf Pride",
+      "model": "2G Tour Wrap Black",
+      "size": "Midsize",
+      "weight_g": 58.0,
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-specifications.html"
+    },
+    {
+      "brand": "SuperStroke",
+      "category": "putter grip",
+      "source_url": "https://superstrokeusa.com/",
+      "core_size_in": 0.58,
+      "models": [
+        {
+          "model": "Ultra Slim",
+          "diameter_in": 1.0,
+          "weight_g": 45
+        },
+        {
+          "model": "Flatso 1.0",
+          "diameter_in": 1.1,
+          "weight_g": 55
+        },
+        {
+          "model": "Legacy 2.0 / Mid Slim 2.0",
+          "diameter_in_range": [
+            1.2,
+            1.25
+          ],
+          "weight_g_range": [
+            50,
+            65
+          ]
+        },
+        {
+          "model": "Legacy 3.0 / Traxion Tour",
+          "diameter_in": 1.3,
+          "weight_g_range": [
+            70,
+            85
+          ]
+        },
+        {
+          "model": "Fatso 5.0",
+          "diameter_in": 1.67,
+          "weight_g": 90
+        },
+        {
+          "model": "Tour 1.0",
+          "diameter_in": 1.0,
+          "weight_g": 125
+        },
+        {
+          "model": "Tour 2.0",
+          "diameter_in": 1.17,
+          "weight_g": 55
+        },
+        {
+          "model": "Tour 3.0",
+          "diameter_in": 1.26,
+          "weight_g": 66
+        },
+        {
+          "model": "Tour 5.0",
+          "diameter_in": 1.52,
+          "weight_g": 90
+        }
+      ],
+      "xl_plus_series_length_in": 13.75,
+      "standard_length_in": 10.5
+    },
+    {
+      "brand": "Lamkin",
+      "model": null,
+      "note": "No official grip model/weight-by-flex specifications located within this research session. Field marked null pending further research on lamkingrips.com.",
+      "sizes": null
+    }
+  ],
+  "grip_buildup_tape": [
+    {
+      "source": "Golf Pride official",
+      "source_url": "https://www.golfpride.com/us/en-us/customer-service-hub/grip-advice/grip-installation-faqs.html",
+      "rule": "1 wrap = +1/64 in diameter; 2 wraps = +1/32 in; 4 wraps = +1/16 in"
+    },
+    {
+      "source": "Grips4Less",
+      "source_url": "https://www.grips4less.com/pages/how-to-apply-grip-tape",
+      "tape_thickness_in": 0.0075,
+      "one_layer_diameter_increase_in": 0.015,
+      "undersize_to_standard_wraps": 2,
+      "standard_to_midsize_wraps": 4,
+      "midsize_to_jumbo_wraps": 4
+    },
+    {
+      "source": "Technical reference (golfwcgc.com)",
+      "source_url": "https://www.golfwcgc.com/wp-content/uploads/sites/8194/2021/06/TECH-TALK-GRIPPING.pdf",
+      "standard_mens_grip_diameter_in": 0.9,
+      "size_increases": [
+        {
+          "increment": "+1/64 in",
+          "resulting_diameter_in": 0.915
+        },
+        {
+          "increment": "+1/32 in",
+          "resulting_diameter_in": 0.93
+        },
+        {
+          "increment": "+3/64 in",
+          "resulting_diameter_in": 0.945
+        },
+        {
+          "increment": "+1/16 in",
+          "resulting_diameter_in": 0.96
+        },
+        {
+          "increment": "+1/8 in",
+          "resulting_diameter_in": 1.025
+        }
+      ],
+      "buildup_tape_thickness_per_layer_in": 0.015,
+      "standard_grip_weight_g": 52,
+      "swingweight_change_per_4g": 1
+    },
+    {
+      "source": "Star Grip tape",
+      "tape_thickness_per_layer_in": 0.013,
+      "full_size_increase_wraps": 5
+    }
+  ],
+  "glove_sizes": [
+    {
+      "brand": "FootJoy",
+      "source_url": "https://www.footjoy.com/golf-glove-fitting-guide.html",
+      "measurement_method": "length of middle finger + circumference of hand at first knuckle (excluding thumb)",
+      "detailed_chart_source": "https://www.scheels.com/size-chart/footjoy-golf-gloves-size-chart/",
+      "sizes_cm": [
+        {
+          "size": "Small",
+          "gender": "Men",
+          "hand_length_cm_range": [
+            17.46,
+            18.1
+          ],
+          "circumference_cm_range": [
+            19.7,
+            20.32
+          ]
+        },
+        {
+          "size": "Medium",
+          "gender": "Men",
+          "hand_length_cm_range": [
+            18.1,
+            18.7
+          ],
+          "circumference_cm_range": [
+            20.32,
+            21.0
+          ]
+        },
+        {
+          "size": "M/L",
+          "gender": "Men",
+          "hand_length_cm_range": [
+            18.7,
+            18.4
+          ],
+          "circumference_cm_range": [
+            21.0,
+            21.3
+          ],
+          "note": "source range irregular, reproduced as found"
+        },
+        {
+          "size": "Large",
+          "gender": "Men",
+          "hand_length_cm_range": [
+            18.7,
+            19.7
+          ],
+          "circumference_cm_range": [
+            21.3,
+            22.2
+          ]
+        },
+        {
+          "size": "XL",
+          "gender": "Men",
+          "hand_length_cm_range": [
+            19.7,
+            20.32
+          ],
+          "circumference_cm_range": [
+            20.32,
+            24.8
+          ],
+          "note": "source range irregular, reproduced as found"
+        },
+        {
+          "size": "2XL",
+          "gender": "Men",
+          "hand_length_cm_range": [
+            20.32,
+            21.0
+          ],
+          "circumference_cm_range": [
+            24.8,
+            24.13
+          ],
+          "note": "source range irregular, reproduced as found"
+        },
+        {
+          "size": "Small",
+          "gender": "Women",
+          "hand_length_cm_range": [
+            15.24,
+            16.2
+          ],
+          "circumference_cm_range": [
+            17.15,
+            17.78
+          ]
+        },
+        {
+          "size": "Medium",
+          "gender": "Women",
+          "hand_length_cm_range": [
+            16.2,
+            16.8
+          ],
+          "circumference_cm_range": [
+            17.78,
+            16.8
+          ],
+          "note": "source range irregular, reproduced as found"
+        },
+        {
+          "size": "M/L",
+          "gender": "Women",
+          "hand_length_cm_range": [
+            16.8,
+            17.1
+          ],
+          "circumference_cm_range": [
+            19.4,
+            19.7
+          ]
+        },
+        {
+          "size": "Large",
+          "gender": "Women",
+          "hand_length_cm_range": [
+            17.1,
+            18.1
+          ],
+          "circumference_cm_range": [
+            19.7,
+            20.32
+          ]
+        },
+        {
+          "size": "XL",
+          "gender": "Women",
+          "hand_length_cm_range": [
+            18.1,
+            18.7
+          ],
+          "circumference_cm_range": [
+            20.32,
+            21.0
+          ]
+        }
+      ],
+      "sizes_simplified_in_cm": [
+        {
+          "size": "Small",
+          "circumference_in_range": [
+            7,
+            7.5
+          ],
+          "circumference_cm_range": [
+            17.8,
+            19.1
+          ]
+        },
+        {
+          "size": "Medium",
+          "circumference_in_range": [
+            7.5,
+            8
+          ],
+          "circumference_cm_range": [
+            19.1,
+            20.3
+          ]
+        },
+        {
+          "size": "Large",
+          "circumference_in_range": [
+            8,
+            8.5
+          ],
+          "circumference_cm_range": [
+            20.3,
+            21.6
+          ]
+        },
+        {
+          "size": "X-Large",
+          "circumference_in_range": [
+            8.5,
+            9
+          ],
+          "circumference_cm_range": [
+            21.6,
+            22.9
+          ]
+        }
+      ]
+    },
+    {
+      "brand": "Titleist",
+      "model": "Players Glove",
+      "source_url": "https://www.titleist.com/product/players-mens/007GL1T.html",
+      "available_sizes": [
+        "S",
+        "M",
+        "ML",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "fit_availability": {
+        "Mens_Regular_Left": [
+          "S",
+          "M",
+          "ML",
+          "L",
+          "XL",
+          "XXL"
+        ],
+        "Mens_Cadet_Left": [
+          "S",
+          "M",
+          "ML",
+          "L",
+          "XL"
+        ],
+        "Mens_Regular_Right": [
+          "S",
+          "M",
+          "ML",
+          "L",
+          "XL"
+        ]
+      },
+      "measurements_in": [
+        {
+          "size": "S",
+          "circumference_in_range": [
+            7.8,
+            8.0
+          ],
+          "length_in_range": [
+            7.5,
+            7.6
+          ]
+        },
+        {
+          "size": "M",
+          "circumference_in_range": [
+            8.0,
+            8.3
+          ],
+          "length_in_range": [
+            7.6,
+            8.0
+          ]
+        },
+        {
+          "size": "M/L",
+          "circumference_in_range": [
+            8.3,
+            8.4
+          ],
+          "length_in_range": [
+            8.0,
+            8.1
+          ]
+        },
+        {
+          "size": "L",
+          "circumference_in_range": [
+            8.4,
+            8.8
+          ],
+          "length_in_range": [
+            8.1,
+            8.3
+          ]
+        },
+        {
+          "size": "XL",
+          "circumference_in_range": [
+            8.8,
+            9.3
+          ],
+          "length_in_range": [
+            8.3,
+            8.6
+          ]
+        },
+        {
+          "size": "2XL",
+          "circumference_in_range": [
+            9.3,
+            9.5
+          ],
+          "length_in_range": [
+            8.6,
+            8.9
+          ]
+        }
+      ],
+      "measurements_source_url": "https://www.amazon.com/Titleist-Players-Mens-Golf-Glove/dp/B07Z9ZGQPK"
+    },
+    {
+      "brand": "Callaway",
+      "model": null,
+      "note": "No official cm-based glove size chart located within this research session. Field marked null.",
+      "sizes": null
+    }
+  ],
+  "trackman_windows": {
+    "official_trackman_launch_angle": {
+      "source_url": "https://www.trackman.com/blog/golf/launch-angle",
+      "tour_averages": {
+        "PGA_Tour": {
+          "driver_deg": 10.4,
+          "six_iron_deg": 14.0
+        },
+        "LPGA_Tour": {
+          "driver_deg": 12.6,
+          "six_iron_deg": 16.7
+        }
+      },
+      "combine_averages_driver_launch_deg": {
+        "male": {
+          "scratch_or_better": 11.2,
+          "5_hcp": 11.2,
+          "10_hcp": 11.9,
+          "average_14_5_hcp": 12.6,
+          "bogey_golfer": 12.1
+        },
+        "female": {
+          "scratch_or_better": 12.7,
+          "5_hcp": 12.0,
+          "10_hcp": 12.4,
+          "15_hcp": 13.6
+        }
+      },
+      "optimizer_assumptions": [
+        {
+          "club": "Driver",
+          "club_speed_mph": 94,
+          "attack_angle_deg": 0,
+          "resulting_launch_angle_deg": 13.6,
+          "resulting_spin_rpm": 2772
+        },
+        {
+          "club": "6-iron",
+          "club_speed_mph": 80,
+          "trajectory": "mid",
+          "resulting_launch_angle_deg": 16.9,
+          "resulting_spin_rpm": 5956
+        },
+        {
+          "club": "PW",
+          "club_speed_mph": 72,
+          "trajectory": "mid",
+          "resulting_launch_angle_deg": 26.7
+        }
+      ]
+    },
+    "pga_tour_spin_rate_2023": {
+      "source_url": "https://www.trackman.com/blog/golf/3-steps-to-improve-your-spin-rate-in-golf",
+      "data": [
+        {
+          "club": "5-iron",
+          "spin_rpm": 5280
+        },
+        {
+          "club": "6-iron",
+          "spin_rpm": 6204
+        },
+        {
+          "club": "7-iron",
+          "spin_rpm": 7124
+        },
+        {
+          "club": "8-iron",
+          "spin_rpm": 8078
+        },
+        {
+          "club": "9-iron",
+          "spin_rpm": 8793
+        }
+      ],
+      "pitching_wedge_spin_rpm_range": {
+        "men": [
+          8500,
+          10500
+        ],
+        "women": [
+          7500,
+          9500
+        ]
+      }
+    },
+    "pga_tour_averages_full_table": {
+      "source_url": "https://teeituprva.com/wp-content/uploads/2019/03/PGA-AVERAGES-INTERACTIVE.pdf",
+      "cross_referenced_with": [
+        "https://www.golfmagic.com/news/page-4-iron-averages-tour",
+        "https://golf.com/instruction/driving/this-is-how-far-pga-and-lpga-tour-players-hit-it-with-every-club/"
+      ],
+      "clubs": [
+        {
+          "club": "Driver",
+          "club_speed_mph": 113,
+          "attack_angle_deg": -1.3,
+          "ball_speed_mph": 167,
+          "smash_factor": 1.48,
+          "launch_angle_deg": 10.9,
+          "spin_rate_rpm": 2686,
+          "max_height_yd": 32,
+          "landing_angle_deg": 38,
+          "carry_yd": 275
+        },
+        {
+          "club": "3-wood",
+          "club_speed_mph": 107,
+          "attack_angle_deg": -2.9,
+          "ball_speed_mph": 158,
+          "smash_factor": 1.48,
+          "launch_angle_deg": 9.2,
+          "spin_rate_rpm": 3655,
+          "max_height_yd": 30,
+          "landing_angle_deg": 43,
+          "carry_yd": 243
+        },
+        {
+          "club": "5-wood",
+          "club_speed_mph": 103,
+          "attack_angle_deg": -3.3,
+          "ball_speed_mph": 152,
+          "smash_factor": 1.47,
+          "launch_angle_deg": 9.4,
+          "spin_rate_rpm": 4350,
+          "max_height_yd": 31,
+          "landing_angle_deg": 47,
+          "carry_yd": 230
+        },
+        {
+          "club": "Hybrid (15-18deg)",
+          "club_speed_mph": 100,
+          "attack_angle_deg": -3.5,
+          "ball_speed_mph": 146,
+          "smash_factor": 1.46,
+          "launch_angle_deg": 10.2,
+          "spin_rate_rpm": 4437,
+          "max_height_yd": 29,
+          "landing_angle_deg": 47,
+          "carry_yd": 225
+        },
+        {
+          "club": "3-iron",
+          "club_speed_mph": 98,
+          "attack_angle_deg": -3.1,
+          "ball_speed_mph": 142,
+          "smash_factor": 1.45,
+          "launch_angle_deg": 10.4,
+          "spin_rate_rpm": 4630,
+          "max_height_yd": 27,
+          "landing_angle_deg": 46,
+          "carry_yd": 212
+        },
+        {
+          "club": "4-iron",
+          "club_speed_mph": 96,
+          "attack_angle_deg": -3.4,
+          "ball_speed_mph": 137,
+          "smash_factor": 1.43,
+          "launch_angle_deg": 11.0,
+          "spin_rate_rpm": 4836,
+          "max_height_yd": 28,
+          "landing_angle_deg": 48,
+          "carry_yd": 203
+        },
+        {
+          "club": "5-iron",
+          "club_speed_mph": 94,
+          "attack_angle_deg": -3.7,
+          "ball_speed_mph": 132,
+          "smash_factor": 1.41,
+          "launch_angle_deg": 12.1,
+          "spin_rate_rpm": 5361,
+          "max_height_yd": 31,
+          "landing_angle_deg": 49,
+          "carry_yd": 194
+        },
+        {
+          "club": "6-iron",
+          "club_speed_mph": 92,
+          "attack_angle_deg": -4.1,
+          "ball_speed_mph": 127,
+          "smash_factor": 1.38,
+          "launch_angle_deg": 14.1,
+          "spin_rate_rpm": 6231,
+          "max_height_yd": 30,
+          "landing_angle_deg": 50,
+          "carry_yd": 183
+        },
+        {
+          "club": "7-iron",
+          "club_speed_mph": 90,
+          "attack_angle_deg": -4.3,
+          "ball_speed_mph": 120,
+          "smash_factor": 1.33,
+          "launch_angle_deg": 16.3,
+          "spin_rate_rpm": 7097,
+          "max_height_yd": 32,
+          "landing_angle_deg": 50,
+          "carry_yd": 172
+        },
+        {
+          "club": "8-iron",
+          "club_speed_mph": 87,
+          "attack_angle_deg": -4.5,
+          "ball_speed_mph": 115,
+          "smash_factor": 1.32,
+          "launch_angle_deg": 18.1,
+          "spin_rate_rpm": 7998,
+          "max_height_yd": 28,
+          "landing_angle_deg": 50,
+          "carry_yd": 160
+        },
+        {
+          "club": "9-iron",
+          "club_speed_mph": 85,
+          "attack_angle_deg": -4.7,
+          "ball_speed_mph": 109,
+          "smash_factor": 1.28,
+          "launch_angle_deg": 20.4,
+          "spin_rate_rpm": 8647,
+          "max_height_yd": 27,
+          "landing_angle_deg": 51,
+          "carry_yd": 148
+        },
+        {
+          "club": "PW",
+          "club_speed_mph": 83,
+          "attack_angle_deg": -5.0,
+          "ball_speed_mph": 102,
+          "smash_factor": 1.23,
+          "launch_angle_deg": 24.2,
+          "spin_rate_rpm": 9304,
+          "max_height_yd": 27,
+          "landing_angle_deg": 52,
+          "carry_yd": 136
+        }
+      ]
+    },
+    "lpga_tour_iron_averages_partial": {
+      "source_url": "https://www.golfmagic.com/news/page-4-iron-averages-tour",
+      "clubs": [
+        {
+          "club": "4-iron",
+          "ball_speed_mph": 116,
+          "spin_rate_rpm": 4801,
+          "launch_angle_deg": 14.3
+        },
+        {
+          "club": "5-iron",
+          "ball_speed_mph": null,
+          "spin_rate_rpm": 5081,
+          "launch_angle_deg": 14.8
+        },
+        {
+          "club": "6-iron",
+          "ball_speed_mph": 109,
+          "spin_rate_rpm": 5943,
+          "launch_angle_deg": 17.1
+        },
+        {
+          "club": "7-iron",
+          "ball_speed_mph": null,
+          "spin_rate_rpm": 6699,
+          "launch_angle_deg": 19.0
+        },
+        {
+          "club": "8-iron",
+          "ball_speed_mph": 100,
+          "spin_rate_rpm": 7494,
+          "launch_angle_deg": 20.8
+        },
+        {
+          "club": "9-iron",
+          "ball_speed_mph": 93,
+          "spin_rate_rpm": 7589,
+          "launch_angle_deg": 23.9
+        }
+      ],
+      "driver": {
+        "club_speed_avg_mph": 94,
+        "ball_speed_avg_mph_range": [
+          144,
+          147
+        ],
+        "attack_angle_deg": 3.0,
+        "launch_angle_deg": 13.2
+      }
+    },
+    "smash_factor_reference": {
+      "source_url": "https://www.skytrakgolf.com/blogs/articles/understanding-golf-ball-data-what-every-metric-actually-means-for-your-game",
+      "data": [
+        {
+          "club": "Driver",
+          "tour_range": [
+            1.48,
+            1.5
+          ],
+          "amateur_range": [
+            1.38,
+            1.45
+          ],
+          "theoretical_max": 1.5
+        },
+        {
+          "club": "Irons",
+          "tour_range": [
+            1.35,
+            1.4
+          ],
+          "amateur_range": null
+        },
+        {
+          "club": "Wedges",
+          "tour_range": null,
+          "amateur_range": [
+            1.28,
+            1.32
+          ]
+        }
+      ]
+    },
+    "driver_fitting_windows_by_swing_speed_category": {
+      "source_url": "https://golf.com/gear/swing-speed-optimal-trackman-numbers-to-hit-your-drives-farther/",
+      "source_attribution": "True Spec Golf 'Launch Monitor Preferred Parameters'",
+      "categories": [
+        {
+          "category": "Very Fast",
+          "speed_min_mph": 105,
+          "launch_deg_range": [
+            10,
+            16
+          ],
+          "spin_rpm_range": [
+            1750,
+            2300
+          ],
+          "peak_height_ft_range": [
+            100,
+            120
+          ],
+          "descent_angle_deg_range": [
+            34,
+            38
+          ]
+        },
+        {
+          "category": "Fast",
+          "speed_range_mph": [
+            97,
+            104
+          ],
+          "launch_deg_range": [
+            12,
+            16
+          ],
+          "spin_rpm_range": [
+            2000,
+            2500
+          ],
+          "peak_height_ft_range": [
+            87,
+            100
+          ],
+          "descent_angle_deg_range": [
+            33,
+            37
+          ]
+        },
+        {
+          "category": "Average",
+          "speed_range_mph": [
+            84,
+            96
+          ],
+          "launch_deg_range": [
+            13,
+            16
+          ],
+          "spin_rpm_range": [
+            2400,
+            2700
+          ],
+          "peak_height_ft_range": [
+            70,
+            86
+          ],
+          "descent_angle_deg_range": [
+            32,
+            36
+          ]
+        },
+        {
+          "category": "Slow",
+          "speed_range_mph": [
+            72,
+            83
+          ],
+          "launch_deg_range": [
+            14,
+            19
+          ],
+          "spin_rpm_range": [
+            2600,
+            2900
+          ],
+          "peak_height_ft_range": [
+            58,
+            70
+          ],
+          "descent_angle_deg_range": [
+            31,
+            35
+          ]
+        },
+        {
+          "category": "Ladies",
+          "speed_max_mph": 72,
+          "launch_deg_range": [
+            14,
+            19
+          ],
+          "spin_rpm_range": [
+            2600,
+            2900
+          ],
+          "peak_height_ft_range": [
+            45,
+            58
+          ],
+          "descent_angle_deg_range": [
+            27,
+            31
+          ]
+        }
+      ]
+    },
+    "generic_windows_by_club": {
+      "source_url": "https://www.upyourclub.com/optimal-launch-monitor-numbers-for-every-club-driver-through-wedges/",
+      "clubs": [
+        {
+          "club": "Driver",
+          "launch_deg_range": [
+            10,
+            14
+          ],
+          "spin_rpm_range": [
+            2000,
+            2600
+          ],
+          "peak_height_yd_range": [
+            25,
+            35
+          ],
+          "descent_angle_deg_range": [
+            35,
+            42
+          ],
+          "carry_yd_range": [
+            240,
+            290
+          ],
+          "smash_factor_range": [
+            1.48,
+            1.5
+          ],
+          "attack_angle_deg_range": [
+            2,
+            5
+          ]
+        },
+        {
+          "club": "3-wood",
+          "launch_deg_range": [
+            12,
+            15
+          ],
+          "spin_rpm_range": [
+            2800,
+            3500
+          ],
+          "peak_height_yd_range": [
+            28,
+            38
+          ],
+          "descent_angle_deg_range": [
+            40,
+            48
+          ],
+          "carry_yd_range": [
+            215,
+            250
+          ],
+          "smash_factor_range": [
+            1.47,
+            1.49
+          ]
+        },
+        {
+          "club": "5-wood",
+          "launch_deg_range": [
+            14,
+            16
+          ],
+          "spin_rpm_range": [
+            3000,
+            3800
+          ],
+          "peak_height_yd_range": [
+            30,
+            40
+          ],
+          "descent_angle_deg_range": [
+            42,
+            50
+          ],
+          "carry_yd_range": [
+            200,
+            230
+          ],
+          "smash_factor_range": [
+            1.45,
+            1.48
+          ]
+        },
+        {
+          "club": "Hybrid 19-21deg",
+          "launch_deg_range": [
+            16,
+            19
+          ],
+          "spin_rpm_range": [
+            3000,
+            4000
+          ],
+          "peak_height_yd_range": [
+            30,
+            42
+          ],
+          "descent_angle_deg_range": [
+            45,
+            52
+          ],
+          "carry_yd_range": [
+            180,
+            210
+          ],
+          "smash_factor_range": [
+            1.42,
+            1.45
+          ]
+        },
+        {
+          "club": "4-6 iron",
+          "launch_deg_range": [
+            12,
+            17
+          ],
+          "spin_rpm_range": [
+            4000,
+            6000
+          ],
+          "peak_height_yd_range": [
+            24,
+            34
+          ],
+          "descent_angle_deg_range": [
+            42,
+            50
+          ],
+          "carry_yd_range": [
+            160,
+            210
+          ],
+          "smash_factor_range": [
+            1.38,
+            1.42
+          ],
+          "attack_angle_deg_range": [
+            -5,
+            -2
+          ],
+          "note_club": "7-iron reference"
+        },
+        {
+          "club": "7-9 iron",
+          "launch_deg_range": [
+            17,
+            24
+          ],
+          "spin_rpm_range": [
+            6000,
+            9000
+          ],
+          "peak_height_yd_range": [
+            25,
+            35
+          ],
+          "descent_angle_deg_range": [
+            45,
+            52
+          ],
+          "carry_yd_range": [
+            120,
+            160
+          ],
+          "smash_factor_range": [
+            1.35,
+            1.4
+          ]
+        },
+        {
+          "club": "Pitching Wedge",
+          "launch_deg_range": [
+            25,
+            30
+          ],
+          "spin_rpm_range": [
+            7000,
+            9000
+          ],
+          "peak_height_yd_range": [
+            28,
+            35
+          ],
+          "descent_angle_deg_range": [
+            50,
+            55
+          ],
+          "carry_yd_range": [
+            90,
+            120
+          ],
+          "smash_factor_range": [
+            1.32,
+            1.36
+          ],
+          "attack_angle_deg_range": [
+            -6,
+            -3
+          ]
+        },
+        {
+          "club": "Gap/Sand/Lob Wedge",
+          "launch_deg_range": [
+            28,
+            35
+          ],
+          "spin_rpm_min": 8500,
+          "peak_height_yd_range": [
+            30,
+            38
+          ],
+          "descent_angle_deg_range": [
+            50,
+            58
+          ],
+          "carry_yd_range": [
+            70,
+            100
+          ],
+          "smash_factor_range": [
+            1.28,
+            1.32
+          ]
+        }
+      ]
+    },
+    "lie_deviation_conversion_rule": {
+      "value": null,
+      "note": "No officially sourced numeric conversion (e.g. '1 degree of lie = X yards deviation') found in reliable sources during this session. Only qualitative guidance found: upright lie tends to promote left start (right-handed golfer), flat lie tends to promote right start."
+    },
+    "lie_board_impact_tape_interpretation": {
+      "value": null,
+      "note": "No standardized numeric interpretation (e.g. mm heel/toe offset to degrees) found from a reliable manufacturer source during this session. Qualitative rule only: heel-side impact mark suggests lie too upright (needs flattening); toe-side impact mark suggests lie too flat (needs uprighting)."
+    }
+  },
+  "static_measurements": {
+    "wrist_to_floor": {
+      "protocol": {
+        "source_urls": [
+          "https://golfhireireland.com/blog/how-to-measure-wrist-to-floor-for-golf-clubs/",
+          "https://1irongolf.com/pages/fitting",
+          "https://jimchapplegolf.com/custom-club-fitting/determining-and-selecting-your-lie-angle/"
+        ],
+        "steps": [
+          "Stand on a hard, flat surface (not carpet)",
+          "Wear flat shoes (athletic shoes, not spiked golf shoes; sole max ~1.5 in)",
+          "Stand naturally upright, no slouching or stretching",
+          "Let arms hang relaxed at sides",
+          "Measure from the wrist crease of the lead hand (left hand for right-handed golfer) straight down to the floor",
+          "Record to nearest 0.5 in",
+          "Repeat 2-3 times, use most consistent value"
+        ]
+      },
+      "length_adjustment_tables": [
+        {
+          "source_url": "https://jimchapplegolf.com/custom-club-fitting/determining-and-selecting-your-lie-angle/",
+          "table_type": "wtf_by_height_to_lie_adjustment",
+          "data": [
+            {
+              "wtf_in": 40,
+              "height_4_10_to_5_6": null,
+              "height_5_6_to_6_2": "3 Upright",
+              "height_6_2_to_6_7": "3 Upright"
+            },
+            {
+              "wtf_in": 39,
+              "height_4_10_to_5_6": "3 Upright",
+              "height_5_6_to_6_2": "3 Upright",
+              "height_6_2_to_6_7": "2 Upright"
+            },
+            {
+              "wtf_in": 38,
+              "height_4_10_to_5_6": "2 Upright",
+              "height_5_6_to_6_2": "2 Upright",
+              "height_6_2_to_6_7": "2 Upright"
+            },
+            {
+              "wtf_in": 37,
+              "height_4_10_to_5_6": "2 Upright",
+              "height_5_6_to_6_2": "2 Upright",
+              "height_6_2_to_6_7": "1 Upright"
+            },
+            {
+              "wtf_in": 36,
+              "height_4_10_to_5_6": "1 Upright",
+              "height_5_6_to_6_2": "1 Upright",
+              "height_6_2_to_6_7": "Standard"
+            },
+            {
+              "wtf_in": 35,
+              "height_4_10_to_5_6": "Standard",
+              "height_5_6_to_6_2": "Standard",
+              "height_6_2_to_6_7": "Standard"
+            },
+            {
+              "wtf_in": 34,
+              "height_4_10_to_5_6": "Standard",
+              "height_5_6_to_6_2": "Standard",
+              "height_6_2_to_6_7": "Standard"
+            },
+            {
+              "wtf_in": 33,
+              "height_4_10_to_5_6": "Standard",
+              "height_5_6_to_6_2": "Standard",
+              "height_6_2_to_6_7": "Standard"
+            },
+            {
+              "wtf_in": 32,
+              "height_4_10_to_5_6": "Standard",
+              "height_5_6_to_6_2": "1 Flat",
+              "height_6_2_to_6_7": "1 Flat"
+            },
+            {
+              "wtf_in": 31,
+              "height_4_10_to_5_6": "1 Flat",
+              "height_5_6_to_6_2": "2 Flat",
+              "height_6_2_to_6_7": "2 Flat"
+            },
+            {
+              "wtf_in": 30,
+              "height_4_10_to_5_6": "2 Flat",
+              "height_5_6_to_6_2": "2 Flat",
+              "height_6_2_to_6_7": "3 Flat"
+            },
+            {
+              "wtf_in": 29,
+              "height_4_10_to_5_6": "3 Flat",
+              "height_5_6_to_6_2": "3 Flat",
+              "height_6_2_to_6_7": null
+            }
+          ],
+          "standard_lie_angles_mens": {
+            "woods": [
+              {
+                "club": 1,
+                "lie_deg": 50.0
+              },
+              {
+                "club": 2,
+                "lie_deg": 55.5
+              },
+              {
+                "club": 3,
+                "lie_deg": 56.0
+              },
+              {
+                "club": 4,
+                "lie_deg": 56.5
+              },
+              {
+                "club": 5,
+                "lie_deg": 57.0
+              },
+              {
+                "club": 6,
+                "lie_deg": 57.5
+              },
+              {
+                "club": 7,
+                "lie_deg": 58.0
+              }
+            ],
+            "irons": [
+              {
+                "club": 1,
+                "lie_deg": 56.0
+              },
+              {
+                "club": 2,
+                "lie_deg": 57.0
+              },
+              {
+                "club": 3,
+                "lie_deg": 58.0
+              },
+              {
+                "club": 4,
+                "lie_deg": 59.0
+              },
+              {
+                "club": 5,
+                "lie_deg": 60.0
+              },
+              {
+                "club": 6,
+                "lie_deg": 61.0
+              },
+              {
+                "club": 7,
+                "lie_deg": 62.0
+              },
+              {
+                "club": 8,
+                "lie_deg": 63.0
+              },
+              {
+                "club": 9,
+                "lie_deg": 64.0
+              },
+              {
+                "club": "PW",
+                "lie_deg": 64.0
+              },
+              {
+                "club": "SW",
+                "lie_deg": 64.0
+              }
+            ],
+            "note": "Women's standard: subtract 1 degree from all lie values"
+          }
+        },
+        {
+          "source_url": "https://sport-calculator.com/glossary/wrist-to-floor",
+          "table_type": "wtf_and_height_to_length_adjustment",
+          "data": [
+            {
+              "wtf_in_range": [
+                null,
+                29
+              ],
+              "height": "5'0\"-5'4\"",
+              "length_adjustment_in_range": [
+                -1.5,
+                -1.0
+              ]
+            },
+            {
+              "wtf_in_range": [
+                29,
+                32
+              ],
+              "height": "5'4\"-5'7\"",
+              "length_adjustment_in_range": [
+                -0.5,
+                -0.25
+              ]
+            },
+            {
+              "wtf_in_range": [
+                32,
+                34
+              ],
+              "height": "5'7\"-5'10\"",
+              "length_adjustment_in_range": [
+                0,
+                0
+              ]
+            },
+            {
+              "wtf_in_range": [
+                34,
+                36
+              ],
+              "height": "5'10\"-6'1\"",
+              "length_adjustment_in_range": [
+                0.25,
+                0.5
+              ]
+            },
+            {
+              "wtf_in_range": [
+                36,
+                37
+              ],
+              "height": "6'1\"-6'3\"",
+              "length_adjustment_in_range": [
+                0.5,
+                1.0
+              ]
+            },
+            {
+              "wtf_in_range": [
+                37,
+                null
+              ],
+              "height": "6'3\"+",
+              "length_adjustment_in_range": [
+                1.0,
+                1.5
+              ]
+            }
+          ]
+        },
+        {
+          "source_url": "https://golfleap.com/how-long-should-my-golf-clubs-be/",
+          "table_type": "height_to_wtf_estimate_and_adjustment",
+          "note": "Some source ranges overlap irregularly (e.g. 5'2-5'4 WTF listed as 29-34in, duplicating row above); reproduced as found.",
+          "data": [
+            {
+              "height": "6'8\"+",
+              "wtf_in_range": [
+                42,
+                null
+              ],
+              "length_adjustment_in": 2.0
+            },
+            {
+              "height": "6'6\"-6'8\"",
+              "wtf_in_range": [
+                41,
+                42
+              ],
+              "length_adjustment_in": 1.5
+            },
+            {
+              "height": "6'4\"-6'6\"",
+              "wtf_in_range": [
+                40,
+                41
+              ],
+              "length_adjustment_in": 1.0
+            },
+            {
+              "height": "6'2\"-6'4\"",
+              "wtf_in_range": [
+                38.5,
+                40
+              ],
+              "length_adjustment_in": 0.5
+            },
+            {
+              "height": "6'1\"-6'2\"",
+              "wtf_in_range": [
+                37,
+                38.5
+              ],
+              "length_adjustment_in": 0.25
+            },
+            {
+              "height": "5'7\"-6'1\"",
+              "wtf_in_range": [
+                34,
+                37
+              ],
+              "length_adjustment_in": 0.0
+            },
+            {
+              "height": "5'4\"-5'7\"",
+              "wtf_in_range": [
+                32,
+                34
+              ],
+              "length_adjustment_in": -0.25
+            },
+            {
+              "height": "5'2\"-5'4\"",
+              "wtf_in_range": [
+                29,
+                34
+              ],
+              "length_adjustment_in": -0.5
+            },
+            {
+              "height": "5'0\"-5'2\"",
+              "wtf_in_range": [
+                27,
+                29
+              ],
+              "length_adjustment_in": -1.0
+            },
+            {
+              "height": "4'10\"-5'0\"",
+              "wtf_in_range": [
+                25,
+                27
+              ],
+              "length_adjustment_in": -1.5
+            },
+            {
+              "height": "<4'10\"",
+              "wtf_in_range": [
+                null,
+                25
+              ],
+              "length_adjustment_in": -2.0
+            }
+          ]
+        },
+        {
+          "source_url": "https://thegolface.com/golf-tips/complete-golf-club-fitting-chart/",
+          "table_type": "height_only_to_length_adjustment",
+          "data": [
+            {
+              "height": "6'9\"-7'0\"",
+              "length_adjustment_in": 2.0
+            },
+            {
+              "height": "6'6\"-6'9\"",
+              "length_adjustment_in": 1.5
+            },
+            {
+              "height": "6'3\"-6'6\"",
+              "length_adjustment_in": 1.0
+            },
+            {
+              "height": "6'0\"-6'3\"",
+              "length_adjustment_in": 0.5
+            },
+            {
+              "height": "5'9\"-6'0\"",
+              "length_adjustment_in": 0.0
+            },
+            {
+              "height": "5'6\"-5'9\"",
+              "length_adjustment_in": -0.5
+            },
+            {
+              "height": "5'3\"-5'6\"",
+              "length_adjustment_in": -1.0
+            },
+            {
+              "height": "5'0\"-5'3\"",
+              "length_adjustment_in": -1.5
+            },
+            {
+              "height": "4'9\"-5'0\"",
+              "length_adjustment_in": -2.0
+            }
+          ]
+        }
+      ],
+      "proportion_rule": {
+        "source_url": "https://golfhireireland.com/blog/how-to-measure-wrist-to-floor-for-golf-clubs/",
+        "wtf_as_pct_of_height_avg": 48.9,
+        "estimation_formula": "height_in * 0.455",
+        "estimation_formula_source_url": "https://app.fitmygolfclubs.com/tools/wrist-to-floor-club-length",
+        "estimation_accuracy_in": 0.5
+      },
+      "typical_adult_range_in": [
+        29,
+        40
+      ],
+      "typical_adult_range_source_url": "https://golfinsideruk.com/golf-club-length-calculator/",
+      "wtf_used_for": "iron length fitting (not driver/wood fitting, which relies on swing characteristics)",
+      "wtf_vs_wingspan": {
+        "wingspan_data_found": false,
+        "note": "No sourced numeric protocol found for using arm span/wingspan as an alternative or complementary static measurement to wrist-to-floor. WTF remains the near-universal reference measurement in the professional fitting literature consulted. Field marked null."
+      }
+    },
+    "grip_hand_measurement": {
+      "source_url": "https://www.golfpride.com/us/en-us/grip-academy/swing-grip-size-guide.html",
+      "method": "measure from wrist crease to tip of middle finger on upper/glove hand",
+      "feel_test": {
+        "source_url": "https://clubfittingdirectory.com/guides/golf-club-fitting-chart",
+        "perfect": "fingers barely touch the heel pad of upper hand",
+        "too_small": "fingers wrap underneath the heel pad",
+        "too_large": "fingers do not touch the heel pad"
+      },
+      "alternative_cm_thresholds": {
+        "source_url": "https://golfinsideruk.com/golf-club-length-calculator/",
+        "note": "These cm figures appear to reference a partial/different measurement (middle finger only) vs. the full Golf Pride wrist-to-fingertip inch chart; not to be conflated.",
+        "undersize_max_cm": 7,
+        "standard_range_cm": [
+          7,
+          8.25
+        ],
+        "midsize_range_cm": [
+          8.25,
+          9.5
+        ],
+        "oversize_min_cm": 9.5
+      }
+    },
+    "ball_position": {
+      "value": null,
+      "note": "No standardized numeric protocol (e.g. distance in cm/inches relative to lead heel by club) located from an authoritative manufacturer or fitting-organization source during this research session. Recommend targeted follow-up research on PGA of America or TPI (Titleist Performance Institute) fitting guides."
+    },
+    "knee_height": {
+      "value": null,
+      "note": "No standardized numeric protocol found in reliable sources during this session."
+    },
+    "wrist_to_wrist_distance": {
+      "value": null,
+      "note": "No standardized numeric protocol found in reliable sources during this session."
+    },
+    "hand_finger_length_independent_measure": {
+      "value": null,
+      "note": "Only documented as part of grip sizing (see grip_hand_measurement above); no separate standalone static-measurement protocol found."
+    },
+    "arm_span_wingspan": {
+      "value": null,
+      "note": "No standardized numeric protocol or usage guidance with figures found in reliable sources during this session (see wrist_to_floor.wtf_vs_wingspan above for narrative context)."
+    }
+  },
+  "_metadata": {
+    "compiled_date": "2026-07-29",
+    "compilation_rule": "No numeric values were invented. Where a precise value could not be found in a reliable source, it is set to null with an explanatory note.",
+    "known_gaps": [
+      "Titleist, Mizuno, Srixon/Cleveland, PXG: precise iron/driver loft/lie/length specs not extracted in this session (source pages identified but not detailed)",
+      "Lamkin: grip models and weight-by-flex specs not found",
+      "Callaway: official cm-based glove size chart not found",
+      "Numeric lie-to-yardage-deviation conversion rule not found",
+      "Numeric lie board / impact tape interpretation (mm to degrees) not found",
+      "Numeric wingspan/arm-span fitting protocol not found",
+      "Numeric ball position protocol not found",
+      "Numeric knee height and wrist-to-wrist distance fitting protocols not found"
+    ]
+  }
+}
