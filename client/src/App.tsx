@@ -15,12 +15,16 @@ import Dashboard from "@/pages/dashboard";
 import FittingPage from "@/pages/fitting";
 import Reference from "@/pages/reference";
 import Outils from "@/pages/outils";
+import CoachingDashboard from "@/pages/coaching";
+import CoachingSessionPage from "@/pages/coaching-session";
 
 function AppRouter() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/fitting/:id" component={FittingPage} />
+      <Route path="/coaching" component={CoachingDashboard} />
+      <Route path="/coaching/:id" component={CoachingSessionPage} />
       <Route path="/reference" component={Reference} />
       <Route path="/outils" component={Outils} />
       <Route component={NotFound} />
@@ -34,6 +38,7 @@ function useLocalData() {
     const off = onStoreChange(() => {
       void queryClient.invalidateQueries({ queryKey: ["fittings"] });
       void queryClient.invalidateQueries({ queryKey: ["reports"] });
+      void queryClient.invalidateQueries({ queryKey: ["coachings"] });
     });
     startSync();
     return () => { off(); };

@@ -1,6 +1,6 @@
 # FitLab Pro
 
-Application de fitting **fers et bois** pour professionnels de golf. PWA installable, utilisable hors ligne dans la baie, avec analyse assistée des dictées de séance et génération de rapport PDF client.
+Application de fitting **fers et bois** et de coaching pour professionnels de golf. PWA installable, utilisable hors ligne dans la baie, avec analyse assistée des dictées/commentaires et génération de rapport PDF client ou élève.
 
 Production : https://fitlab-pro-five.vercel.app
 
@@ -22,6 +22,18 @@ Un assistant en 7 étapes qui va du joueur au rapport signé :
 
 Le moteur de prescription (`client/src/lib/engine.ts`) croise les mesures statiques, le test de lie et les données Trackman avec les chartes constructeurs de `client/src/data/` — Callaway, Ping, Cobra, Titleist, Mizuno, Srixon, PXG, TaylorMade. Chaque recommandation cite sa source ; les 14 sections de référence sourcées sont dans `client/src/data/reference.ts` et consultables dans l'onglet Référence de l'application.
 
+### Parcours Coaching
+
+Le nouvel onglet Coaching suit cinq étapes :
+
+1. Élève existant ou nouveau (nom, prénom, e-mail obligatoires ; le reste peut être complété plus tard)
+2. Commentaires du pro sous forme de transcription collée, avec prompt IA dédié au coaching
+3. Recommandations éditables : problème observé, cause probable, correction proposée, priorité
+4. Exercices IA éditables : durée, répétitions, fréquence, consignes, critère de réussite et lien
+5. Rapport simplifié pour l'élève, sauvegardé dans la fiche et exportable en PDF
+
+Une ou plusieurs captures Trackman peuvent être jointes à chaque cours depuis ordinateur ou téléphone. Stripe et la base Notion DNA BASE restent volontairement différés pour la prochaine étape produit.
+
 ---
 
 ## Architecture
@@ -30,10 +42,12 @@ Le moteur de prescription (`client/src/lib/engine.ts`) croise les mesures statiq
 api/                    Fonctions serverless Vercel (Node, ESM)
   _lib/llm.ts           Client LLM unifié, sorties structurées par schéma, diagnostic de durée
   _lib/transcript-parse.ts   Extraction des mesures depuis une dictée
+  _lib/coaching-parse.ts     Analyse pédagogique des commentaires du pro
   _lib/trackman-ocr.ts  Lecture d'une photo d'écran Trackman
   status.ts             État de la configuration IA
 client/
   src/pages/fitting.tsx L'assistant en 7 étapes
+  src/pages/coaching.tsx / coaching-session.tsx   Parcours coaching en 5 étapes
   src/lib/engine.ts     Moteur de prescription (~600 lignes)
   src/lib/pdf.ts        Rapport jsPDF A4, 2 pages
   src/lib/store.ts      IndexedDB (idb) — source de vérité locale
@@ -99,7 +113,7 @@ Au-delà de `medium` on approche la limite de 60 s des fonctions Vercel. L'inter
 
 ## Base de données
 
-Supabase, projet `whhpqdhiwhsfsigchbxx` (eu-west-1). Tables `public.fitlab_fittings` et `public.fitlab_reports`, RLS active avec politique `owner = auth.uid()`. Pour recevoir le code à 6 chiffres, le modèle **Authentication → Emails → Magic Link** doit contenir `{{ .Token }}` dans son corps. Le lien magique ne doit pas être le seul contenu du modèle.
+Supabase, projet `whhpqdhiwhsfsigchbxx` (eu-west-1). Tables `public.fitlab_fittings`, `public.fitlab_reports` et `public.fitlab_coachings`, RLS active avec politique `owner = auth.uid()`. Pour recevoir le code à 6 chiffres, le modèle **Authentication → Emails → Magic Link** doit contenir `{{ .Token }}` dans son corps. Le lien magique ne doit pas être le seul contenu du modèle.
 
 ## Déploiement
 

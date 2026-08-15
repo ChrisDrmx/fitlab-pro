@@ -1,7 +1,7 @@
-import { supabase, supabaseConfigured, TABLE_FITTINGS, TABLE_REPORTS } from "./supabase";
+import { supabase, supabaseConfigured, TABLE_COACHINGS, TABLE_FITTINGS, TABLE_REPORTS } from "./supabase";
 import {
   applyRemote, currentStoreScope, dirtyRows, getMeta, markClean, pendingCount, setMeta, setSyncHook,
-  type Fitting, type Report,
+  type Coaching, type Fitting, type Report,
 } from "./store";
 
 /**
@@ -89,6 +89,33 @@ const reportFromRemote = (r: Record<string, unknown>): Report => ({
   brand: String(r.brand ?? ""),
   insightCount: Number(r.insight_count ?? 0),
   snapshot: JSON.stringify(r.snapshot ?? {}),
+  updatedAt: String(r.updated_at ?? new Date().toISOString()),
+  deletedAt: r.deleted_at ? String(r.deleted_at) : null,
+  dirty: 0,
+});
+
+const coachingToRemote = (c: Coaching, owner: string) => {
+  const data = safeParse(c.data);
+  return {
+    id: c.id,
+    owner,
+    student_name: c.studentName,
+    student_email: c.studentEmail,
+    date: c.date,
+    status: c.status,
+    data,
+    updated_at: c.updatedAt,
+    deleted_at: c.deletedAt,
+  };
+};
+
+const coachingFromRemote = (r: Record<string, unknown>): Coaching => ({
+  id: String(r.id),
+  studentName: String(r.student_name ?? "Sans nom"),
+  studentEmail: String(r.student_email ?? ""),
+  date: String(r.date ?? "").slice(0, 10),
+  status: String(r.status ?? "en_cours"),
+  data: JSON.stringify(r.data ?? {}),
   updatedAt: String(r.updated_at ?? new Date().toISOString()),
   deletedAt: r.deleted_at ? String(r.deleted_at) : null,
   dirty: 0,
@@ -191,7 +218,7 @@ export async function syncNow(): Promise<SyncState> {
     }
 
     // 1) Envoi des modifications locales.
-    const { fittings, reports } = await dirtyRows();
+    const { fittings, reports, coachings } = await dirtyRows();
     if (fittings.length) {
       const accepted = await pushRows(
         sb,
@@ -210,21 +237,34 @@ export async function syncNow(): Promise<SyncState> {
       );
       await markClean("reports", accepted);
     }
+    if (coachings.length) {
+      const accepted = await pushRows(
+        sb,
+        TABLE_COACHINGS,
+        coachings,
+        (c) => coachingToRemote(c, owner),
+      );
+      await markClean("coachings", accepted);
+    }
 
     // 2) Recuperation des lignes plus recentes que le dernier passage.
     const since = (await getMeta<string>(LAST_PULL)) ?? "1970-01-01T00:00:00.000Z";
-    const [rf, rr] = await Promise.all([
+    const [rf, rr, rc] = await Promise.all([
       sb.from(TABLE_FITTINGS).select("*").gte("updated_at", since).order("updated_at"),
       sb.from(TABLE_REPORTS).select("*").gte("updated_at", since).order("updated_at"),
+      sb.from(TABLE_COACHINGS).select("*").gte("updated_at", since).order("updated_at"),
     ]);
     if (rf.error) throw new Error(rf.error.message);
     if (rr.error) throw new Error(rr.error.message);
+    if (rc.error) throw new Error(rc.error.message);
     await applyRemote("fittings", (rf.data ?? []).map(fittingFromRemote));
     await applyRemote("reports", (rr.data ?? []).map(reportFromRemote));
+    await applyRemote("coachings", (rc.data ?? []).map(coachingFromRemote));
 
     const stamps = [
       ...(rf.data ?? []).map((r) => String(r.updated_at)),
       ...(rr.data ?? []).map((r) => String(r.updated_at)),
+      ...(rc.data ?? []).map((r) => String(r.updated_at)),
     ];
     if (stamps.length) await setMeta(LAST_PULL, stamps.sort().at(-1));
 

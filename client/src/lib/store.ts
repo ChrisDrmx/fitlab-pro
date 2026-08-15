@@ -1,4 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
+import type { CoachingData } from "./types";
 
 /**
  * Couche de donnees locale (local-first).
@@ -35,9 +36,22 @@ export type Report = {
   dirty: number;
 };
 
+export type Coaching = {
+  id: string;
+  studentName: string;
+  studentEmail: string;
+  date: string;
+  status: string;
+  data: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  dirty: number;
+};
+
 interface FitlabDB extends DBSchema {
   fittings: { key: string; value: Fitting; indexes: { dirty: number } };
   reports: { key: string; value: Report; indexes: { dirty: number; fittingId: string } };
+  coachings: { key: string; value: Coaching; indexes: { dirty: number } };
   meta: { key: string; value: unknown };
 }
 
@@ -54,14 +68,22 @@ function databaseName() {
 
 function db() {
   if (!dbp) {
-    dbp = openDB<FitlabDB>(databaseName(), 1, {
+    dbp = openDB<FitlabDB>(databaseName(), 2, {
       upgrade(d) {
-        const f = d.createObjectStore("fittings", { keyPath: "id" });
-        f.createIndex("dirty", "dirty");
-        const r = d.createObjectStore("reports", { keyPath: "id" });
-        r.createIndex("dirty", "dirty");
-        r.createIndex("fittingId", "fittingId");
-        d.createObjectStore("meta");
+        if (!d.objectStoreNames.contains("fittings")) {
+          const f = d.createObjectStore("fittings", { keyPath: "id" });
+          f.createIndex("dirty", "dirty");
+        }
+        if (!d.objectStoreNames.contains("reports")) {
+          const r = d.createObjectStore("reports", { keyPath: "id" });
+          r.createIndex("dirty", "dirty");
+          r.createIndex("fittingId", "fittingId");
+        }
+        if (!d.objectStoreNames.contains("coachings")) {
+          const c = d.createObjectStore("coachings", { keyPath: "id" });
+          c.createIndex("dirty", "dirty");
+        }
+        if (!d.objectStoreNames.contains("meta")) d.createObjectStore("meta");
       },
     });
   }
@@ -98,6 +120,7 @@ export async function adoptLocalDataFor(userId: string) {
   const source = await db();
   const fittings = await source.getAll("fittings");
   const reports = await source.getAll("reports");
+  const coachings = await source.getAll("coachings");
   // Marque l'adoption comme consommee pour qu'un autre compte ne reprenne pas
   // les memes donnees locales apres une deconnexion.
   await source.put("meta", false, "localOnly");
@@ -117,6 +140,13 @@ export async function adoptLocalDataFor(userId: string) {
     }
   }
   await reportTx.done;
+  const coachingTx = target.transaction("coachings", "readwrite");
+  for (const row of coachings) {
+    if (!(await coachingTx.store.get(row.id))) {
+      await coachingTx.store.put({ ...row, dirty: 1 });
+    }
+  }
+  await coachingTx.done;
 }
 
 export function newId() {
@@ -221,6 +251,70 @@ export async function deleteFitting(id: string) {
   scheduleSync();
 }
 
+/* -------------------------------------------------------------- coachings */
+
+export async function listCoachings(): Promise<Coaching[]> {
+  const d = await db();
+  return (await d.getAll("coachings"))
+    .filter((c) => !c.deletedAt)
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : b.updatedAt.localeCompare(a.updatedAt)));
+}
+
+export async function getCoaching(id: string): Promise<Coaching | undefined> {
+  const d = await db();
+  const c = await d.get("coachings", id);
+  return c && !c.deletedAt ? c : undefined;
+}
+
+export async function createCoaching(input: {
+  studentName: string;
+  studentEmail: string;
+  date: string;
+  status: string;
+  data: CoachingData | string;
+}): Promise<Coaching> {
+  const d = await db();
+  const row: Coaching = {
+    id: newId(),
+    studentName: input.studentName || "Sans nom",
+    studentEmail: input.studentEmail || "",
+    date: input.date,
+    status: input.status || "en_cours",
+    data: typeof input.data === "string" ? input.data : JSON.stringify(input.data),
+    updatedAt: now(),
+    deletedAt: null,
+    dirty: 1,
+  };
+  await d.put("coachings", row);
+  emit();
+  scheduleSync();
+  return row;
+}
+
+export async function updateCoaching(
+  id: string,
+  patch: Partial<Pick<Coaching, "studentName" | "studentEmail" | "date" | "status" | "data">>,
+): Promise<Coaching | undefined> {
+  const d = await db();
+  const cur = await d.get("coachings", id);
+  if (!cur) return undefined;
+  const row: Coaching = { ...cur, ...patch, updatedAt: now(), dirty: 1 };
+  await d.put("coachings", row);
+  emit();
+  scheduleSync();
+  return row;
+}
+
+export async function deleteCoaching(id: string) {
+  const d = await db();
+  const cur = await d.get("coachings", id);
+  if (!cur) return;
+  const stamp = now();
+  await d.put("coachings", { ...cur, deletedAt: stamp, updatedAt: stamp, dirty: 1 });
+  emit();
+  scheduleSync();
+}
+
 /* ----------------------------------------------------------------- reports */
 
 export async function listReports(fittingId: string): Promise<Report[]> {
@@ -269,7 +363,8 @@ export async function pendingCount() {
   const d = await db();
   const a = await d.countFromIndex("fittings", "dirty", 1);
   const b = await d.countFromIndex("reports", "dirty", 1);
-  return a + b;
+  const c = await d.countFromIndex("coachings", "dirty", 1);
+  return a + b + c;
 }
 
 export async function dirtyRows() {
@@ -277,10 +372,11 @@ export async function dirtyRows() {
   return {
     fittings: await d.getAllFromIndex("fittings", "dirty", 1),
     reports: await d.getAllFromIndex("reports", "dirty", 1),
+    coachings: await d.getAllFromIndex("coachings", "dirty", 1),
   };
 }
 
-export async function markClean(kind: "fittings" | "reports", ids: string[]) {
+export async function markClean(kind: "fittings" | "reports" | "coachings", ids: string[]) {
   if (!ids.length) return;
   const d = await db();
   const tx = d.transaction(kind, "readwrite");
@@ -292,13 +388,13 @@ export async function markClean(kind: "fittings" | "reports", ids: string[]) {
 }
 
 /** Applique une ligne venue du serveur (le plus recent gagne). */
-export async function applyRemote(kind: "fittings" | "reports", rows: (Fitting | Report)[]) {
+export async function applyRemote(kind: "fittings" | "reports" | "coachings", rows: (Fitting | Report | Coaching)[]) {
   if (!rows.length) return 0;
   const d = await db();
   const tx = d.transaction(kind, "readwrite");
   let applied = 0;
   for (const row of rows) {
-    const cur = (await tx.store.get(row.id)) as Fitting | Report | undefined;
+    const cur = (await tx.store.get(row.id)) as Fitting | Report | Coaching | undefined;
     if (cur && cur.dirty === 1 && cur.updatedAt >= row.updatedAt) continue;
     if (cur && cur.updatedAt > row.updatedAt) continue;
     await tx.store.put({ ...(row as object), dirty: 0 } as never);
@@ -324,6 +420,7 @@ export async function wipeLocal() {
   const d = await db();
   await d.clear("fittings");
   await d.clear("reports");
+  await d.clear("coachings");
   await d.clear("meta");
   emit();
 }

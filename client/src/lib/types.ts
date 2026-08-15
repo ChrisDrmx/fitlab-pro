@@ -124,6 +124,56 @@ export interface FittingData {
   unitSystem: "metric" | "imperial";
 }
 
+export interface CoachingStudent {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  level: string;
+  handicap: string;
+  notes: string;
+}
+
+export type CoachingPriority = "haute" | "moyenne" | "basse" | "";
+
+export interface CoachingRecommendation {
+  id: string;
+  problemObserved: string;
+  probableCause: string;
+  proposedCorrection: string;
+  priority: CoachingPriority;
+}
+
+export interface CoachingExercise {
+  id: string;
+  title: string;
+  duration: string;
+  repetitions: string;
+  frequency: string;
+  instructions: string;
+  successCriteria: string;
+  videoUrl: string;
+}
+
+export interface CoachingPhoto {
+  id: string;
+  name: string;
+  dataUrl: string;
+}
+
+export interface CoachingData {
+  student: CoachingStudent;
+  date: string;
+  objective: string;
+  duration: string;
+  proNotes: string;
+  transcript: string;
+  recommendations: CoachingRecommendation[];
+  exercises: CoachingExercise[];
+  trackmanPhotos: CoachingPhoto[];
+  studentReport: string;
+}
+
 export const emptyFitting = (): FittingData => ({
   targetBrand: "PING",
   fitterNotes: "",
@@ -147,4 +197,19 @@ export const emptyFitting = (): FittingData => ({
     lengthIrons: "", lengthDriver: "", lie: "", gripModel: "", gripSize: "",
     glove: "", loftGapping: "", driverLoft: "", ballModel: "", priority: "", notes: "",
   },
+});
+
+export const emptyCoaching = (): CoachingData => ({
+  student: {
+    firstName: "", lastName: "", email: "", phone: "", level: "", handicap: "", notes: "",
+  },
+  date: new Date().toISOString().slice(0, 10),
+  objective: "",
+  duration: "",
+  proNotes: "",
+  transcript: "",
+  recommendations: [],
+  exercises: [],
+  trackmanPhotos: [],
+  studentReport: "",
 });
