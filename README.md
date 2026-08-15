@@ -45,7 +45,7 @@ client/
 
 **Local d'abord.** Toutes les données vivent dans IndexedDB (base `fitlab-pro`, stores `fittings` / `reports` / `meta`). La synchronisation Supabase est optionnelle et se déclenche toutes les 5 minutes, au retour en ligne et au retour d'onglet. L'application reste entièrement fonctionnelle sans réseau et sans compte ; seules les analyses de dictée et l'OCR nécessitent une connexion.
 
-Les bases locales sont séparées par utilisateur dès qu'une session Supabase est active. Les fiches créées explicitement en mode local peuvent être adoptées par le compte lors de la première connexion, sans être exposées à un autre compte sur le même appareil.
+Les bases locales sont séparées par utilisateur dès qu'une session Supabase est active. Les fiches créées explicitement en mode local peuvent être adoptées par le compte lors de la première connexion, sans être exposées à un autre compte sur le même appareil. La connexion en ligne se fait sans mot de passe : Supabase envoie un code e-mail à 6 chiffres, puis l'application le vérifie avec `verifyOtp`.
 
 **Deux clés API suffisent** pour que tout tourne en autonomie : Supabase (sauvegarde) et OpenAI (analyse à la demande). Aucune autre dépendance de service.
 
@@ -99,7 +99,7 @@ Au-delà de `medium` on approche la limite de 60 s des fonctions Vercel. L'inter
 
 ## Base de données
 
-Supabase, projet `whhpqdhiwhsfsigchbxx` (eu-west-1). Tables `public.fitlab_fittings` et `public.fitlab_reports`, RLS active avec politique `owner = auth.uid()`. Confirmation d'email activée.
+Supabase, projet `whhpqdhiwhsfsigchbxx` (eu-west-1). Tables `public.fitlab_fittings` et `public.fitlab_reports`, RLS active avec politique `owner = auth.uid()`. Pour recevoir le code à 6 chiffres, le modèle **Authentication → Emails → Magic Link** doit contenir `{{ .Token }}` dans son corps. Le lien magique ne doit pas être le seul contenu du modèle.
 
 ## Déploiement
 

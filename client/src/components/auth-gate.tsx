@@ -5,17 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Field } from "@/components/kit";
-import { Loader2, CloudOff, ShieldCheck } from "lucide-react";
+import { Loader2, CloudOff, ShieldCheck, ArrowLeft } from "lucide-react";
 
 /**
  * Ecran de connexion. La sauvegarde en ligne est optionnelle : on peut toujours
  * travailler en local sur l'appareil et synchroniser plus tard.
  */
 export function AuthGate({ children }: { children: React.ReactNode }) {
-  const { ready, session, localOnly, configured, useLocalOnly, signIn, signUp } = useAuth();
-  const [mode, setMode] = useState<"in" | "up">("in");
+  const { ready, session, localOnly, configured, useLocalOnly, sendOtp, verifyOtp } = useAuth();
+  const [mode, setMode] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
-  const [pwd, setPwd] = useState("");
+  const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [info, setInfo] = useState("");
@@ -36,13 +36,12 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     setInfo("");
     setBusy(true);
     try {
-      if (mode === "in") await signIn(email, pwd);
-      else {
-        const msg = await signUp(email, pwd);
-        if (msg) {
-          setInfo(msg);
-          setMode("in");
-        }
+      if (mode === "email") {
+        await sendOtp(email);
+        setMode("code");
+        setInfo("Un code à 6 chiffres vient d’être envoyé à ton adresse e-mail.");
+      } else {
+        await verifyOtp(email, code);
       }
     } catch (e2) {
       setErr(e2 instanceof Error ? e2.message : "Connexion impossible.");
@@ -63,10 +62,10 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1">
             <h1 className="text-lg font-semibold">
-              {mode === "in" ? "Connexion" : "Créer un compte"}
+              {mode === "email" ? "Connexion par e-mail" : "Vérifier le code"}
             </h1>
             <p className="text-xs text-muted-foreground">
-              Tes fiches sont sauvegardées et synchronisées entre tes appareils.
+              Entre ton adresse e-mail : aucun mot de passe n’est nécessaire.
             </p>
           </div>
 
@@ -81,21 +80,26 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
               className="h-11"
               data-testid="input-auth-email"
               required
+              disabled={mode === "code"}
             />
           </Field>
-          <Field label="Mot de passe" hint={mode === "up" ? "8 caractères minimum" : undefined}>
-            <Input
-              type="password"
-              autoComplete={mode === "in" ? "current-password" : "new-password"}
-              value={pwd}
-              onChange={(e) => setPwd(e.target.value)}
-              placeholder="••••••••"
-              className="h-11"
-              data-testid="input-auth-password"
-              required
-              minLength={6}
-            />
-          </Field>
+          {mode === "code" ? (
+            <Field label="Code reçu par e-mail" hint="6 chiffres — valable quelques minutes">
+              <Input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                placeholder="123456"
+                className="h-11 text-center font-mono text-lg tracking-[0.35em]"
+                data-testid="input-auth-code"
+                pattern="[0-9]{6}"
+                maxLength={6}
+                required
+              />
+            </Field>
+          ) : null}
 
           {err ? (
             <p className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive" data-testid="text-auth-error">
@@ -109,17 +113,29 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           ) : null}
 
           <Button type="submit" className="h-11 w-full" disabled={busy} data-testid="button-auth-submit">
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : mode === "in" ? "Se connecter" : "Créer le compte"}
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : mode === "email" ? "Recevoir mon code" : "Valider le code"}
           </Button>
 
-          <button
-            type="button"
-            className="w-full text-center text-xs text-muted-foreground underline-offset-2 hover:underline"
-            onClick={() => { setMode(mode === "in" ? "up" : "in"); setErr(""); setInfo(""); }}
-            data-testid="button-auth-toggle"
-          >
-            {mode === "in" ? "Pas encore de compte ? En créer un" : "J'ai déjà un compte"}
-          </button>
+          {mode === "code" ? (
+            <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 underline-offset-2 hover:underline"
+                onClick={() => { setMode("email"); setCode(""); setErr(""); setInfo(""); }}
+                data-testid="button-auth-back"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" /> Modifier l’e-mail
+              </button>
+              <button
+                type="button"
+                className="underline-offset-2 hover:underline"
+                onClick={() => { setErr(""); setInfo(""); void sendOtp(email).then(() => setInfo("Un nouveau code a été envoyé."), (e) => setErr(e instanceof Error ? e.message : "Envoi impossible.")); }}
+                data-testid="button-auth-resend"
+              >
+                Renvoyer le code
+              </button>
+            </div>
+          ) : null}
         </form>
       </Card>
 

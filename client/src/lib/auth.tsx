@@ -20,8 +20,8 @@ type AuthCtx = {
   configured: boolean;
   useLocalOnly: () => void;
   connectOnline: () => void;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<string>;
+  sendOtp: (email: string) => Promise<void>;
+  verifyOtp: (email: string, token: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -85,25 +85,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLocalOnly(false);
         void setMeta(LOCAL_ONLY_KEY, false);
       },
-      signIn: async (email, password) => {
+      sendOtp: async (email) => {
         const sb = supabase();
         if (!sb) throw new Error("Sauvegarde en ligne non configurée.");
-        const { error } = await sb.auth.signInWithPassword({ email: email.trim(), password });
+        const { error } = await sb.auth.signInWithOtp({
+          email: email.trim(),
+          options: { shouldCreateUser: true },
+        });
         if (error) throw new Error(traduire(error.message));
         setLocalOnly(false);
         void setMeta(LOCAL_ONLY_KEY, false);
       },
-      signUp: async (email, password) => {
+      verifyOtp: async (email, token) => {
         const sb = supabase();
         if (!sb) throw new Error("Sauvegarde en ligne non configurée.");
-        const { data, error } = await sb.auth.signUp({ email: email.trim(), password });
+        const { error } = await sb.auth.verifyOtp({
+          email: email.trim(),
+          token: token.trim(),
+          type: "email",
+        });
         if (error) throw new Error(traduire(error.message));
-        if (data.session) {
-          setLocalOnly(false);
-          void setMeta(LOCAL_ONLY_KEY, false);
-          return "";
-        }
-        return "Compte créé. Confirme l'adresse via le lien reçu par e-mail, puis connecte-toi.";
+        setLocalOnly(false);
+        void setMeta(LOCAL_ONLY_KEY, false);
       },
       signOut: async () => {
         const sb = supabase();
@@ -127,11 +130,11 @@ export function useAuth() {
 
 function traduire(msg: string) {
   const m = msg.toLowerCase();
-  if (m.includes("invalid login credentials")) return "Adresse e-mail ou mot de passe incorrect.";
+  if (m.includes("otp") && (m.includes("expired") || m.includes("invalid"))) return "Code invalide ou expiré. Demande un nouveau code.";
+  if (m.includes("token has expired") || m.includes("token is expired")) return "Code expiré. Demande un nouveau code.";
   if (m.includes("email not confirmed")) return "Adresse non confirmée : ouvre le lien reçu par e-mail.";
-  if (m.includes("already registered")) return "Cette adresse a déjà un compte : connecte-toi.";
-  if (m.includes("password")) return "Mot de passe trop court (6 caractères minimum).";
   if (m.includes("rate limit")) return "Trop de tentatives, patiente une minute.";
+  if (m.includes("email") && m.includes("invalid")) return "Adresse e-mail invalide.";
   if (m.includes("failed to fetch") || m.includes("network")) return "Serveur injoignable : vérifie la connexion.";
   return msg;
 }
