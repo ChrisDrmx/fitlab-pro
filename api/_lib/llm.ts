@@ -41,6 +41,13 @@ export type LlmConfig = {
 };
 
 const EFFORTS = ["none", "low", "medium", "high", "xhigh", "max"] as const;
+const CLIENT_EFFORTS = ["low", "medium", "high"] as const;
+
+/** Seuls ces niveaux sont pilotables par l'interface publique. */
+export function clientEffort(value: unknown) {
+  const effort = typeof value === "string" ? value.trim().toLowerCase() : "";
+  return (CLIENT_EFFORTS as readonly string[]).includes(effort) ? effort : undefined;
+}
 
 export function llmProvider(): LlmConfig | null {
   const openai = (process.env.OPENAI_API_KEY ?? "").trim();

@@ -1,6 +1,6 @@
 import { supabase, supabaseConfigured, TABLE_FITTINGS, TABLE_REPORTS } from "./supabase";
 import {
-  applyRemote, dirtyRows, getMeta, markClean, pendingCount, setMeta, setSyncHook,
+  applyRemote, currentStoreScope, dirtyRows, getMeta, markClean, pendingCount, setMeta, setSyncHook,
   type Fitting, type Report,
 } from "./store";
 
@@ -102,6 +102,51 @@ function safeParse(s: string) {
   }
 }
 
+/**
+ * Pousse une ligne seulement si le serveur n'est pas plus recent.
+ * L'upsert Supabase classique pouvait ecraser une modification faite sur un
+ * autre appareil avec une vieille copie locale.
+ */
+async function pushIfNewer(
+  sb: ReturnType<typeof supabase> & object,
+  table: string,
+  payload: Record<string, unknown>,
+  id: string,
+  updatedAt: string,
+) {
+  const current = await sb.from(table).select("id, updated_at").eq("id", id).maybeSingle();
+  if (current.error) throw new Error(current.error.message);
+  if (!current.data) {
+    const inserted = await sb.from(table).insert(payload).select("id").maybeSingle();
+    if (inserted.error) throw new Error(inserted.error.message);
+    return true;
+  }
+  const remoteUpdatedAt = String((current.data as { updated_at?: unknown }).updated_at ?? "");
+  if (remoteUpdatedAt > updatedAt) return false;
+  const updated = await sb
+    .from(table)
+    .update(payload)
+    .eq("id", id)
+    .lte("updated_at", updatedAt)
+    .select("id")
+    .maybeSingle();
+  if (updated.error) throw new Error(updated.error.message);
+  return Boolean(updated.data);
+}
+
+async function pushRows<T extends { id: string; updatedAt: string }>(
+  sb: ReturnType<typeof supabase> & object,
+  table: string,
+  rows: T[],
+  map: (row: T) => Record<string, unknown>,
+) {
+  const accepted: string[] = [];
+  for (const row of rows) {
+    if (await pushIfNewer(sb, table, map(row), row.id, row.updatedAt)) accepted.push(row.id);
+  }
+  return accepted;
+}
+
 /* -------------------------------------------------------------------- moteur */
 
 let running = false;
@@ -138,29 +183,39 @@ export async function syncNow(): Promise<SyncState> {
       });
       return state;
     }
+    // Evite qu'un effet de demarrage ne pousse la base locale legacy vers le
+    // mauvais compte avant que AuthProvider ait fini de changer de scope.
+    if (currentStoreScope() !== `user:${owner}`) {
+      set({ status: "local", pending: await pendingCount(), message: "Préparation de la session…" });
+      return state;
+    }
 
     // 1) Envoi des modifications locales.
     const { fittings, reports } = await dirtyRows();
     if (fittings.length) {
-      const { error } = await sb
-        .from(TABLE_FITTINGS)
-        .upsert(fittings.map((f) => fittingToRemote(f, owner)), { onConflict: "id" });
-      if (error) throw new Error(error.message);
-      await markClean("fittings", fittings.map((f) => f.id));
+      const accepted = await pushRows(
+        sb,
+        TABLE_FITTINGS,
+        fittings,
+        (f) => fittingToRemote(f, owner),
+      );
+      await markClean("fittings", accepted);
     }
     if (reports.length) {
-      const { error } = await sb
-        .from(TABLE_REPORTS)
-        .upsert(reports.map((r) => reportToRemote(r, owner)), { onConflict: "id" });
-      if (error) throw new Error(error.message);
-      await markClean("reports", reports.map((r) => r.id));
+      const accepted = await pushRows(
+        sb,
+        TABLE_REPORTS,
+        reports,
+        (r) => reportToRemote(r, owner),
+      );
+      await markClean("reports", accepted);
     }
 
     // 2) Recuperation des lignes plus recentes que le dernier passage.
     const since = (await getMeta<string>(LAST_PULL)) ?? "1970-01-01T00:00:00.000Z";
     const [rf, rr] = await Promise.all([
-      sb.from(TABLE_FITTINGS).select("*").gt("updated_at", since).order("updated_at"),
-      sb.from(TABLE_REPORTS).select("*").gt("updated_at", since).order("updated_at"),
+      sb.from(TABLE_FITTINGS).select("*").gte("updated_at", since).order("updated_at"),
+      sb.from(TABLE_REPORTS).select("*").gte("updated_at", since).order("updated_at"),
     ]);
     if (rf.error) throw new Error(rf.error.message);
     if (rr.error) throw new Error(rr.error.message);

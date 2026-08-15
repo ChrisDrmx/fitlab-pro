@@ -47,18 +47,38 @@ create index if not exists fitlab_reports_fitting_idx
 alter table public.fitlab_fittings enable row level security;
 alter table public.fitlab_reports  enable row level security;
 
--- Une seule politique par table : le proprietaire fait tout, personne d'autre
--- ne voit rien. La cle anon exposee au navigateur ne donne donc acces a aucune
--- ligne sans session authentifiee.
+-- Policies explicites : seuls les comptes authentifies peuvent toucher leurs
+-- propres lignes. La cle publishable/anon exposee au navigateur ne donne donc
+-- acces a aucune ligne sans session authentifiee.
 
 drop policy if exists fitlab_fittings_owner_all on public.fitlab_fittings;
-create policy fitlab_fittings_owner_all
-  on public.fitlab_fittings for all
-  using (owner = auth.uid())
-  with check (owner = auth.uid());
+drop policy if exists fitlab_fittings_select_own on public.fitlab_fittings;
+drop policy if exists fitlab_fittings_insert_own on public.fitlab_fittings;
+drop policy if exists fitlab_fittings_update_own on public.fitlab_fittings;
+drop policy if exists fitlab_fittings_delete_own on public.fitlab_fittings;
+create policy fitlab_fittings_select_own on public.fitlab_fittings
+  for select to authenticated using ((select auth.uid()) = owner);
+create policy fitlab_fittings_insert_own on public.fitlab_fittings
+  for insert to authenticated with check ((select auth.uid()) = owner);
+create policy fitlab_fittings_update_own on public.fitlab_fittings
+  for update to authenticated
+  using ((select auth.uid()) = owner)
+  with check ((select auth.uid()) = owner);
+create policy fitlab_fittings_delete_own on public.fitlab_fittings
+  for delete to authenticated using ((select auth.uid()) = owner);
 
 drop policy if exists fitlab_reports_owner_all on public.fitlab_reports;
-create policy fitlab_reports_owner_all
-  on public.fitlab_reports for all
-  using (owner = auth.uid())
-  with check (owner = auth.uid());
+drop policy if exists fitlab_reports_select_own on public.fitlab_reports;
+drop policy if exists fitlab_reports_insert_own on public.fitlab_reports;
+drop policy if exists fitlab_reports_update_own on public.fitlab_reports;
+drop policy if exists fitlab_reports_delete_own on public.fitlab_reports;
+create policy fitlab_reports_select_own on public.fitlab_reports
+  for select to authenticated using ((select auth.uid()) = owner);
+create policy fitlab_reports_insert_own on public.fitlab_reports
+  for insert to authenticated with check ((select auth.uid()) = owner);
+create policy fitlab_reports_update_own on public.fitlab_reports
+  for update to authenticated
+  using ((select auth.uid()) = owner)
+  with check ((select auth.uid()) = owner);
+create policy fitlab_reports_delete_own on public.fitlab_reports
+  for delete to authenticated using ((select auth.uid()) = owner);

@@ -113,7 +113,7 @@ export default function FittingPage() {
     setExporting(true);
     const createdAt = new Date().toISOString();
     try {
-      exportFittingPdf(data, createdAt);
+      await exportFittingPdf(data, createdAt);
       const dx = buildDiagnosis(data);
       const kept = dx.insights.filter((it) => !(data.excludedInsights ?? []).includes(it.id)).length;
       try {

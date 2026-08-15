@@ -42,10 +42,19 @@ interface FitlabDB extends DBSchema {
 }
 
 let dbp: Promise<IDBPDatabase<FitlabDB>> | null = null;
+export type StoreScope = "local" | `user:${string}`;
+let activeScope: StoreScope = "local";
+
+function databaseName() {
+  if (activeScope === "local") return "fitlab-pro";
+  // Les identifiants Supabase sont des UUID. Le remplacement garde un nom de
+  // base lisible tout en evitant tout caractere structurel inattendu.
+  return `fitlab-pro-${activeScope.slice(5).replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+}
 
 function db() {
   if (!dbp) {
-    dbp = openDB<FitlabDB>("fitlab-pro", 1, {
+    dbp = openDB<FitlabDB>(databaseName(), 1, {
       upgrade(d) {
         const f = d.createObjectStore("fittings", { keyPath: "id" });
         f.createIndex("dirty", "dirty");
@@ -57,6 +66,57 @@ function db() {
     });
   }
   return dbp;
+}
+
+export function currentStoreScope() {
+  return activeScope;
+}
+
+/** Change de base locale lorsque la session Supabase change. */
+export async function switchStoreScope(scope: StoreScope) {
+  if (scope === activeScope) return;
+  const previous = dbp;
+  dbp = null;
+  activeScope = scope;
+  if (previous) {
+    try {
+      (await previous).close();
+    } catch {
+      // Une base deja fermee ne doit pas bloquer la nouvelle session.
+    }
+  }
+}
+
+/**
+ * Adopte les fiches creees en mode local apres une connexion explicite.
+ * Les donnees restent aussi dans la base locale : une deconnexion ne les
+ * detruit pas et un autre compte ne peut pas les voir dans sa base dediee.
+ */
+export async function adoptLocalDataFor(userId: string) {
+  if (!userId) return;
+  if (activeScope !== "local") await switchStoreScope("local");
+  const source = await db();
+  const fittings = await source.getAll("fittings");
+  const reports = await source.getAll("reports");
+  // Marque l'adoption comme consommee pour qu'un autre compte ne reprenne pas
+  // les memes donnees locales apres une deconnexion.
+  await source.put("meta", false, "localOnly");
+  await switchStoreScope(`user:${userId}`);
+  const target = await db();
+  const fittingTx = target.transaction("fittings", "readwrite");
+  for (const row of fittings) {
+    if (!(await fittingTx.store.get(row.id))) {
+      await fittingTx.store.put({ ...row, dirty: 1 });
+    }
+  }
+  await fittingTx.done;
+  const reportTx = target.transaction("reports", "readwrite");
+  for (const row of reports) {
+    if (!(await reportTx.store.get(row.id))) {
+      await reportTx.store.put({ ...row, dirty: 1 });
+    }
+  }
+  await reportTx.done;
 }
 
 export function newId() {

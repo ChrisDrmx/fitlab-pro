@@ -45,6 +45,8 @@ client/
 
 **Local d'abord.** Toutes les données vivent dans IndexedDB (base `fitlab-pro`, stores `fittings` / `reports` / `meta`). La synchronisation Supabase est optionnelle et se déclenche toutes les 5 minutes, au retour en ligne et au retour d'onglet. L'application reste entièrement fonctionnelle sans réseau et sans compte ; seules les analyses de dictée et l'OCR nécessitent une connexion.
 
+Les bases locales sont séparées par utilisateur dès qu'une session Supabase est active. Les fiches créées explicitement en mode local peuvent être adoptées par le compte lors de la première connexion, sans être exposées à un autre compte sur le même appareil.
+
 **Deux clés API suffisent** pour que tout tourne en autonomie : Supabase (sauvegarde) et OpenAI (analyse à la demande). Aucune autre dépendance de service.
 
 ### Points de vigilance dans le code
@@ -83,6 +85,8 @@ npm run build                  # sortie dans dist/public
 
 Voir `.env.example`. Les clés `VITE_*` sont exposées au navigateur (l'anon key Supabase est publique par conception, protégée par RLS) ; `OPENAI_API_KEY` reste strictement côté serveur.
 
+En production, `AI_REQUIRE_AUTH=true` impose un JWT Supabase valide sur les routes OCR et transcription. Les routes refusent aussi les payloads trop volumineux, limitent les appels rapprochés et n'acceptent que les niveaux de raisonnement prévus par l'interface.
+
 `OPENAI_REASONING_EFFORT` pilote le compromis vitesse/profondeur. Mesuré sur une séance complète avec `gpt-5.6-luna`, pour une qualité d'extraction identique :
 
 | Effort | Durée | Jetons de réflexion |
@@ -102,5 +106,7 @@ Supabase, projet `whhpqdhiwhsfsigchbxx` (eu-west-1). Tables `public.fitlab_fitti
 ```bash
 npx vercel deploy --prod
 ```
+
+La migration `supabase/migrations/202608150001_harden_fitlab_rls.sql` doit être appliquée au projet Supabase avant le déploiement du client corrigé. Elle remplace les anciennes policies générales par des policies explicites réservées au propriétaire authentifié.
 
 L'auteur git du commit doit avoir accès à l'équipe Vercel, sinon le déploiement est bloqué avec `TEAM_ACCESS_REQUIRED`. `vercel.json` fixe `maxDuration: 60` et `memory: 1024` pour `api/*.ts`.

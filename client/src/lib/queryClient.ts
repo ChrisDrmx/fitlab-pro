@@ -1,4 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
+import { supabase } from "./supabase";
 
 /**
  * Les donnees de fitting ne passent plus par un serveur : elles vivent dans la
@@ -11,9 +12,17 @@ export async function apiRequest(
   url: string,
   data?: unknown,
 ): Promise<Response> {
+  const headers: Record<string, string> = data ? { "Content-Type": "application/json" } : {};
+  const sb = supabase();
+  if (sb) {
+    const { data: sessionData } = await sb.auth.getSession();
+    if (sessionData.session?.access_token) {
+      headers.Authorization = `Bearer ${sessionData.session.access_token}`;
+    }
+  }
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
   });
   if (!res.ok) {

@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase, supabaseConfigured } from "./supabase";
 import { syncNow } from "./sync";
-import { getMeta, setMeta } from "./store";
+import { adoptLocalDataFor, getMeta, setMeta, switchStoreScope } from "./store";
 
 const LOCAL_ONLY_KEY = "localOnly";
 
@@ -42,15 +42,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const sb = supabase();
     if (!sb) return;
     let alive = true;
-    void sb.auth.getSession().then(({ data }) => {
-      if (!alive) return;
-      setSession(data.session ?? null);
-      setReady(true);
-    });
-    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-      if (s) void syncNow();
-    });
+    let activation = Promise.resolve();
+
+    const activate = (next: Session | null) => {
+      activation = activation.then(async () => {
+        if (!alive) return;
+        if (next) {
+          const adoptLocal = await getMeta<boolean>(LOCAL_ONLY_KEY);
+          if (adoptLocal) await adoptLocalDataFor(next.user.id);
+          else await switchStoreScope(`user:${next.user.id}`);
+        } else {
+          await switchStoreScope("local");
+        }
+        if (!alive) return;
+        setSession(next);
+        setReady(true);
+        if (next) void syncNow();
+      });
+    };
+
+    void sb.auth.getSession().then(({ data }) => activate(data.session ?? null));
+    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => activate(s));
     return () => {
       alive = false;
       sub.subscription.unsubscribe();
@@ -91,7 +103,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signOut: async () => {
         const sb = supabase();
         await sb?.auth.signOut();
+        await switchStoreScope("local");
         setSession(null);
+        setLocalOnly(false);
       },
     }),
     [ready, session, localOnly],

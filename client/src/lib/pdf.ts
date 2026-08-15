@@ -1,4 +1,3 @@
-import { jsPDF } from "jspdf";
 import type { FittingData } from "@/lib/types";
 import { CLUB_LABEL } from "@/lib/types";
 import { buildDiagnosis, computeStatic, computeDynamicLie, dynamicLieConsensus, computeGapping, fmt } from "@/lib/engine";
@@ -29,7 +28,8 @@ function san<T>(v: T): T {
   return v;
 }
 
-export function exportFittingPdf(d: FittingData, stampIso?: string) {
+export async function exportFittingPdf(d: FittingData, stampIso?: string) {
+  const { jsPDF } = await import("jspdf");
   const stamp = stampIso && !Number.isNaN(new Date(stampIso).getTime()) ? new Date(stampIso) : new Date();
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   // Toute écriture de texte passe par le nettoyage des glyphes.
