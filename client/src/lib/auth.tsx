@@ -19,6 +19,7 @@ type AuthCtx = {
   localOnly: boolean;
   configured: boolean;
   useLocalOnly: () => void;
+  connectOnline: () => void;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<string>;
   signOut: () => Promise<void>;
@@ -79,6 +80,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       useLocalOnly: () => {
         setLocalOnly(true);
         void setMeta(LOCAL_ONLY_KEY, true);
+      },
+      connectOnline: () => {
+        setLocalOnly(false);
+        void setMeta(LOCAL_ONLY_KEY, false);
       },
       signIn: async (email, password) => {
         const sb = supabase();
