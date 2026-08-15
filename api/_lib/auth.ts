@@ -10,12 +10,15 @@ export class ApiAuthError extends Error {
 let client: ReturnType<typeof createClient> | null = null;
 
 function configuredClient() {
-  const url = (process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? "").trim();
+  // Aligne le serveur sur la paire URL/clé effectivement utilisée par le
+  // client navigateur. Les anciennes variables SUPABASE_* peuvent pointer
+  // vers une configuration historique du projet.
+  const url = (process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL ?? "").trim();
   const key = (
     // Le projet actuel expose encore sa clé legacy anon active. Elle doit être
     // identique à celle utilisée par le client navigateur pour valider ses JWT.
-    process.env.SUPABASE_ANON_KEY
-    ?? process.env.VITE_SUPABASE_ANON_KEY
+    process.env.VITE_SUPABASE_ANON_KEY
+    ?? process.env.SUPABASE_ANON_KEY
     ?? process.env.SUPABASE_PUBLISHABLE_KEY
     ?? ""
   ).trim();
@@ -58,6 +61,13 @@ export async function authenticateAiRequest(req: IncomingMessage) {
   const sb = configuredClient();
   if (!sb) throw new ApiAuthError(503, "Authentification Supabase indisponible.");
   const { data, error } = await sb.auth.getUser(token);
-  if (error || !data.user) throw new ApiAuthError(401, "Session expirée : reconnecte-toi puis réessaie.");
+  if (error || !data.user) {
+    console.warn("FitLab auth rejected", {
+      code: error?.code ?? "unknown",
+      status: error?.status ?? 401,
+      message: error?.message ?? "user missing",
+    });
+    throw new ApiAuthError(401, "Session expirée ou invalide : reconnecte-toi puis réessaie.");
+  }
   return { userId: data.user.id, key: requestKey(req, data.user.id) };
 }
