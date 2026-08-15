@@ -1,15 +1,17 @@
-import { callLlm } from "./llm.js";
+import { callLlmStructured } from "./llm.js";
+import { TranscriptSchema, CLUBS, BRANDS } from "./schema-transcript.js";
+import type { TranscriptParsed } from "./schema-transcript.js";
 
 /**
  * Analyse d'une transcription audio de seance de fitting.
  * Renvoie les champs de la fiche qui peuvent etre remplis, chacun accompagne
- * de l'extrait de transcription qui le justifie, pour relecture par le fitter.
+ * de l'extrait de transcription qui le justifie, de la nature de la valeur
+ * (mesure / recommandation / hypothese / incertain) et d'un niveau de
+ * confiance, pour relecture par le fitter.
+ *
+ * La forme de la reponse est garantie par un schema de sortie structuree :
+ * le modele ne peut pas renvoyer un JSON hors format.
  */
-
-const CLUBS = [
-  "DR", "3W", "5W", "7W", "H3", "H4", "H5",
-  "3i", "4i", "5i", "6i", "7i", "8i", "9i", "PW", "GW", "SW", "LW",
-] as const;
 
 const TM_FIELDS = [
   "clubSpeed", "ballSpeed", "smash", "launch", "spin", "attackAngle",
@@ -17,57 +19,39 @@ const TM_FIELDS = [
   "height", "landingAngle", "carry", "total", "sideCarry",
 ] as const;
 
-const PLAYER_FIELDS = [
-  "firstName", "lastName", "email", "phone", "gender", "birthYear", "handedness",
-  "handicap", "yearsPlaying", "roundsPerMonth", "tempo", "physicalNotes", "missPattern", "club",
-] as const;
+const NUM_PLAYER = ["handicap", "birthYear", "yearsPlaying", "roundsPerMonth"];
+const NUM_MEASURES = [
+  "heightCm", "wristToFloorCm", "armSpanCm",
+  "handLengthCm", "handCircumferenceCm", "middleFingerCm",
+];
+const NUM_CLUB = ["year", "shaftWeight", "lengthIn", "wraps"];
 
-const MEASURE_FIELDS = [
-  "heightCm", "wristToFloorCm", "armSpanCm", "handLengthCm",
-  "handCircumferenceCm", "middleFingerCm", "gloveSizeCurrent", "shoeSole",
-] as const;
+const INSTRUCTIONS = `Tu es un expert en fitting de golf (fers et bois) et en extraction de donnees.
 
-const RECO_FIELDS = [
-  "headIrons", "headWoods", "shaftIrons", "shaftWoods", "flex", "lengthIrons",
-  "lengthDriver", "lie", "gripModel", "gripSize", "glove", "loftGapping",
-  "driverLoft", "ballModel", "priority", "notes",
-] as const;
+On te donne la TRANSCRIPTION AUDIO d'une seance de fitting, dictee a voix haute pendant la seance par le fitter. Il y annonce les mesures du joueur, ses observations, les marques sur la lie board, parfois des chiffres Trackman, et son avis de prescription.
 
-const CLUB_FIELDS = [
-  "club", "brand", "model", "year", "shaft", "flex", "shaftWeight",
-  "lengthIn", "lieNote", "gripModel", "gripSize", "wraps",
-] as const;
-
-const PROMPT = `Tu es l'assistant d'un club-fitter professionnel. On te donne la TRANSCRIPTION AUDIO d'une seance de fitting fers et bois, dictee a voix haute pendant la seance. Le fitter y annonce les mesures du joueur, ses observations, les marques sur la lie board et parfois des chiffres Trackman.
-
-Ta mission : extraire tout ce qui est reellement dit et le placer dans les champs de la fiche. Renvoie UNIQUEMENT un objet JSON valide, sans texte autour et sans bloc de code, de la forme :
-
-{
-  "summary": "resume en une phrase de ce que contient la transcription",
-  "player": { "firstName": "Marc", "lastName": "Dupont", "gender": "H", "handedness": "droitier", "handicap": "15", "birthYear": "1984", "yearsPlaying": "12", "roundsPerMonth": "4", "tempo": "moyen", "physicalNotes": "epaule droite sensible", "missPattern": "slice au driver", "club": "Royal Waterloo", "email": "", "phone": "" },
-  "measures": { "heightCm": "182", "wristToFloorCm": "88", "armSpanCm": "188", "handLengthCm": "19.5", "handCircumferenceCm": "22", "middleFingerCm": "8.5", "gloveSizeCurrent": "L", "shoeSole": "crampons" },
-  "currentClubs": [ { "club": "7i", "brand": "Ping", "model": "G425", "year": "2021", "shaft": "AWT 2.0", "flex": "R", "shaftWeight": "98", "lengthIn": "37.5", "lieNote": "standard", "gripModel": "Golf Pride Tour Velvet", "gripSize": "standard", "wraps": "1" } ],
-  "lieTests": [ { "club": "7i", "mark": "toe_slight", "shotsHitLeft": "3", "correctionDeg": "", "note": "marque nette en pointe" } ],
-  "trackman": [ { "club": "7i", "clubSpeed": "87.4", "ballSpeed": "118.2", "smash": "1.35", "launch": "17.2", "spin": "5100", "attackAngle": "-2.1", "dynamicLoft": "22.4", "spinLoft": "", "faceAngle": "-0.8", "clubPath": "1.4", "faceToPath": "", "height": "27.5", "landingAngle": "42", "carry": "163", "total": "168", "sideCarry": "-4" } ],
-  "reco": { "flex": "S", "lie": "1 degre upright", "lengthIrons": "+0.5 pouce", "gripSize": "midsize", "glove": "L", "headIrons": "", "headWoods": "", "shaftIrons": "", "shaftWoods": "", "lengthDriver": "", "gripModel": "", "loftGapping": "", "driverLoft": "", "ballModel": "", "priority": "", "notes": "" },
-  "targetBrand": "PING",
-  "fitterNotes": "observations libres du fitter, en une ou deux phrases, dans ses mots",
-  "quotes": { "measures.heightCm": "il mesure un metre quatre-vingt-deux", "lieTests.0": "la marque part clairement vers la pointe sur le fer 7" }
-}
+Analyse TOUTE la transcription, meme si elle contient des erreurs de reconnaissance vocale. Retrouve tous les nombres lies aux mesures corporelles, au materiel et aux performances.
 
 Regles imperatives :
-- N'INVENTE RIEN. Un champ qui n'est pas dit dans la transcription reste une chaine vide "". Un tableau sans donnee reste [].
-- Les nombres dictes en toutes lettres doivent etre convertis en chiffres : "un metre quatre-vingt-deux" -> "182", "quatre-vingt-huit centimetres" -> "88", "dix-neuf virgule cinq" -> "19.5".
-- Toutes les longueurs corporelles en CENTIMETRES. Si le fitter parle en pouces ou en pieds, convertis (1 pouce = 2.54 cm, 1 pied = 30.48 cm). "wristToFloorCm" = distance du pli du poignet au sol. "armSpanCm" = envergure bras ecartes. "handLengthCm" = pli du poignet au bout du majeur. "handCircumferenceCm" = tour de main. "middleFingerCm" = longueur du majeur.
-- Vitesses Trackman en MPH, distances Trackman (carry, total, height, sideCarry) en METRES, spin en tr/min, angles en degres. Convertis si le fitter dicte en km/h ou en yards (1 yard = 0.9144 m).
-- "club" (dans currentClubs, lieTests, trackman) doit valoir exactement une de ces valeurs : ${CLUBS.join(", ")}. Driver = "DR", bois 3 = "3W", hybride 4 = "H4", fer 7 = "7i", pitching = "PW", gap ou approach = "GW", sand = "SW", lob = "LW".
-- Si le fitter decrit le materiel actuel comme une SERIE complete sans nommer de club precis ("il joue du Callaway Rogue", "sa serie est en Ping G425"), utilise "7i" comme club de reference pour cette entree et precise "serie complete" dans "lieNote".
-- "mark" (lie board) vaut exactement : "toe" (marque franche en pointe), "toe_slight" (legerement pointe), "center" (centre), "heel_slight" (legerement talon), "heel" (marque franche au talon), ou "".
-- "gender" vaut "H" ou "F" ou "". "handedness" vaut "droitier" ou "gaucher" ou "". "tempo" vaut "lent", "moyen", "rapide" ou "". "shoeSole" vaut "plate", "crampons" ou "".
-- "targetBrand" : seulement si une marque cible est evoquee pour la commande (PING, Callaway, Cobra, Titleist, Mizuno, Srixon, PXG, TaylorMade). Sinon "".
-- "quotes" : pour chaque valeur que tu remplis, ajoute une entree dont la cle est le chemin du champ ("player.handicap", "measures.wristToFloorCm", "reco.flex") ou l'index du tableau ("lieTests.0", "trackman.1", "currentClubs.0"), et la valeur est l'extrait EXACT et court de la transcription qui le justifie. Ne cite jamais une phrase qui n'est pas dans le texte.
-- Nombres sous forme de chaines, point decimal, sans unite.
-- Si la transcription ne contient aucune donnee de fitting exploitable, renvoie tous les champs vides et un "summary" qui l'explique.`;
+- N'INVENTE JAMAIS une valeur absente. Un champ non dit vaut null. Un tableau sans donnee vaut [].
+- Corrige les erreurs de transcription evidentes ("chef" ou "chaft" = "shaft", "lie bord" = "lie board", "smache" = "smash", "ping g quatre cent vingt-cinq" = "G425"), mais conserve toujours le texte original dans le champ "evidence".
+- Distingue clairement :
+  * "mesure" : une valeur reellement mesuree ou lue sur un appareil ;
+  * "recommandation" : une prescription du fitter ("on part sur du stiff") ;
+  * "hypothese" : une piste evoquee sans decision ("on pourrait peut-etre tester du midsize") ;
+  * "incertain" : une valeur entendue mais douteuse (chiffre coupe, unite absente, club non nomme).
+- Convertis les nombres dictes en toutes lettres : "un metre quatre-vingt-deux" -> "182", "dix-neuf virgule cinq" -> "19.5", "quatre-vingt-dix-huit quatre" -> "98.4".
+- Toutes les longueurs corporelles en CENTIMETRES (1 pouce = 2.54 cm, 1 pied = 30.48 cm). "wristToFloorCm" = pli du poignet au sol. "armSpanCm" = envergure bras ecartes. "handLengthCm" = pli du poignet au bout du majeur. "handCircumferenceCm" = tour de main. "middleFingerCm" = longueur du majeur.
+- Vitesses Trackman en MPH, distances Trackman (carry, total, height, sideCarry) en METRES, spin en tr/min, angles en degres. Convertis depuis km/h (÷1.609) ou yards (×0.9144) si necessaire, et signale la conversion dans "evidence".
+- "club" vaut exactement une de ces valeurs : ${CLUBS.join(", ")}. Driver = "DR", bois 3 = "3W", hybride 4 = "H4", fer 7 = "7i", pitching = "PW", gap ou approach = "GW", sand = "SW", lob = "LW".
+- Si le materiel actuel est decrit comme une SERIE complete sans club precis ("il joue du Callaway Rogue"), utilise "7i" comme club de reference et ecris "serie complete" dans "lieNote".
+- "mark" (lie board) : "toe" (marque franche en pointe), "toe_slight", "center", "heel_slight", "heel", ou null.
+- "targetBrand" : uniquement si une marque cible est evoquee pour la commande, parmi ${BRANDS.join(", ")}. Sinon null.
+- Les nombres sont des chaines de caracteres, avec un point decimal, sans unite.
+- "values" : UNE entree pour chaque valeur que tu remplis. "field" est le chemin du champ ("player.handicap", "measures.wristToFloorCm", "reco.flex") ou l'index de la ligne du tableau ("lieTests.0", "trackman.1", "currentClubs.0", "targetBrand", "fitterNotes"). "evidence" est l'extrait EXACT et court de la transcription qui justifie la valeur : ne cite jamais une phrase absente du texte.
+- "ambiguities" : liste courte, en francais, des points a verifier de vive voix (chiffre inaudible, unite douteuse, club non identifie, contradiction entre deux passages).
+- "fitterNotes" : les observations libres du fitter, dans ses mots, en une ou deux phrases.
+- Si la transcription ne contient aucune donnee de fitting exploitable, renvoie tous les champs a null et explique-le dans "summary".`;
 
 type Dict = Record<string, unknown>;
 
@@ -84,14 +68,12 @@ const numStr = (v: unknown) => {
   return Number.isFinite(n) ? String(n) : "";
 };
 
-const oneOf = <T extends string>(v: unknown, allowed: readonly T[]): T | "" =>
-  (allowed as readonly string[]).includes(str(v)) ? (str(v) as T) : "";
-
-const pick = (src: Dict, fields: readonly string[], numeric: readonly string[] = []) => {
+/** Aplatit un objet du schema en Record<string,string>, en ecartant les vides. */
+const flat = (src: Dict | null | undefined, numeric: readonly string[] = []) => {
   const out: Record<string, string> = {};
-  for (const f of fields) {
-    const v = numeric.includes(f) ? numStr(src[f]) : str(src[f]);
-    if (v) out[f] = v;
+  for (const [k, v] of Object.entries(src ?? {})) {
+    const s = numeric.includes(k) ? numStr(v) : str(v);
+    if (s) out[k] = s;
   }
   return out;
 };
@@ -101,62 +83,37 @@ export async function parseTranscript(transcript: string) {
   if (text.length < 20) throw new Error("Transcription trop courte pour être analysée.");
   if (text.length > 60000) throw new Error("Transcription trop longue (60 000 caractères maximum).");
 
-  const raw = await callLlm({
-    prompt: `${PROMPT}\n\n--- TRANSCRIPTION ---\n${text}`,
+  const p: TranscriptParsed = await callLlmStructured({
+    instructions: INSTRUCTIONS,
+    input: `--- TRANSCRIPTION ---\n${text}`,
+    schema: TranscriptSchema,
+    schemaName: "fitting_data",
     maxTokens: 8000,
   });
 
-  const start = raw.indexOf("{");
-  const end = raw.lastIndexOf("}");
-  if (start === -1 || end === -1) throw new Error("Analyse impossible : réponse illisible du module d'analyse.");
+  const player = flat(p.player as Dict, NUM_PLAYER);
+  const measures = flat(p.measures as Dict, NUM_MEASURES);
+  const reco = flat(p.reco as Dict);
 
-  let p: Dict;
-  try {
-    p = JSON.parse(raw.slice(start, end + 1)) as Dict;
-  } catch {
-    throw new Error("Analyse impossible : réponse illisible du module d'analyse.");
-  }
+  const currentClubs = (p.currentClubs ?? [])
+    .map((c) => flat(c as Dict, NUM_CLUB))
+    .filter((c) => c.club && Object.keys(c).some((k) => k !== "club"));
 
-  const srcPlayer = (p.player ?? {}) as Dict;
-  const player = pick(srcPlayer, PLAYER_FIELDS, ["handicap", "birthYear", "yearsPlaying", "roundsPerMonth"]);
-  const g = oneOf(srcPlayer.gender, ["H", "F"] as const);
-  if (g) player.gender = g; else delete player.gender;
-  const hd = oneOf(srcPlayer.handedness, ["droitier", "gaucher"] as const);
-  if (hd) player.handedness = hd; else delete player.handedness;
-  const tp = oneOf(srcPlayer.tempo, ["lent", "moyen", "rapide"] as const);
-  if (tp) player.tempo = tp; else delete player.tempo;
-
-  const srcMeasures = (p.measures ?? {}) as Dict;
-  const measures = pick(srcMeasures, MEASURE_FIELDS, [
-    "heightCm", "wristToFloorCm", "armSpanCm", "handLengthCm", "handCircumferenceCm", "middleFingerCm",
-  ]);
-  const sole = oneOf(srcMeasures.shoeSole, ["plate", "crampons"] as const);
-  if (sole) measures.shoeSole = sole; else delete measures.shoeSole;
-
-  const reco = pick((p.reco ?? {}) as Dict, RECO_FIELDS);
-
-  const currentClubs = (Array.isArray(p.currentClubs) ? (p.currentClubs as Dict[]) : [])
-    .map((c) => {
-      const row = pick(c, CLUB_FIELDS, ["year", "shaftWeight", "lengthIn", "wraps"]);
-      row.club = oneOf(c.club, CLUBS);
-      return row;
-    })
-    .filter((c) => c.club && CLUB_FIELDS.some((f) => f !== "club" && c[f]));
-
-  const lieTests = (Array.isArray(p.lieTests) ? (p.lieTests as Dict[]) : [])
+  const lieTests = (p.lieTests ?? [])
     .map((l) => ({
-      club: oneOf(l.club, CLUBS),
-      mark: oneOf(l.mark, ["toe", "toe_slight", "center", "heel_slight", "heel"] as const),
+      club: str(l.club),
+      mark: str(l.mark),
       shotsHitLeft: numStr(l.shotsHitLeft),
       correctionDeg: numStr(l.correctionDeg),
       note: str(l.note),
     }))
     .filter((l) => l.club && (l.mark || l.correctionDeg || l.note));
 
-  const trackman = (Array.isArray(p.trackman) ? (p.trackman as Dict[]) : [])
+  const trackman = (p.trackman ?? [])
     .map((r) => {
-      const row: Record<string, string> = { club: oneOf(r.club, CLUBS) };
-      for (const f of TM_FIELDS) row[f] = numStr(r[f]);
+      const src = r as Dict;
+      const row: Record<string, string> = { club: str(src.club) };
+      for (const f of TM_FIELDS) row[f] = numStr(src[f]);
       if (!row.faceToPath && row.faceAngle && row.clubPath) {
         row.faceToPath = String(Math.round((Number(row.faceAngle) - Number(row.clubPath)) * 10) / 10);
       }
@@ -169,12 +126,18 @@ export async function parseTranscript(transcript: string) {
     })
     .filter((r) => r.club && TM_FIELDS.some((f) => r[f] !== ""));
 
-  const quotesRaw = (p.quotes ?? {}) as Dict;
+  /* Tracabilite : citation + nature + confiance, indexees par chemin de champ. */
   const quotes: Record<string, string> = {};
-  for (const [k, v] of Object.entries(quotesRaw)) {
-    const q = str(v);
-    if (q) quotes[k] = q.length > 220 ? `${q.slice(0, 217)}...` : q;
+  const flags: Record<string, { status: string; confidence: string }> = {};
+  for (const v of p.values ?? []) {
+    const key = str(v.field);
+    if (!key) continue;
+    const q = str(v.evidence);
+    if (q) quotes[key] = q.length > 220 ? `${q.slice(0, 217)}...` : q;
+    flags[key] = { status: str(v.status) || "mesure", confidence: str(v.confidence) || "moyenne" };
   }
+
+  const ambiguities = (p.ambiguities ?? []).map(str).filter(Boolean).slice(0, 12);
 
   return {
     summary: str(p.summary),
@@ -184,11 +147,11 @@ export async function parseTranscript(transcript: string) {
     currentClubs,
     lieTests,
     trackman,
-    targetBrand: oneOf(str(p.targetBrand).toUpperCase(), [
-      "PING", "CALLAWAY", "COBRA", "TITLEIST", "MIZUNO", "SRIXON", "PXG", "TAYLORMADE",
-    ] as const),
+    targetBrand: str(p.targetBrand).toUpperCase(),
     fitterNotes: str(p.fitterNotes),
     quotes,
+    flags,
+    ambiguities,
   };
 }
 

@@ -58,6 +58,17 @@ type Result = {
   targetBrand: string;
   fitterNotes: string;
   quotes: Record<string, string>;
+  flags?: Record<string, { status: string; confidence: string }>;
+  ambiguities?: string[];
+};
+
+type Flag = { status: string; confidence: string };
+
+const STATUS_LABEL: Record<string, string> = {
+  mesure: "mesuré",
+  recommandation: "prescription",
+  hypothese: "hypothèse",
+  incertain: "incertain",
 };
 
 const EXEMPLE = `Séance du 29 juillet, joueur Marc Dupont, droitier, index 15, il joue depuis douze ans, environ quatre parcours par mois.
@@ -98,7 +109,13 @@ export function StepTranscription({
     },
     onSuccess: (r) => {
       setRes(r);
-      setOff(new Set());
+      // Les hypotheses et les valeurs de faible confiance ne sont pas cochees
+      // par defaut : le fitter doit les valider explicitement.
+      const doute = new Set<string>();
+      for (const [k, f] of Object.entries(r.flags ?? {})) {
+        if (f.status === "hypothese" || f.confidence === "faible") doute.add(k);
+      }
+      setOff(doute);
       setApplied(false);
       set((x) => { x.transcript = text; });
       const n = countValues(r);
@@ -185,7 +202,7 @@ export function StepTranscription({
         </SectionCard>
 
         {analyse.isPending ? (
-          <SectionCard title="Analyse en cours" subtitle="Lecture de la transcription et extraction des mesures." icon={<Sparkles className="h-4 w-4" />}>
+          <SectionCard title="Analyse en cours" subtitle="Lecture raisonnée de la transcription et extraction des mesures. Compte jusqu'à une minute sur une longue séance." icon={<Sparkles className="h-4 w-4" />}>
             <div className="space-y-2">
               {[0, 1, 2, 3].map((i) => <div key={i} className="h-10 animate-pulse rounded-md bg-secondary/60" />)}
             </div>
@@ -219,13 +236,13 @@ export function StepTranscription({
                 </div>
               ) : (
                 <div className="space-y-5">
-                  <ScalarGroup title="Joueur" data={res.player} labels={PLAYER_LABEL} prefix="player" quotes={res.quotes} on={on} toggle={toggle} />
-                  <ScalarGroup title="Mesures statiques" data={res.measures} labels={MEASURE_LABEL} prefix="measures" quotes={res.quotes} on={on} toggle={toggle} />
+                  <ScalarGroup title="Joueur" data={res.player} labels={PLAYER_LABEL} prefix="player" quotes={res.quotes} flags={res.flags} on={on} toggle={toggle} />
+                  <ScalarGroup title="Mesures statiques" data={res.measures} labels={MEASURE_LABEL} prefix="measures" quotes={res.quotes} flags={res.flags} on={on} toggle={toggle} />
 
                   {res.currentClubs.length ? (
                     <Group title="Matériel actuel">
                       {res.currentClubs.map((c, i) => (
-                        <Row key={i} k={`currentClubs.${i}`} on={on} toggle={toggle} quote={res.quotes[`currentClubs.${i}`]} testId={`row-tr-club-${i}`}>
+                        <Row key={i} k={`currentClubs.${i}`} on={on} toggle={toggle} quote={res.quotes[`currentClubs.${i}`]} flag={res.flags?.[`currentClubs.${i}`]} testId={`row-tr-club-${i}`}>
                           <span className="font-medium">{CLUB_LABEL[c.club as ClubKey] ?? c.club}</span>
                           <span className="text-muted-foreground">
                             {[c.brand, c.model, c.shaft, c.flex && `flex ${c.flex}`, c.lengthIn && `${c.lengthIn}"`, c.gripModel, c.gripSize, c.wraps && `${c.wraps} couche(s)`]
@@ -239,7 +256,7 @@ export function StepTranscription({
                   {res.lieTests.length ? (
                     <Group title="Test de lie">
                       {res.lieTests.map((l, i) => (
-                        <Row key={i} k={`lieTests.${i}`} on={on} toggle={toggle} quote={res.quotes[`lieTests.${i}`]} testId={`row-tr-lie-${i}`}>
+                        <Row key={i} k={`lieTests.${i}`} on={on} toggle={toggle} quote={res.quotes[`lieTests.${i}`]} flag={res.flags?.[`lieTests.${i}`]} testId={`row-tr-lie-${i}`}>
                           <span className="font-medium">{CLUB_LABEL[l.club as ClubKey] ?? l.club}</span>
                           <span className="text-muted-foreground">
                             {[MARK_LABEL[l.mark] ?? l.mark, l.correctionDeg && `${l.correctionDeg}°`].filter(Boolean).join(" · ")}
@@ -252,7 +269,7 @@ export function StepTranscription({
                   {res.trackman.length ? (
                     <Group title="Données Trackman">
                       {res.trackman.map((r, i) => (
-                        <Row key={i} k={`trackman.${i}`} on={on} toggle={toggle} quote={res.quotes[`trackman.${i}`]} testId={`row-tr-tm-${i}`}>
+                        <Row key={i} k={`trackman.${i}`} on={on} toggle={toggle} quote={res.quotes[`trackman.${i}`]} flag={res.flags?.[`trackman.${i}`]} testId={`row-tr-tm-${i}`}>
                           <span className="font-medium">{CLUB_LABEL[r.club as ClubKey] ?? r.club}</span>
                           <span className="font-mono text-xs text-muted-foreground">
                             {Object.keys(TM_LABEL).filter((f) => r[f]).map((f) => `${TM_LABEL[f]} ${r[f]}`).join(" · ")}
@@ -262,18 +279,18 @@ export function StepTranscription({
                     </Group>
                   ) : null}
 
-                  <ScalarGroup title="Prescription dictée" data={res.reco} labels={RECO_LABEL} prefix="reco" quotes={res.quotes} on={on} toggle={toggle} />
+                  <ScalarGroup title="Prescription dictée" data={res.reco} labels={RECO_LABEL} prefix="reco" quotes={res.quotes} flags={res.flags} on={on} toggle={toggle} />
 
                   {res.targetBrand || res.fitterNotes ? (
                     <Group title="Divers">
                       {res.targetBrand ? (
-                        <Row k="targetBrand" on={on} toggle={toggle} quote={res.quotes.targetBrand} testId="row-tr-brand">
+                        <Row k="targetBrand" on={on} toggle={toggle} quote={res.quotes.targetBrand} flag={res.flags?.targetBrand} testId="row-tr-brand">
                           <span className="font-medium">Marque cible</span>
                           <span className="text-muted-foreground">{res.targetBrand}</span>
                         </Row>
                       ) : null}
                       {res.fitterNotes ? (
-                        <Row k="fitterNotes" on={on} toggle={toggle} quote={res.quotes.fitterNotes} testId="row-tr-notes">
+                        <Row k="fitterNotes" on={on} toggle={toggle} quote={res.quotes.fitterNotes} flag={res.flags?.fitterNotes} testId="row-tr-notes">
                           <span className="font-medium">Notes du fitter</span>
                           <span className="text-muted-foreground">{res.fitterNotes}</span>
                         </Row>
@@ -283,6 +300,23 @@ export function StepTranscription({
                 </div>
               )}
             </SectionCard>
+
+            {res.ambiguities?.length ? (
+              <SectionCard
+                title="À vérifier de vive voix"
+                subtitle="Points que la transcription ne permet pas de trancher avec certitude."
+                icon={<AlertTriangle className="h-4 w-4" />}
+              >
+                <ul className="space-y-1.5" data-testid="list-transcript-ambiguities">
+                  {res.ambiguities.map((a, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm leading-snug" data-testid={`text-ambiguity-${i}`}>
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
+                      <span>{a}</span>
+                    </li>
+                  ))}
+                </ul>
+              </SectionCard>
+            ) : null}
 
             {countValues(res) ? (
               <SectionCard
@@ -333,10 +367,10 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
 }
 
 function Row({
-  k, on, toggle, quote, children, testId,
+  k, on, toggle, quote, flag, children, testId,
 }: {
   k: string; on: (k: string) => boolean; toggle: (k: string) => void;
-  quote?: string; children: React.ReactNode; testId: string;
+  quote?: string; flag?: Flag; children: React.ReactNode; testId: string;
 }) {
   const active = on(k);
   return (
@@ -346,7 +380,23 @@ function Row({
     >
       <div className="flex items-start gap-2.5">
         <Checkbox checked={active} onCheckedChange={() => toggle(k)} className="mt-0.5" aria-label={`Reporter ${k}`} data-testid={`checkbox-tr-${k}`} />
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5 text-sm sm:flex-row sm:items-baseline sm:gap-2">{children}</div>
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5 text-sm sm:flex-row sm:items-baseline sm:gap-2">
+          {children}
+          {flag && (flag.status !== "mesure" || flag.confidence !== "haute") ? (
+            <span className="flex shrink-0 flex-wrap gap-1 sm:ml-auto">
+              {flag.status !== "mesure" ? (
+                <span className="rounded border border-card-border bg-background px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                  {STATUS_LABEL[flag.status] ?? flag.status}
+                </span>
+              ) : null}
+              {flag.confidence !== "haute" ? (
+                <span className="rounded border border-card-border bg-background px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                  confiance {flag.confidence}
+                </span>
+              ) : null}
+            </span>
+          ) : null}
+        </div>
       </div>
       {quote ? (
         <p className="mt-1.5 flex items-start gap-1.5 pl-7 text-xs italic leading-snug text-muted-foreground">
@@ -359,10 +409,10 @@ function Row({
 }
 
 function ScalarGroup({
-  title, data, labels, prefix, quotes, on, toggle,
+  title, data, labels, prefix, quotes, flags, on, toggle,
 }: {
   title: string; data: Record<string, string>; labels: Record<string, string>;
-  prefix: string; quotes: Record<string, string>;
+  prefix: string; quotes: Record<string, string>; flags?: Record<string, Flag>;
   on: (k: string) => boolean; toggle: (k: string) => void;
 }) {
   const entries = Object.entries(data).filter(([, v]) => v);
@@ -370,7 +420,7 @@ function ScalarGroup({
   return (
     <Group title={title}>
       {entries.map(([f, v]) => (
-        <Row key={f} k={`${prefix}.${f}`} on={on} toggle={toggle} quote={quotes[`${prefix}.${f}`]} testId={`row-tr-${prefix}-${f}`}>
+        <Row key={f} k={`${prefix}.${f}`} on={on} toggle={toggle} quote={quotes[`${prefix}.${f}`]} flag={flags?.[`${prefix}.${f}`]} testId={`row-tr-${prefix}-${f}`}>
           <span className="font-medium">{labels[f] ?? f}</span>
           <span className="font-mono text-muted-foreground">{v}</span>
         </Row>

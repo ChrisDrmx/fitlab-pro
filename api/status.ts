@@ -5,6 +5,13 @@ import { sendJson } from "./_lib/http.js";
 export default async function handler(_req: IncomingMessage, res: ServerResponse) {
   const cfg = llmProvider();
   return sendJson(res, 200, {
-    ia: cfg ? { configured: true, provider: cfg.provider, model: cfg.model } : { configured: false },
+    ia: cfg
+      ? {
+          configured: true,
+          provider: cfg.provider,
+          model: cfg.model,
+          ...(cfg.provider === "openai" ? { reasoning: cfg.effort } : {}),
+        }
+      : { configured: false },
   });
 }
