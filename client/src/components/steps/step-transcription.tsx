@@ -102,6 +102,7 @@ export function StepTranscription({
   const [off, setOff] = useState<Set<string>>(new Set());
   const [applied, setApplied] = useState(false);
   const [mode, setMode] = useState<Mode>("complete");
+  const [vitesse, setVitesse] = useState<"low" | "medium" | "high">("medium");
 
   const playerName = `${d.player.firstName} ${d.player.lastName}`.trim();
 
@@ -121,7 +122,10 @@ export function StepTranscription({
   /* --- Analyse ---------------------------------------------------- */
   const analyse = useMutation({
     mutationFn: async () => {
-      const r = await apiRequest("POST", "/api/transcript-parse", { transcript: text });
+      const r = await apiRequest("POST", "/api/transcript-parse", {
+        transcript: text,
+        effort: vitesse,
+      });
       return (await r.json()) as Result;
     },
     onSuccess: (r) => {
@@ -206,9 +210,31 @@ export function StepTranscription({
             data-testid="input-transcript"
           />
           <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-muted-foreground" data-testid="text-transcript-count">
-              {words} mot{words > 1 ? "s" : ""} · {text.length} caractères
-            </p>
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground" data-testid="text-transcript-count">
+                {words} mot{words > 1 ? "s" : ""} · {text.length} caractères
+              </p>
+              <div className="inline-flex rounded-md border border-card-border p-0.5" role="group" aria-label="Profondeur d'analyse">
+                {([
+                  ["low", "Rapide", "~10 s"],
+                  ["medium", "Standard", "~20 s"],
+                  ["high", "Approfondie", "~50 s"],
+                ] as const).map(([v, label, duree]) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setVitesse(v)}
+                    aria-pressed={vitesse === v}
+                    className={`rounded px-2 py-1 text-[11px] font-medium transition-colors ${
+                      vitesse === v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary/60"
+                    }`}
+                    data-testid={`button-transcript-speed-${v}`}
+                  >
+                    {label} <span className="opacity-70">{duree}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
             <Button
               onClick={() => analyse.mutate()}
               disabled={analyse.isPending || text.trim().length < 20}
@@ -222,7 +248,17 @@ export function StepTranscription({
         </SectionCard>
 
         {analyse.isPending ? (
-          <SectionCard title="Analyse en cours" subtitle="Lecture raisonnée de la transcription et extraction des mesures. Compte jusqu'à une minute sur une longue séance." icon={<Sparkles className="h-4 w-4" />}>
+          <SectionCard
+            title="Analyse en cours"
+            subtitle={
+              vitesse === "high"
+                ? "Lecture approfondie de la transcription : compte une quarantaine de secondes."
+                : vitesse === "medium"
+                  ? "Lecture raisonnée de la transcription : une vingtaine de secondes."
+                  : "Lecture rapide de la transcription : une dizaine de secondes."
+            }
+            icon={<Sparkles className="h-4 w-4" />}
+          >
             <div className="space-y-2">
               {[0, 1, 2, 3].map((i) => <div key={i} className="h-10 animate-pulse rounded-md bg-secondary/60" />)}
             </div>

@@ -7,7 +7,10 @@
  *
  * Variables d'environnement reconnues (une seule suffit) :
  *   OPENAI_API_KEY     + OPENAI_MODEL (defaut gpt-5.6-luna)
- *                      + OPENAI_REASONING_EFFORT (defaut high)
+ *                      + OPENAI_REASONING_EFFORT (defaut medium)
+ *                        Mesure sur une seance complete : low 9 s, medium 19 s,
+ *                        high 50 s, pour une qualite d'extraction identique.
+ *                        Au-dela de medium on frole la limite de 60 s de Vercel.
  *   ANTHROPIC_API_KEY  + ANTHROPIC_MODEL (optionnel)
  *
  * OpenAI passe par la Responses API : raisonnement explicite (effort high) et
@@ -45,7 +48,7 @@ export function llmProvider(): LlmConfig | null {
     const raw = (process.env.OPENAI_REASONING_EFFORT ?? "").trim().toLowerCase();
     const effort = (EFFORTS as readonly string[]).includes(raw)
       ? (raw as LlmConfig["effort"])
-      : "high";
+      : "medium";
     return {
       provider: "openai",
       key: openai,
