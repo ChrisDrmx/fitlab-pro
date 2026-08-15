@@ -1,4 +1,5 @@
 import { callLlmStructured } from "./llm.js";
+import type { LlmDiag } from "./llm.js";
 import { TranscriptSchema, CLUBS, BRANDS } from "./schema-transcript.js";
 import type { TranscriptParsed } from "./schema-transcript.js";
 
@@ -78,17 +79,24 @@ const flat = (src: Dict | null | undefined, numeric: readonly string[] = []) => 
   return out;
 };
 
-export async function parseTranscript(transcript: string) {
+export async function parseTranscript(
+  transcript: string,
+  tune: { model?: string; effort?: string } = {},
+) {
   const text = transcript.trim();
   if (text.length < 20) throw new Error("Transcription trop courte pour être analysée.");
   if (text.length > 60000) throw new Error("Transcription trop longue (60 000 caractères maximum).");
 
+  const diag: Partial<LlmDiag> = {};
   const p: TranscriptParsed = await callLlmStructured({
     instructions: INSTRUCTIONS,
     input: `--- TRANSCRIPTION ---\n${text}`,
     schema: TranscriptSchema,
     schemaName: "fitting_data",
     maxTokens: 8000,
+    model: tune.model,
+    effort: tune.effort,
+    diag,
   });
 
   const player = flat(p.player as Dict, NUM_PLAYER);
@@ -152,6 +160,7 @@ export async function parseTranscript(transcript: string) {
     quotes,
     flags,
     ambiguities,
+    diag: diag as LlmDiag,
   };
 }
 

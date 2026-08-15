@@ -104,7 +104,18 @@ function traduireErreur(e: unknown): Error {
 /* Sortie structuree : garantie par schema Zod                         */
 /* ------------------------------------------------------------------ */
 
-export async function callLlmStructured<T extends z.ZodType>(opts: {
+/** Mesures de performance d'un appel, pour diagnostiquer la lenteur. */
+export type LlmDiag = {
+  provider: string;
+  model: string;
+  effort: string;
+  ms: number;
+  inputTokens: number;
+  outputTokens: number;
+  reasoningTokens: number;
+};
+
+export type StructuredOpts<T extends z.ZodType> = {
   /** Consignes de role (message "developer"). */
   instructions: string;
   /** Contenu a analyser (message "user"). */
@@ -114,28 +125,45 @@ export async function callLlmStructured<T extends z.ZodType>(opts: {
   /** Nom du schema, requis par l'API (a-z, chiffres, tirets bas). */
   schemaName: string;
   maxTokens?: number;
-}): Promise<z.infer<T>> {
+  /** Surcharges ponctuelles, pour comparer vitesse et qualite. */
+  model?: string;
+  effort?: string;
+  /** Objet rempli avec les mesures de l'appel. */
+  diag?: Partial<LlmDiag>;
+};
+
+export async function callLlmStructured<T extends z.ZodType>(
+  opts: StructuredOpts<T>,
+): Promise<z.infer<T>> {
+  const t0 = Date.now();
   try {
-    const cfg = llmProvider();
-    if (!cfg) throw new LlmNotConfiguredError();
+    const base = llmProvider();
+    if (!base) throw new LlmNotConfiguredError();
+    const cfg: LlmConfig = {
+      ...base,
+      model: (opts.model ?? "").trim() || base.model,
+      effort: (EFFORTS as readonly string[]).includes((opts.effort ?? "").trim().toLowerCase())
+        ? ((opts.effort as string).trim().toLowerCase() as LlmConfig["effort"])
+        : base.effort,
+    };
+    if (opts.diag) {
+      opts.diag.provider = cfg.provider;
+      opts.diag.model = cfg.model;
+      opts.diag.effort = cfg.provider === "openai" ? cfg.effort : "n/a";
+    }
     return cfg.provider === "openai"
       ? await structureOpenai(cfg, opts)
       : await structureAnthropic(cfg, opts);
   } catch (e) {
     throw traduireErreur(e);
+  } finally {
+    if (opts.diag) opts.diag.ms = Date.now() - t0;
   }
 }
 
 async function structureOpenai<T extends z.ZodType>(
   cfg: LlmConfig,
-  opts: {
-    instructions: string;
-    input: string;
-    image?: LlmImage;
-    schema: T;
-    schemaName: string;
-    maxTokens?: number;
-  },
+  opts: StructuredOpts<T>,
 ): Promise<z.infer<T>> {
   const { default: OpenAI } = await import("openai");
   const { zodTextFormat } = await import("openai/helpers/zod");
@@ -162,6 +190,15 @@ async function structureOpenai<T extends z.ZodType>(
     text: { format: zodTextFormat(opts.schema as never, opts.schemaName) },
   } as never);
 
+  if (opts.diag) {
+    const u = (resp as { usage?: Record<string, unknown> }).usage ?? {};
+    opts.diag.inputTokens = Number(u.input_tokens ?? 0);
+    opts.diag.outputTokens = Number(u.output_tokens ?? 0);
+    opts.diag.reasoningTokens = Number(
+      (u.output_tokens_details as { reasoning_tokens?: number } | undefined)?.reasoning_tokens ?? 0,
+    );
+  }
+
   const parsed = (resp as { output_parsed?: unknown }).output_parsed;
   if (parsed === null || parsed === undefined) {
     const refus = (resp as { output_text?: string }).output_text ?? "";
@@ -176,14 +213,7 @@ async function structureOpenai<T extends z.ZodType>(
 
 async function structureAnthropic<T extends z.ZodType>(
   cfg: LlmConfig,
-  opts: {
-    instructions: string;
-    input: string;
-    image?: LlmImage;
-    schema: T;
-    schemaName: string;
-    maxTokens?: number;
-  },
+  opts: StructuredOpts<T>,
 ): Promise<z.infer<T>> {
   const { default: Anthropic } = await import("@anthropic-ai/sdk");
   const { z: zod } = await import("zod");

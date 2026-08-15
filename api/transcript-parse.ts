@@ -11,7 +11,11 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     const body = await readJsonBody(req);
     const transcript = typeof body.transcript === "string" ? body.transcript : "";
     if (!transcript.trim()) return sendJson(res, 400, { error: "Aucune transcription transmise." });
-    const result = await parseTranscript(transcript);
+    const tune = {
+      model: typeof body.model === "string" ? body.model : undefined,
+      effort: typeof body.effort === "string" ? body.effort : undefined,
+    };
+    const result = await parseTranscript(transcript, tune);
     return sendJson(res, 200, result);
   } catch (e) {
     const status = e instanceof LlmNotConfiguredError ? 503 : 400;

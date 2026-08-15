@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Mic, Sparkles, Wand2, Check, Quote, AlertTriangle, User } from "lucide-react";
+import { Mic, Sparkles, Wand2, Check, Quote, AlertTriangle, User, Layers, Replace, Timer } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { CLUB_LABEL } from "@/lib/types";
@@ -60,7 +60,14 @@ type Result = {
   quotes: Record<string, string>;
   flags?: Record<string, { status: string; confidence: string }>;
   ambiguities?: string[];
+  diag?: {
+    provider?: string; model?: string; effort?: string; ms?: number;
+    inputTokens?: number; outputTokens?: number; reasoningTokens?: number;
+  };
 };
+
+/** Comment reporter une valeur deja presente dans la fiche. */
+type Mode = "complete" | "overwrite";
 
 type Flag = { status: string; confidence: string };
 
@@ -94,8 +101,18 @@ export function StepTranscription({
   const [res, setRes] = useState<Result | null>(null);
   const [off, setOff] = useState<Set<string>>(new Set());
   const [applied, setApplied] = useState(false);
+  const [mode, setMode] = useState<Mode>("complete");
 
   const playerName = `${d.player.firstName} ${d.player.lastName}`.trim();
+
+  /** Remet la page a zero pour enchainer sur une autre dictee. */
+  const vider = () => {
+    setText("");
+    setRes(null);
+    setOff(new Set());
+    setApplied(false);
+    set((x) => { x.transcript = ""; });
+  };
 
   const on = (k: string) => !off.has(k);
   const toggle = (k: string) =>
@@ -135,13 +152,16 @@ export function StepTranscription({
   const applyToSheet = () => {
     if (!res) return;
     set((x) => {
-      merge(x, res, off);
+      merge(x, res, off, mode);
       x.transcript = text;
     });
     setApplied(true);
     toast({
       title: "Fiche remplie",
-      description: `Les données sont reportées dans la fiche de ${playerName || "ce joueur"}. Vérifie-les étape par étape.`,
+      description:
+        mode === "complete"
+          ? `Seuls les champs vides de la fiche de ${playerName || "ce joueur"} ont été remplis.`
+          : `Les valeurs existantes de la fiche de ${playerName || "ce joueur"} ont été remplacées.`,
     });
   };
 
@@ -170,7 +190,7 @@ export function StepTranscription({
               </Button>
               <Button
                 size="sm" variant="ghost" className="h-7 px-2 text-xs"
-                onClick={() => { setText(""); setRes(null); setOff(new Set()); }}
+                onClick={vider}
                 data-testid="button-transcript-clear"
               >
                 Vider
@@ -321,26 +341,70 @@ export function StepTranscription({
             {countValues(res) ? (
               <SectionCard
                 title="Reporter dans la fiche"
-                subtitle="Seules les lignes cochées sont écrites. Une valeur déjà saisie n'est jamais effacée par une valeur vide."
+                subtitle="Seules les lignes cochées sont écrites. Une valeur vide n'efface jamais une valeur déjà saisie."
                 icon={<Check className="h-4 w-4" />}
               >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    {applied
-                      ? "Données reportées. Continue vers les mesures pour vérifier."
-                      : `${nSel} donnée${nSel > 1 ? "s" : ""} sélectionnée${nSel > 1 ? "s" : ""} pour ${playerName || "cette fiche"}.`}
-                  </p>
-                  <div className="flex gap-2">
-                    <Button onClick={applyToSheet} disabled={nSel <= 0} className="gap-2" data-testid="button-transcript-apply">
-                      <Check className="h-4 w-4" />
-                      Reporter {nSel} donnée{nSel > 1 ? "s" : ""}
-                    </Button>
-                    {applied ? (
-                      <Button variant="outline" onClick={goNext} className="gap-2" data-testid="button-transcript-continue">
-                        Vérifier les mesures
-                      </Button>
-                    ) : null}
+                <div className="space-y-3">
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Si la fiche contient déjà une valeur
+                    </p>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <ModeCard
+                        active={mode === "complete"}
+                        onClick={() => setMode("complete")}
+                        icon={<Layers className="h-4 w-4" />}
+                        title="Compléter"
+                        desc="Ne remplit que les champs encore vides. Idéal pour ajouter une seconde dictée sans toucher au reste."
+                        testId="button-transcript-mode-complete"
+                      />
+                      <ModeCard
+                        active={mode === "overwrite"}
+                        onClick={() => setMode("overwrite")}
+                        icon={<Replace className="h-4 w-4" />}
+                        title="Écraser"
+                        desc="Remplace les anciennes valeurs par celles de cette transcription. Pour corriger une série de mesures."
+                        testId="button-transcript-mode-overwrite"
+                      />
+                    </div>
                   </div>
+
+                  <Separator />
+
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs text-muted-foreground">
+                      {applied
+                        ? "Données reportées. Tu peux vider et coller une autre transcription, ou continuer vers les mesures."
+                        : `${nSel} donnée${nSel > 1 ? "s" : ""} sélectionnée${nSel > 1 ? "s" : ""} pour ${playerName || "cette fiche"}.`}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button onClick={applyToSheet} disabled={nSel <= 0} className="gap-2" data-testid="button-transcript-apply">
+                        <Check className="h-4 w-4" />
+                        {mode === "complete" ? "Compléter" : "Écraser"} · {nSel} donnée{nSel > 1 ? "s" : ""}
+                      </Button>
+                      {applied ? (
+                        <>
+                          <Button variant="outline" onClick={vider} className="gap-2" data-testid="button-transcript-next-dictation">
+                            <Mic className="h-4 w-4" />
+                            Autre transcription
+                          </Button>
+                          <Button variant="outline" onClick={goNext} className="gap-2" data-testid="button-transcript-continue">
+                            Vérifier les mesures
+                          </Button>
+                        </>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  {res.diag?.ms ? (
+                    <p className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground" data-testid="text-transcript-diag">
+                      <Timer className="h-3 w-3 shrink-0" />
+                      Analyse en {(res.diag.ms / 1000).toFixed(1)} s · {res.diag.model} · raisonnement {res.diag.effort}
+                      {res.diag.reasoningTokens
+                        ? ` · ${res.diag.reasoningTokens} jetons de réflexion sur ${res.diag.outputTokens} produits`
+                        : null}
+                    </p>
+                  ) : null}
                 </div>
               </SectionCard>
             ) : null}
@@ -353,6 +417,35 @@ export function StepTranscription({
 /* ------------------------------------------------------------------ */
 /* Sous-composants de relecture                                        */
 /* ------------------------------------------------------------------ */
+
+/** Choix visuel du mode de report : completer ou ecraser. */
+function ModeCard({
+  active, onClick, icon, title, desc, testId,
+}: {
+  active: boolean; onClick: () => void; icon: React.ReactNode;
+  title: string; desc: string; testId: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`rounded-md border p-3 text-left transition-colors ${
+        active
+          ? "border-primary bg-primary/5"
+          : "border-card-border bg-background hover:bg-secondary/40"
+      }`}
+      data-testid={testId}
+    >
+      <span className={`flex items-center gap-2 text-sm font-semibold ${active ? "text-primary" : ""}`}>
+        {icon}
+        {title}
+        {active ? <Check className="ml-auto h-3.5 w-3.5" /> : null}
+      </span>
+      <span className="mt-1 block text-xs leading-snug text-muted-foreground">{desc}</span>
+    </button>
+  );
+}
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -450,18 +543,40 @@ function countValues(r: Result) {
   return allKeys(r).length;
 }
 
-/** Reporte dans la fiche uniquement les valeurs cochees. */
-function merge(base: FittingData, r: Result, off: Set<string>) {
+/**
+ * Reporte dans la fiche uniquement les valeurs cochees.
+ * mode "complete"  : ne touche pas a un champ deja rempli (ajout).
+ * mode "overwrite" : remplace la valeur existante.
+ */
+function merge(base: FittingData, r: Result, off: Set<string>, mode: Mode) {
   const keep = (k: string) => !off.has(k);
+  const ecrase = mode === "overwrite";
+
+  /** Ecrit un champ scalaire en respectant le mode choisi. */
+  const poser = (target: Record<string, string>, f: string, v: string) => {
+    if (!ecrase && String(target[f] ?? "").trim()) return;
+    target[f] = v;
+  };
+
+  /** Fusionne une ligne de tableau (club) en respectant le mode choisi. */
+  const fusionner = <T extends Record<string, unknown>>(ancien: T, nouveau: T): T => {
+    const out: Record<string, unknown> = { ...ancien };
+    for (const [k, v] of Object.entries(nouveau)) {
+      if (v === "" || v === undefined || v === null) continue;
+      if (!ecrase && String(out[k] ?? "").trim()) continue;
+      out[k] = v;
+    }
+    return out as T;
+  };
 
   for (const [f, v] of Object.entries(r.player)) {
-    if (v && keep(`player.${f}`)) (base.player as unknown as Record<string, string>)[f] = v;
+    if (v && keep(`player.${f}`)) poser(base.player as unknown as Record<string, string>, f, v);
   }
   for (const [f, v] of Object.entries(r.measures)) {
-    if (v && keep(`measures.${f}`)) (base.measures as unknown as Record<string, string>)[f] = v;
+    if (v && keep(`measures.${f}`)) poser(base.measures as unknown as Record<string, string>, f, v);
   }
   for (const [f, v] of Object.entries(r.reco)) {
-    if (v && keep(`reco.${f}`)) (base.reco as unknown as Record<string, string>)[f] = v;
+    if (v && keep(`reco.${f}`)) poser(base.reco as unknown as Record<string, string>, f, v);
   }
 
   r.currentClubs.forEach((c, i) => {
@@ -473,7 +588,7 @@ function merge(base: FittingData, r: Result, off: Set<string>) {
       gripSize: c.gripSize ?? "", wraps: c.wraps ?? "",
     };
     const at = base.currentClubs.findIndex((x) => x.club === row.club);
-    if (at >= 0) base.currentClubs[at] = { ...base.currentClubs[at], ...stripEmpty(row as unknown as Record<string, unknown>) } as CurrentClub;
+    if (at >= 0) base.currentClubs[at] = fusionner(base.currentClubs[at] as unknown as Record<string, unknown>, row as unknown as Record<string, unknown>) as unknown as CurrentClub;
     else base.currentClubs.push(row);
   });
 
@@ -484,7 +599,7 @@ function merge(base: FittingData, r: Result, off: Set<string>) {
       shotsHitLeft: l.shotsHitLeft ?? "", correctionDeg: l.correctionDeg ?? "", note: l.note ?? "",
     };
     const at = base.lieTests.findIndex((x) => x.club === row.club);
-    if (at >= 0) base.lieTests[at] = { ...base.lieTests[at], ...stripEmpty(row as unknown as Record<string, unknown>) } as LieTest;
+    if (at >= 0) base.lieTests[at] = fusionner(base.lieTests[at] as unknown as Record<string, unknown>, row as unknown as Record<string, unknown>) as unknown as LieTest;
     else base.lieTests.push(row);
   });
 
@@ -492,13 +607,17 @@ function merge(base: FittingData, r: Result, off: Set<string>) {
     if (!keep(`trackman.${i}`)) return;
     const row = { ...emptyTm(t.club as ClubKey), ...stripEmpty(t as unknown as Record<string, unknown>) } as TrackmanRow;
     const at = base.trackman.findIndex((x) => x.club === row.club);
-    if (at >= 0) base.trackman[at] = { ...base.trackman[at], ...stripEmpty(row as unknown as Record<string, unknown>) } as TrackmanRow;
+    if (at >= 0) base.trackman[at] = fusionner(base.trackman[at] as unknown as Record<string, unknown>, row as unknown as Record<string, unknown>) as unknown as TrackmanRow;
     else base.trackman.push(row);
   });
 
-  if (r.targetBrand && keep("targetBrand")) base.targetBrand = r.targetBrand;
+  if (r.targetBrand && keep("targetBrand") && (ecrase || !base.targetBrand)) {
+    base.targetBrand = r.targetBrand;
+  }
   if (r.fitterNotes && keep("fitterNotes")) {
-    base.fitterNotes = base.fitterNotes ? `${base.fitterNotes}\n${r.fitterNotes}` : r.fitterNotes;
+    base.fitterNotes = ecrase || !base.fitterNotes
+      ? r.fitterNotes
+      : `${base.fitterNotes}\n${r.fitterNotes}`;
   }
 }
 
