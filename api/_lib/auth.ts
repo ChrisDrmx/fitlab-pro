@@ -11,7 +11,12 @@ let client: ReturnType<typeof createClient> | null = null;
 
 function configuredClient() {
   const url = (process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? "").trim();
-  const key = (process.env.SUPABASE_ANON_KEY ?? process.env.VITE_SUPABASE_ANON_KEY ?? "").trim();
+  const key = (
+    process.env.SUPABASE_PUBLISHABLE_KEY
+    ?? process.env.SUPABASE_ANON_KEY
+    ?? process.env.VITE_SUPABASE_ANON_KEY
+    ?? ""
+  ).trim();
   if (!url || !key) return null;
   if (!client) {
     client = createClient(url, key, {

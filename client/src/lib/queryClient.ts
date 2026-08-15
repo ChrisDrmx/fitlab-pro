@@ -12,19 +12,32 @@ export async function apiRequest(
   url: string,
   data?: unknown,
 ): Promise<Response> {
-  const headers: Record<string, string> = data ? { "Content-Type": "application/json" } : {};
   const sb = supabase();
+  const body = data ? JSON.stringify(data) : undefined;
+  const baseHeaders: Record<string, string> = data ? { "Content-Type": "application/json" } : {};
+
+  const withToken = async (token?: string) => {
+    const headers = { ...baseHeaders };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    return fetch(url, { method, headers, body });
+  };
+
+  let token: string | undefined;
   if (sb) {
     const { data: sessionData } = await sb.auth.getSession();
-    if (sessionData.session?.access_token) {
-      headers.Authorization = `Bearer ${sessionData.session.access_token}`;
+    token = sessionData.session?.access_token;
+  }
+
+  let res = await withToken(token);
+  // Les onglets restés ouverts peuvent conserver un access token expiré alors
+  // que le refresh token est encore valide. On renouvelle une seule fois avant
+  // d'afficher une erreur d'authentification à l'utilisateur.
+  if (res.status === 401 && sb) {
+    const { data: refreshed, error } = await sb.auth.refreshSession();
+    if (!error && refreshed.session?.access_token) {
+      res = await withToken(refreshed.session.access_token);
     }
   }
-  const res = await fetch(url, {
-    method,
-    headers,
-    body: data ? JSON.stringify(data) : undefined,
-  });
   if (!res.ok) {
     let message = `${res.status}`;
     try {
