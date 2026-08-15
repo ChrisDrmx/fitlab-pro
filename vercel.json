@@ -4,7 +4,7 @@
   "outputDirectory": "dist/public",
   "framework": null,
   "functions": {
-    "api/*.ts": { "maxDuration": 300, "memory": 1024 }
+    "api/*.ts": { "maxDuration": 60, "memory": 1024 }
   },
   "headers": [
     {

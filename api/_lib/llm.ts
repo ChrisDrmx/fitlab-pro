@@ -6,7 +6,7 @@
  * renvoie une erreur explicite en francais, sans jamais planter l'application.
  *
  * Variables d'environnement reconnues (une seule suffit) :
- *   OPENAI_API_KEY     + OPENAI_MODEL (defaut gpt-5.6)
+ *   OPENAI_API_KEY     + OPENAI_MODEL (defaut gpt-5.6-luna)
  *                      + OPENAI_REASONING_EFFORT (defaut high)
  *   ANTHROPIC_API_KEY  + ANTHROPIC_MODEL (optionnel)
  *
@@ -49,7 +49,7 @@ export function llmProvider(): LlmConfig | null {
     return {
       provider: "openai",
       key: openai,
-      model: (process.env.OPENAI_MODEL ?? "").trim() || "gpt-5.6",
+      model: (process.env.OPENAI_MODEL ?? "").trim() || "gpt-5.6-luna",
       effort,
     };
   }
