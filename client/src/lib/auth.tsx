@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase, supabaseConfigured } from "./supabase";
 import { syncNow } from "./sync";
-import { getMeta, setMeta } from "./store";
+import { adoptLocalDataFor, getMeta, setMeta, switchStoreScope } from "./store";
 
 const LOCAL_ONLY_KEY = "localOnly";
 
@@ -19,8 +19,9 @@ type AuthCtx = {
   localOnly: boolean;
   configured: boolean;
   useLocalOnly: () => void;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<string>;
+  connectOnline: () => void;
+  sendOtp: (email: string) => Promise<void>;
+  verifyOtp: (email: string, token: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -42,15 +43,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const sb = supabase();
     if (!sb) return;
     let alive = true;
-    void sb.auth.getSession().then(({ data }) => {
-      if (!alive) return;
-      setSession(data.session ?? null);
-      setReady(true);
-    });
-    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-      if (s) void syncNow();
-    });
+    let activation = Promise.resolve();
+
+    const activate = (next: Session | null) => {
+      activation = activation.then(async () => {
+        if (!alive) return;
+        if (next) {
+          const adoptLocal = await getMeta<boolean>(LOCAL_ONLY_KEY);
+          if (adoptLocal) await adoptLocalDataFor(next.user.id);
+          else await switchStoreScope(`user:${next.user.id}`);
+        } else {
+          await switchStoreScope("local");
+        }
+        if (!alive) return;
+        setSession(next);
+        setReady(true);
+        if (next) void syncNow();
+      });
+    };
+
+    void sb.auth.getSession().then(({ data }) => activate(data.session ?? null));
+    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => activate(s));
     return () => {
       alive = false;
       sub.subscription.unsubscribe();
@@ -68,30 +81,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLocalOnly(true);
         void setMeta(LOCAL_ONLY_KEY, true);
       },
-      signIn: async (email, password) => {
+      connectOnline: () => {
+        setLocalOnly(false);
+        void setMeta(LOCAL_ONLY_KEY, false);
+      },
+      sendOtp: async (email) => {
         const sb = supabase();
         if (!sb) throw new Error("Sauvegarde en ligne non configurée.");
-        const { error } = await sb.auth.signInWithPassword({ email: email.trim(), password });
+        const { error } = await sb.auth.signInWithOtp({
+          email: email.trim(),
+          options: { shouldCreateUser: true },
+        });
         if (error) throw new Error(traduire(error.message));
         setLocalOnly(false);
         void setMeta(LOCAL_ONLY_KEY, false);
       },
-      signUp: async (email, password) => {
+      verifyOtp: async (email, token) => {
         const sb = supabase();
         if (!sb) throw new Error("Sauvegarde en ligne non configurée.");
-        const { data, error } = await sb.auth.signUp({ email: email.trim(), password });
+        const { error } = await sb.auth.verifyOtp({
+          email: email.trim(),
+          token: token.trim(),
+          type: "email",
+        });
         if (error) throw new Error(traduire(error.message));
-        if (data.session) {
-          setLocalOnly(false);
-          void setMeta(LOCAL_ONLY_KEY, false);
-          return "";
-        }
-        return "Compte créé. Confirme l'adresse via le lien reçu par e-mail, puis connecte-toi.";
+        setLocalOnly(false);
+        void setMeta(LOCAL_ONLY_KEY, false);
       },
       signOut: async () => {
         const sb = supabase();
         await sb?.auth.signOut();
+        await switchStoreScope("local");
         setSession(null);
+        setLocalOnly(false);
       },
     }),
     [ready, session, localOnly],
@@ -108,11 +130,11 @@ export function useAuth() {
 
 function traduire(msg: string) {
   const m = msg.toLowerCase();
-  if (m.includes("invalid login credentials")) return "Adresse e-mail ou mot de passe incorrect.";
+  if (m.includes("otp") && (m.includes("expired") || m.includes("invalid"))) return "Code invalide ou expiré. Demande un nouveau code.";
+  if (m.includes("token has expired") || m.includes("token is expired")) return "Code expiré. Demande un nouveau code.";
   if (m.includes("email not confirmed")) return "Adresse non confirmée : ouvre le lien reçu par e-mail.";
-  if (m.includes("already registered")) return "Cette adresse a déjà un compte : connecte-toi.";
-  if (m.includes("password")) return "Mot de passe trop court (6 caractères minimum).";
   if (m.includes("rate limit")) return "Trop de tentatives, patiente une minute.";
+  if (m.includes("email") && m.includes("invalid")) return "Adresse e-mail invalide.";
   if (m.includes("failed to fetch") || m.includes("network")) return "Serveur injoignable : vérifie la connexion.";
   return msg;
 }

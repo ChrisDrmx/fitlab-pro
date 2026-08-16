@@ -1,7 +1,7 @@
-import { jsPDF } from "jspdf";
 import type { FittingData } from "@/lib/types";
 import { CLUB_LABEL } from "@/lib/types";
 import { buildDiagnosis, computeStatic, computeDynamicLie, dynamicLieConsensus, computeGapping, fmt } from "@/lib/engine";
+import { ARM_LABEL, PLANE_LABEL, computeBioSwing } from "@/lib/bioswing";
 
 const GREEN: [number, number, number] = [27, 58, 44];
 const ACCENT: [number, number, number] = [32, 100, 72];
@@ -29,7 +29,8 @@ function san<T>(v: T): T {
   return v;
 }
 
-export function exportFittingPdf(d: FittingData, stampIso?: string) {
+export async function exportFittingPdf(d: FittingData, stampIso?: string) {
+  const { jsPDF } = await import("jspdf");
   const stamp = stampIso && !Number.isNaN(new Date(stampIso).getTime()) ? new Date(stampIso) : new Date();
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   // Toute écriture de texte passe par le nettoyage des glyphes.
@@ -44,6 +45,7 @@ export function exportFittingPdf(d: FittingData, stampIso?: string) {
   const dyn = computeDynamicLie(d);
   const consensus = dynamicLieConsensus(dyn);
   const gaps = computeGapping(d.trackman);
+  const bio = computeBioSwing(d);
 
   const playerName = `${d.player.firstName} ${d.player.lastName}`.trim() || "Joueur";
   const today = stamp.toLocaleDateString("fr-BE", { day: "2-digit", month: "long", year: "numeric" });
@@ -182,6 +184,32 @@ export function exportFittingPdf(d: FittingData, stampIso?: string) {
     ["Code couleur PING", s.pingColorCurrent ? `${s.pingColorCurrent.fr} (${s.pingColorCurrent.color})` : "—"],
     ["Gant recommandé", s.gloveSize ? `${s.gloveSize}${s.gloveCadet ? " Cadet" : ""}` : "—"],
   ], 4);
+
+  /* ---------- BioSwing Dynamics ---------- */
+  if (bio.ready || d.bioSwing.notes.trim() || d.bioSwing.rightArmObservation.trim()) {
+    h2("BioSwing Dynamics");
+    kv([
+      ["Plan backswing", bio.backswingPlane ? PLANE_LABEL[bio.backswingPlane] : "—"],
+      ["Plan downswing", bio.downswingPlane ? PLANE_LABEL[bio.downswingPlane] : "—"],
+      ["Type de bras droit", bio.armType ? ARM_LABEL[bio.armType] : "—"],
+      ["Hinge recommandé", bio.matchup?.hinge ?? "—"],
+      ["Position du club", bio.matchup?.clubPosition ?? "—"],
+      ["Release recommandé", bio.matchup?.release ?? "—"],
+      ["Avant-bras / humérus", bio.forearmCm !== null && bio.humerusCm !== null ? `${fmt(bio.forearmCm)} / ${fmt(bio.humerusCm)} cm` : "—"],
+      ["Forces au sol", d.bioSwing.groundForceType || "—"],
+    ], 4);
+    if (d.bioSwing.rightArmObservation.trim() || d.bioSwing.notes.trim()) {
+      const notes = [
+        d.bioSwing.rightArmObservation.trim() ? `Observation bras droit : ${d.bioSwing.rightArmObservation.trim()}` : "",
+        d.bioSwing.notes.trim() ? `Notes BioSwing : ${d.bioSwing.notes.trim()}` : "",
+      ].filter(Boolean).join("\n");
+      const lines = doc.splitTextToSize(notes, W - 2 * M);
+      ensure(lines.length * 4 + 4);
+      doc.setFont("helvetica", "normal").setFontSize(8).setTextColor(50, 50, 50);
+      doc.text(lines, M, y);
+      y += lines.length * 4 + 4;
+    }
+  }
 
   /* ---------- Lie ---------- */
   if (d.lieTests.length) {

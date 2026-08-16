@@ -13,6 +13,7 @@ import { emptyFitting } from "@/lib/types";
 import { StepPlayer } from "@/components/steps/step-player";
 import { StepTranscription } from "@/components/steps/step-transcription";
 import { StepMeasures } from "@/components/steps/step-measures";
+import { StepBioSwing } from "@/components/steps/step-bioswing";
 import { StepGear } from "@/components/steps/step-gear";
 import { StepLie } from "@/components/steps/step-lie";
 import { StepTrackman } from "@/components/steps/step-trackman";
@@ -26,6 +27,7 @@ const STEPS = [
   { key: "joueur", label: "Joueur", short: "Joueur" },
   { key: "transcription", label: "Transcription", short: "Transcript." },
   { key: "mesures", label: "Mesures statiques", short: "Mesures" },
+  { key: "bioswing", label: "BioSwing Dynamics", short: "BioSwing" },
   { key: "materiel", label: "Matériel actuel", short: "Matériel" },
   { key: "lie", label: "Lie dynamique", short: "Lie" },
   { key: "trackman", label: "Données Trackman", short: "Trackman" },
@@ -41,6 +43,7 @@ function hydrate(raw: string): FittingData {
       ...base, ...p,
       player: { ...base.player, ...(p.player ?? {}) },
       measures: { ...base.measures, ...(p.measures ?? {}) },
+      bioSwing: { ...base.bioSwing, ...(p.bioSwing ?? {}), checklist: { ...base.bioSwing.checklist, ...(p.bioSwing?.checklist ?? {}) } },
       currentClubs: p.currentClubs ?? [],
       lieTests: p.lieTests ?? [],
       trackman: p.trackman ?? [],
@@ -113,7 +116,7 @@ export default function FittingPage() {
     setExporting(true);
     const createdAt = new Date().toISOString();
     try {
-      exportFittingPdf(data, createdAt);
+      await exportFittingPdf(data, createdAt);
       const dx = buildDiagnosis(data);
       const kept = dx.insights.filter((it) => !(data.excludedInsights ?? []).includes(it.id)).length;
       try {
@@ -212,10 +215,11 @@ export default function FittingPage() {
         {step === 0 ? <StepPlayer d={data} set={set} /> : null}
         {step === 1 ? <StepTranscription d={data} set={set} goNext={() => setStep(2)} /> : null}
         {step === 2 ? <StepMeasures d={data} set={set} /> : null}
-        {step === 3 ? <StepGear d={data} set={set} /> : null}
-        {step === 4 ? <StepLie d={data} set={set} /> : null}
-        {step === 5 ? <StepTrackman d={data} set={set} /> : null}
-        {step === 6 ? (
+        {step === 3 ? <StepBioSwing d={data} set={set} /> : null}
+        {step === 4 ? <StepGear d={data} set={set} /> : null}
+        {step === 5 ? <StepLie d={data} set={set} /> : null}
+        {step === 6 ? <StepTrackman d={data} set={set} /> : null}
+        {step === 7 ? (
           <div className="space-y-4">
             <StepDiagnosis d={data} set={set} onExport={onExport} exporting={exporting} />
             <ReportHistory fittingId={id} />

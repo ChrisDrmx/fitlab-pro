@@ -3,11 +3,12 @@ import { Logo } from "@/components/logo";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ClipboardList, BookOpen, Moon, Sun, Ruler } from "lucide-react";
+import { ClipboardList, BookOpen, Moon, Sun, Ruler, GraduationCap } from "lucide-react";
 import { SyncBadge } from "@/components/sync-badge";
 
 const NAV = [
   { href: "/", label: "Fittings", icon: ClipboardList },
+  { href: "/coaching", label: "Coaching", icon: GraduationCap },
   { href: "/reference", label: "Chartes", icon: BookOpen },
   { href: "/outils", label: "Outils", icon: Ruler },
 ];
@@ -77,7 +78,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <main className="min-w-0 flex-1 pb-20 md:pb-0">{children}</main>
 
       {/* Nav mobile */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 grid grid-cols-3 border-t border-border bg-card/95 backdrop-blur md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 grid grid-cols-4 border-t border-border bg-card/95 backdrop-blur md:hidden">
         {NAV.map((n) => (
           <Link key={n.href} href={n.href}>
             <a

@@ -33,3 +33,4 @@ export function supabase(): SupabaseClient | null {
 
 export const TABLE_FITTINGS = "fitlab_fittings";
 export const TABLE_REPORTS = "fitlab_reports";
+export const TABLE_COACHINGS = "fitlab_coachings";

@@ -37,11 +37,30 @@ export interface Measures {
   heightCm: string;
   wristToFloorCm: string;
   armSpanCm: string;
+  forearmLengthCm: string;
+  humerusLengthCm: string;
   handLengthCm: string;      // pli du poignet -> bout du majeur
   handCircumferenceCm: string; // tour de main aux articulations
   middleFingerCm: string;
   gloveSizeCurrent: string;
   shoeSole: "plate" | "crampons" | "";
+}
+
+export type BioSwingPlane = "Shoulder" | "Torso" | "Hip";
+export type BioSwingArmType = "OnTop" | "SideOn" | "Under" | "";
+export type BioSwingGroundForce = "RearPost" | "CenterPost" | "FrontPost" | "";
+
+export interface BioSwingData {
+  rightArmType: BioSwingArmType;
+  rightArmObservation: string;
+  groundForceType: BioSwingGroundForce;
+  manualBackswingPlane: BioSwingPlane | "";
+  manualDownswingPlane: BioSwingPlane | "";
+  manualHinge: string;
+  manualClubPosition: string;
+  manualRelease: string;
+  notes: string;
+  checklist: Record<string, boolean>;
 }
 
 export interface CurrentClub {
@@ -111,6 +130,7 @@ export interface Recommendation {
 export interface FittingData {
   player: Player;
   measures: Measures;
+  bioSwing: BioSwingData;
   currentClubs: CurrentClub[];
   lieTests: LieTest[];
   trackman: TrackmanRow[];
@@ -122,6 +142,56 @@ export interface FittingData {
   /** Transcription audio de la seance, conservee avec la fiche du joueur. */
   transcript: string;
   unitSystem: "metric" | "imperial";
+}
+
+export interface CoachingStudent {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  level: string;
+  handicap: string;
+  notes: string;
+}
+
+export type CoachingPriority = "haute" | "moyenne" | "basse" | "";
+
+export interface CoachingRecommendation {
+  id: string;
+  problemObserved: string;
+  probableCause: string;
+  proposedCorrection: string;
+  priority: CoachingPriority;
+}
+
+export interface CoachingExercise {
+  id: string;
+  title: string;
+  duration: string;
+  repetitions: string;
+  frequency: string;
+  instructions: string;
+  successCriteria: string;
+  videoUrl: string;
+}
+
+export interface CoachingPhoto {
+  id: string;
+  name: string;
+  dataUrl: string;
+}
+
+export interface CoachingData {
+  student: CoachingStudent;
+  date: string;
+  objective: string;
+  duration: string;
+  proNotes: string;
+  transcript: string;
+  recommendations: CoachingRecommendation[];
+  exercises: CoachingExercise[];
+  trackmanPhotos: CoachingPhoto[];
+  studentReport: string;
 }
 
 export const emptyFitting = (): FittingData => ({
@@ -136,8 +206,13 @@ export const emptyFitting = (): FittingData => ({
     tempo: "", physicalNotes: "", goals: [], missPattern: "", club: "",
   },
   measures: {
-    heightCm: "", wristToFloorCm: "", armSpanCm: "", handLengthCm: "",
+    heightCm: "", wristToFloorCm: "", armSpanCm: "", forearmLengthCm: "", humerusLengthCm: "", handLengthCm: "",
     handCircumferenceCm: "", middleFingerCm: "", gloveSizeCurrent: "", shoeSole: "plate",
+  },
+  bioSwing: {
+    rightArmType: "", rightArmObservation: "", groundForceType: "",
+    manualBackswingPlane: "", manualDownswingPlane: "", manualHinge: "",
+    manualClubPosition: "", manualRelease: "", notes: "", checklist: {},
   },
   currentClubs: [],
   lieTests: [],
@@ -147,4 +222,19 @@ export const emptyFitting = (): FittingData => ({
     lengthIrons: "", lengthDriver: "", lie: "", gripModel: "", gripSize: "",
     glove: "", loftGapping: "", driverLoft: "", ballModel: "", priority: "", notes: "",
   },
+});
+
+export const emptyCoaching = (): CoachingData => ({
+  student: {
+    firstName: "", lastName: "", email: "", phone: "", level: "", handicap: "", notes: "",
+  },
+  date: new Date().toISOString().slice(0, 10),
+  objective: "",
+  duration: "",
+  proNotes: "",
+  transcript: "",
+  recommendations: [],
+  exercises: [],
+  trackmanPhotos: [],
+  studentReport: "",
 });

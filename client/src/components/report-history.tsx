@@ -43,10 +43,10 @@ export function ReportHistory({ fittingId }: { fittingId: string }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
   });
 
-  const download = (r: StoredReport) => {
+  const download = async (r: StoredReport) => {
     try {
       const snap = { ...emptyFitting(), ...(JSON.parse(r.snapshot) as Partial<FittingData>) } as FittingData;
-      exportFittingPdf(snap, r.createdAt);
+      await exportFittingPdf(snap, r.createdAt);
     } catch {
       toast({ title: "Rapport illisible", description: "L'archive de ce rapport n'a pas pu être relue.", variant: "destructive" });
     }
@@ -81,7 +81,7 @@ export function ReportHistory({ fittingId }: { fittingId: string }) {
               </div>
               <div className="flex items-center gap-2">
               {r.brand ? <Badge variant="secondary" className="text-[11px]">{r.brand}</Badge> : null}
-              <Button size="sm" variant="outline" className="h-8 gap-1.5" onClick={() => download(r)} data-testid={`button-report-download-${r.id}`}>
+              <Button size="sm" variant="outline" className="h-8 gap-1.5" onClick={() => void download(r)} data-testid={`button-report-download-${r.id}`}>
                 <Download className="h-3.5 w-3.5" /> PDF
               </Button>
               <Button
