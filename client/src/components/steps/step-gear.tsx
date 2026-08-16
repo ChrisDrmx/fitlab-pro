@@ -5,10 +5,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Trash2, Wrench } from "lucide-react";
 import { CLUB_LABEL, IRON_CLUBS, WOOD_CLUBS } from "@/lib/types";
 import type { ClubKey, FittingData } from "@/lib/types";
+import chartes from "@/data/club-chartes.json";
 
 const ALL: ClubKey[] = [...WOOD_CLUBS, ...IRON_CLUBS];
 const FLEXES = ["L", "A", "R", "R+", "S", "S+", "X", "TX"];
 const GRIP_SIZES = ["Undersize", "Standard", "Midsize", "Jumbo"];
+const CLUB_CHARTES = chartes.clubSpecs as Array<{
+  brand: string; model: string; club: string; lie?: number | string; lengthIn?: number | string;
+}>;
+const BRANDS = [...new Set(CLUB_CHARTES.map((row) => row.brand))];
+
+function chartClub(club: ClubKey) {
+  return /^\d+i$/.test(club) ? club.slice(0, -1) : club;
+}
+
+function specFor(brand: string, model: string, club: ClubKey) {
+  const targetClub = chartClub(club);
+  return CLUB_CHARTES.find((row) => row.brand.toLowerCase() === brand.trim().toLowerCase()
+    && row.model.toLowerCase() === model.trim().toLowerCase()
+    && row.club === targetClub);
+}
 
 export function StepGear({ d, set }: { d: FittingData; set: (fn: (p: FittingData) => void) => void }) {
   const add = () => set((x) => {
@@ -50,11 +66,19 @@ export function StepGear({ d, set }: { d: FittingData; set: (fn: (p: FittingData
                 </Button>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <Field label="Marque">
-                  <Input value={c.brand} onChange={(e) => set((x) => { x.currentClubs[i].brand = e.target.value; })} className="h-10 md:h-9" />
+                <Field label="Marque constructeur">
+                  <Input list={`club-brands-${i}`} value={c.brand} onChange={(e) => set((x) => { x.currentClubs[i].brand = e.target.value; })} className="h-10 md:h-9" />
+                  <datalist id={`club-brands-${i}`}>{BRANDS.map((brand) => <option key={brand} value={brand} />)}</datalist>
                 </Field>
-                <Field label="Modèle">
-                  <Input value={c.model} onChange={(e) => set((x) => { x.currentClubs[i].model = e.target.value; })} className="h-10 md:h-9" />
+                <Field label="Modèle constructeur" hint="La longueur et le lie se complètent automatiquement si le modèle est reconnu.">
+                  <Input list={`club-models-${i}`} value={c.model} onChange={(e) => set((x) => {
+                    const model = e.target.value;
+                    x.currentClubs[i].model = model;
+                    const spec = specFor(x.currentClubs[i].brand, model, x.currentClubs[i].club);
+                    if (spec?.lengthIn !== undefined) x.currentClubs[i].lengthIn = String(spec.lengthIn);
+                    if (spec?.lie !== undefined) x.currentClubs[i].lieNote = `${spec.lie}° standard`;
+                  })} className="h-10 md:h-9" />
+                  <datalist id={`club-models-${i}`}>{CLUB_CHARTES.filter((row) => row.brand.toLowerCase() === c.brand.trim().toLowerCase() && row.club === chartClub(c.club)).map((row) => <option key={row.model} value={row.model} />)}</datalist>
                 </Field>
                 <Field label="Année">
                   <Input type="number" inputMode="numeric" value={c.year} onChange={(e) => set((x) => { x.currentClubs[i].year = e.target.value; })} className="h-10 font-mono md:h-9" />

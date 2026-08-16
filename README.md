@@ -20,7 +20,7 @@ Un assistant en 7 étapes qui va du joueur au rapport signé :
 | 6 | Trackman | Saisie manuelle ou import photo (OCR), dont **loft dynamique**, spin loft, angle d'attaque |
 | 7 | Diagnostic | Prescription calculée, justifications, export PDF 2 pages |
 
-Le moteur de prescription (`client/src/lib/engine.ts`) croise les mesures statiques, le test de lie et les données Trackman avec les chartes constructeurs de `client/src/data/` — Callaway, Ping, Cobra, Titleist, Mizuno, Srixon, PXG, TaylorMade. Chaque recommandation cite sa source ; les 14 sections de référence sourcées sont dans `client/src/data/reference.ts` et consultables dans l'onglet Référence de l'application.
+Le moteur de prescription (`client/src/lib/engine.ts`) croise les mesures statiques, le test de lie et les données Trackman avec les chartes constructeurs de `client/src/data/` — Callaway, Ping, Cobra, Titleist, Mizuno, Srixon, PXG, TaylorMade. Chaque recommandation cite sa source ; les 14 sections de référence sourcées sont dans `client/src/data/reference.ts` et consultables dans l'onglet Référence de l'application. Le nouvel explorateur `client/src/components/club-chartes-explorer.tsx` exploite aussi `client/src/data/club-chartes.json`, import normalisé du classeur FitLab Pro (142 spécifications clubs et 29 shafts).
 
 ### Parcours Coaching
 

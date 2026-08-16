@@ -3,6 +3,7 @@ import { SectionCard, SourceLink } from "@/components/kit";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CLUB_LABEL } from "@/lib/types";
+import { ClubChartesExplorer } from "@/components/club-chartes-explorer";
 import {
   PING_COLORS_CURRENT, PING_COLORS_CURRENT_SRC, PING_COLORS_LEGACY, PING_COLORS_LEGACY_SRC,
   PING_LENGTH_BY_HEIGHT, PING_GRIP_COLORS, PING_GRIP_SRC, PING_SRC,
@@ -53,8 +54,9 @@ export default function Reference() {
         subtitle="Base de référence constructeurs, shafts, grips et fenêtres Trackman — chaque table renvoie à sa source"
       />
       <div className="p-4 md:p-6">
-        <Tabs defaultValue="lie">
+        <Tabs defaultValue="constructeurs">
           <TabsList className="mb-4 flex h-auto w-full flex-wrap justify-start gap-1">
+            <TabsTrigger value="constructeurs" data-testid="tab-constructeurs">Constructeurs</TabsTrigger>
             <TabsTrigger value="lie" data-testid="tab-lie">Lie &amp; longueur</TabsTrigger>
             <TabsTrigger value="marques" data-testid="tab-marques">Marques</TabsTrigger>
             <TabsTrigger value="trackman" data-testid="tab-trackman">Trackman</TabsTrigger>
@@ -62,6 +64,11 @@ export default function Reference() {
             <TabsTrigger value="grips" data-testid="tab-grips">Grips &amp; gants</TabsTrigger>
             <TabsTrigger value="methode" data-testid="tab-methode">Méthode</TabsTrigger>
           </TabsList>
+
+          {/* ---------------- CONSTRUCTEURS ---------------- */}
+          <TabsContent value="constructeurs" className="mt-0">
+            <ClubChartesExplorer />
+          </TabsContent>
 
           {/* ---------------- LIE ---------------- */}
           <TabsContent value="lie" className="mt-0 space-y-4">

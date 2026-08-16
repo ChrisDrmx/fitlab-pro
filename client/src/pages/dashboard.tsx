@@ -25,7 +25,7 @@ const BRANDS = ["PING", "Callaway", "Cobra", "TaylorMade", "Titleist", "Mizuno",
 const MODULES = [
   { label: "Coaching", detail: "Vos objectifs", icon: GraduationCap, href: "/coaching", color: "bg-[#b8d8bd] text-[#123223]", size: "h-32 w-32" },
   { label: "Exercices", detail: "Votre routine", icon: Dumbbell, href: "/coaching", color: "bg-[#dcead7] text-[#245338]", size: "h-28 w-28" },
-  { label: "Data", detail: "Vos mesures", icon: Activity, href: "/outils", color: "bg-[#6d9f78] text-[#f5f3e9]", size: "h-28 w-28" },
+  { label: "Data", detail: "Vos mesures", icon: Activity, href: "/reference", color: "bg-[#6d9f78] text-[#f5f3e9]", size: "h-28 w-28" },
   { label: "Cours", detail: "Votre historique", icon: Sparkles, href: "/coaching", color: "bg-[#e9ecdf] text-[#31533d]", size: "h-24 w-24" },
   { label: "Agenda", detail: "Bientôt disponible", icon: CalendarDays, href: "", color: "bg-[#8bb997] text-[#102d21]", size: "h-24 w-24" },
 ];
