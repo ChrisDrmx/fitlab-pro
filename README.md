@@ -8,19 +8,20 @@ Production : https://fitlab-pro-five.vercel.app
 
 ## Ce que fait l'application
 
-Un assistant en 7 étapes qui va du joueur au rapport signé :
+Un assistant en 8 étapes qui va du joueur au rapport signé :
 
 | Étape | Écran | Contenu |
 | --- | --- | --- |
 | 1 | Joueur | Identité, main dominante, index, fréquence de jeu, tempo, objectifs |
 | 2 | Transcription | Collage de la dictée de séance, extraction assistée des mesures, report dans la fiche |
 | 3 | Mesures | Taille, poignet-sol, **envergure**, longueur et tour de main, majeur → taille de gant |
-| 4 | Matériel | Série actuelle, shafts, longueurs, grips, marque cible |
-| 5 | Lie | Test lie board par club, marque pointe/talon/centre → correction **upright / flat** |
-| 6 | Trackman | Saisie manuelle ou import photo (OCR), dont **loft dynamique**, spin loft, angle d'attaque |
-| 7 | Diagnostic | Prescription calculée, justifications, export PDF 2 pages |
+| 4 | BioSwing Dynamics | Taille, envergure, avant-bras/humérus, plan de backswing/downswing, bras droit, matchups et checklist |
+| 5 | Matériel | Série actuelle, shafts, longueurs, grips, marque cible |
+| 6 | Lie | Test lie board par club, marque pointe/talon/centre → correction **upright / flat** |
+| 7 | Trackman | Saisie manuelle ou import photo (OCR), dont **loft dynamique**, spin loft, angle d'attaque |
+| 8 | Diagnostic | Prescription calculée, résultats BioSwing, justifications, export PDF |
 
-Le moteur de prescription (`client/src/lib/engine.ts`) croise les mesures statiques, le test de lie et les données Trackman avec les chartes constructeurs de `client/src/data/` — Callaway, Ping, Cobra, Titleist, Mizuno, Srixon, PXG, TaylorMade. Chaque recommandation cite sa source ; les 14 sections de référence sourcées sont dans `client/src/data/reference.ts` et consultables dans l'onglet Référence de l'application. Le nouvel explorateur `client/src/components/club-chartes-explorer.tsx` exploite aussi `client/src/data/club-chartes.json`, import normalisé du classeur FitLab Pro (142 spécifications clubs et 29 shafts).
+Le moteur de prescription (`client/src/lib/engine.ts`) croise les mesures statiques, le test de lie et les données Trackman avec les chartes constructeurs de `client/src/data/` — Callaway, Ping, Cobra, Titleist, Mizuno, Srixon, PXG, TaylorMade. Chaque recommandation cite sa source ; les 14 sections de référence sourcées sont dans `client/src/data/reference.ts` et consultables dans l'onglet Référence de l'application. Le nouvel explorateur `client/src/components/club-chartes-explorer.tsx` exploite aussi `client/src/data/club-chartes.json`, import normalisé du classeur FitLab Pro (142 spécifications clubs et 29 shafts). Le module BioSwing est calculé par `client/src/lib/bioswing.ts`, saisi dans `client/src/components/steps/step-bioswing.tsx` et consultable dans l'onglet Data → BioSwing.
 
 ### Parcours Coaching
 
@@ -46,9 +47,10 @@ api/                    Fonctions serverless Vercel (Node, ESM)
   _lib/trackman-ocr.ts  Lecture d'une photo d'écran Trackman
   status.ts             État de la configuration IA
 client/
-  src/pages/fitting.tsx L'assistant en 7 étapes
+  src/pages/fitting.tsx L'assistant en 8 étapes
   src/pages/coaching.tsx / coaching-session.tsx   Parcours coaching en 5 étapes
   src/lib/engine.ts     Moteur de prescription (~600 lignes)
+  src/lib/bioswing.ts   Règles BioSwing Dynamics et matchups physiologiques
   src/lib/pdf.ts        Rapport jsPDF A4, 2 pages
   src/lib/store.ts      IndexedDB (idb) — source de vérité locale
   src/lib/sync.ts       Synchronisation Supabase, dernière écriture gagnante

@@ -45,6 +45,8 @@ const Measures = z.object({
   heightCm: txt(),
   wristToFloorCm: txt(),
   armSpanCm: txt(),
+  forearmLengthCm: txt(),
+  humerusLengthCm: txt(),
   handLengthCm: txt(),
   handCircumferenceCm: txt(),
   middleFingerCm: txt(),

@@ -37,11 +37,30 @@ export interface Measures {
   heightCm: string;
   wristToFloorCm: string;
   armSpanCm: string;
+  forearmLengthCm: string;
+  humerusLengthCm: string;
   handLengthCm: string;      // pli du poignet -> bout du majeur
   handCircumferenceCm: string; // tour de main aux articulations
   middleFingerCm: string;
   gloveSizeCurrent: string;
   shoeSole: "plate" | "crampons" | "";
+}
+
+export type BioSwingPlane = "Shoulder" | "Torso" | "Hip";
+export type BioSwingArmType = "OnTop" | "SideOn" | "Under" | "";
+export type BioSwingGroundForce = "RearPost" | "CenterPost" | "FrontPost" | "";
+
+export interface BioSwingData {
+  rightArmType: BioSwingArmType;
+  rightArmObservation: string;
+  groundForceType: BioSwingGroundForce;
+  manualBackswingPlane: BioSwingPlane | "";
+  manualDownswingPlane: BioSwingPlane | "";
+  manualHinge: string;
+  manualClubPosition: string;
+  manualRelease: string;
+  notes: string;
+  checklist: Record<string, boolean>;
 }
 
 export interface CurrentClub {
@@ -111,6 +130,7 @@ export interface Recommendation {
 export interface FittingData {
   player: Player;
   measures: Measures;
+  bioSwing: BioSwingData;
   currentClubs: CurrentClub[];
   lieTests: LieTest[];
   trackman: TrackmanRow[];
@@ -186,8 +206,13 @@ export const emptyFitting = (): FittingData => ({
     tempo: "", physicalNotes: "", goals: [], missPattern: "", club: "",
   },
   measures: {
-    heightCm: "", wristToFloorCm: "", armSpanCm: "", handLengthCm: "",
+    heightCm: "", wristToFloorCm: "", armSpanCm: "", forearmLengthCm: "", humerusLengthCm: "", handLengthCm: "",
     handCircumferenceCm: "", middleFingerCm: "", gloveSizeCurrent: "", shoeSole: "plate",
+  },
+  bioSwing: {
+    rightArmType: "", rightArmObservation: "", groundForceType: "",
+    manualBackswingPlane: "", manualDownswingPlane: "", manualHinge: "",
+    manualClubPosition: "", manualRelease: "", notes: "", checklist: {},
   },
   currentClubs: [],
   lieTests: [],

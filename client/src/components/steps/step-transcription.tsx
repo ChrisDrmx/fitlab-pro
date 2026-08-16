@@ -24,6 +24,7 @@ const PLAYER_LABEL: Record<string, string> = {
 
 const MEASURE_LABEL: Record<string, string> = {
   heightCm: "Taille (cm)", wristToFloorCm: "Poignet-sol (cm)", armSpanCm: "Envergure (cm)",
+  forearmLengthCm: "Avant-bras (cm)", humerusLengthCm: "Humérus (cm)",
   handLengthCm: "Longueur de main (cm)", handCircumferenceCm: "Tour de main (cm)",
   middleFingerCm: "Majeur (cm)", gloveSizeCurrent: "Gant actuel", shoeSole: "Semelle",
 };
@@ -670,4 +671,3 @@ function emptyTm(club: ClubKey): TrackmanRow {
     landingAngle: "", carry: "", total: "", sideCarry: "", impactHoriz: "", impactVert: "",
   };
 }
-

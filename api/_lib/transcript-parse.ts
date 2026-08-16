@@ -23,6 +23,7 @@ const TM_FIELDS = [
 const NUM_PLAYER = ["handicap", "birthYear", "yearsPlaying", "roundsPerMonth"];
 const NUM_MEASURES = [
   "heightCm", "wristToFloorCm", "armSpanCm",
+  "forearmLengthCm", "humerusLengthCm",
   "handLengthCm", "handCircumferenceCm", "middleFingerCm",
 ];
 const NUM_CLUB = ["year", "shaftWeight", "lengthIn", "wraps"];
@@ -42,7 +43,7 @@ Regles imperatives :
   * "hypothese" : une piste evoquee sans decision ("on pourrait peut-etre tester du midsize") ;
   * "incertain" : une valeur entendue mais douteuse (chiffre coupe, unite absente, club non nomme).
 - Convertis les nombres dictes en toutes lettres : "un metre quatre-vingt-deux" -> "182", "dix-neuf virgule cinq" -> "19.5", "quatre-vingt-dix-huit quatre" -> "98.4".
-- Toutes les longueurs corporelles en CENTIMETRES (1 pouce = 2.54 cm, 1 pied = 30.48 cm). "wristToFloorCm" = pli du poignet au sol. "armSpanCm" = envergure bras ecartes. "handLengthCm" = pli du poignet au bout du majeur. "handCircumferenceCm" = tour de main. "middleFingerCm" = longueur du majeur.
+- Toutes les longueurs corporelles en CENTIMETRES (1 pouce = 2.54 cm, 1 pied = 30.48 cm). "wristToFloorCm" = pli du poignet au sol. "armSpanCm" = envergure bras ecartes. "forearmLengthCm" = milieu du coude a l'articulation du majeur. "humerusLengthCm" = articulation de l'epaule au milieu du coude. "handLengthCm" = pli du poignet au bout du majeur. "handCircumferenceCm" = tour de main. "middleFingerCm" = longueur du majeur.
 - Vitesses Trackman en MPH, distances Trackman (carry, total, height, sideCarry) en METRES, spin en tr/min, angles en degres. Convertis depuis km/h (÷1.609) ou yards (×0.9144) si necessaire, et signale la conversion dans "evidence".
 - "club" vaut exactement une de ces valeurs : ${CLUBS.join(", ")}. Driver = "DR", bois 3 = "3W", hybride 4 = "H4", fer 7 = "7i", pitching = "PW", gap ou approach = "GW", sand = "SW", lob = "LW".
 - Si le materiel actuel est decrit comme une SERIE complete sans club precis ("il joue du Callaway Rogue"), utilise "7i" comme club de reference et ecris "serie complete" dans "lieNote".
